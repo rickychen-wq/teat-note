@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>NOTE.SYS</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+:root {
+  --bg:     #09090f;
+  --bg2:    #111119;
+  --bg3:    #1a1a26;
+  --border: #23232f;
+  --text:   #e4e4f0;
+  --muted:  #66667a;
+  --gold:   #f0c040;
+  --gold2:  #aa7a10;
+  --cyan:   #3dd6c8;
+  --red:    #ff4a6e;
+}
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  height: 100%;
+  overflow: hidden; /* pages handle their own scroll */
+}
+
+/* ══════════════════════════════
+   PAGE STACK SYSTEM
+══════════════════════════════ */
+#app {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+.page {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  background: var(--bg);
+  transition: transform .32s cubic-bezier(.4,0,.2,1),
+              opacity   .32s cubic-bezier(.4,0,.2,1);
+  will-change: transform;
+}
+
+/* states */
+.page.state-hidden-right { transform: translateX(100%); pointer-events:none; }
+.page.state-hidden-left  { transform: translateX(-30%); opacity:.6; pointer-events:none; }
+.page.state-active       { transform: translateX(0); opacity:1; }
+
+/* ── top bar ── */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(9,9,15,.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  height: 52px;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.back-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: var(--accent, var(--gold));
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 15px;
+  cursor: pointer;
+  padding: 8px 0;
+  flex-shrink: 0;
+}
+.back-btn svg { width:18px; height:18px; flex-shrink:0; }
+
+.topbar-title {
+  flex: 1;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* spacer to balance back btn */
+.topbar-spacer { width: 60px; flex-shrink:0; }
+
+/* ══════════════════════════════
+   PAGE 0 — HOME
+══════════════════════════════ */
+#page-home {
+  display: flex;
+  flex-direction: column;
+}
+
+.home-hero {
+  padding: 48px 20px 32px;
+  text-align: center;
+}
+.home-hero .sys-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 4px;
+  color: var(--gold2);
+  margin-bottom: 8px;
+}
+.home-hero .sys-title {
+  font-size: 42px;
+  font-weight: 900;
+  color: var(--gold);
+  letter-spacing: 4px;
+  line-height: 1;
+}
+.home-hero .sys-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 2px;
+  margin-top: 10px;
+}
+
+.subj-list {
+  padding: 0 16px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.subj-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+.subj-card:active { background: var(--bg3); }
+
+.subj-dot {
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--c);
+  box-shadow: 0 0 8px var(--c);
+}
+.subj-info { flex: 1; min-width: 0; }
+.subj-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--c);
+  line-height: 1.2;
+}
+.subj-pub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.subj-count {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  flex-shrink: 0;
+}
+.chevron {
+  color: var(--muted);
+  flex-shrink: 0;
+}
+
+/* ══════════════════════════════
+   PAGE 1 — SUBJECT CHAPTERS
+══════════════════════════════ */
+.chapter-scroll {
+  padding: 16px 16px 40px;
+}
+
+.unit-section { margin-bottom: 24px; }
+
+.unit-header {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  padding: 0 4px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.unit-header::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.ch-list {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.ch-item {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  gap: 12px;
+  cursor: pointer;
+  transition: background .15s;
+  user-select: none;
+  border-bottom: 1px solid var(--border);
+}
+.ch-item:last-child { border-bottom: none; }
+.ch-item:active { background: var(--bg3); }
+
+.ch-status {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.ch-status.ready {
+  background: var(--accent);
+  box-shadow: 0 0 5px var(--accent);
+}
+.ch-status.wip { background: var(--border); }
+
+.ch-name {
+  flex: 1;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.ch-badge {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  padding: 2px 7px;
+  border-radius: 20px;
+  flex-shrink: 0;
+}
+.ch-badge.ready {
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  background: rgba(255,255,255,.03);
+}
+.ch-badge.wip { color: var(--muted); border: 1px solid var(--border); }
+
+/* ══════════════════════════════
+   PAGE 2 — NOTE CONTENT
+══════════════════════════════ */
+.note-scroll {
+  padding: 20px 16px 60px;
+}
+
+/* note typography */
+.note-body { font-size: 14px; line-height: 1.75; }
+
+.note-header-block {
+  border-left: 4px solid var(--gold);
+  padding: 14px 16px;
+  margin-bottom: 24px;
+  background: linear-gradient(90deg, rgba(240,192,64,.07) 0%, transparent 80%);
+  border-radius: 0 8px 8px 0;
+}
+.note-header-block .nh-tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  color: var(--gold2);
+  letter-spacing: 3px;
+  margin-bottom: 5px;
+}
+.note-header-block h1 { font-size: 18px; font-weight: 900; color: var(--gold); line-height: 1.3; }
+.note-header-block .nh-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+.sec-title {
+  display: flex; align-items: center; gap: 8px;
+  margin: 24px 0 10px;
+}
+.sec-title .num {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  background: var(--gold);
+  color: #000;
+  padding: 2px 7px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.sec-title h2 { font-size: 14px; font-weight: 700; color: var(--gold); }
+
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+.card.hl { border-color: var(--gold2); }
+
+.pts { display: flex; flex-direction: column; gap: 8px; }
+.pt  { display: flex; gap: 9px; align-items: flex-start; font-size: 13.5px; }
+.dot { width:6px; height:6px; border-radius:50%; background:var(--gold); margin-top:8px; flex-shrink:0; }
+.dot.c { background: var(--cyan); }
+.dot.r { background: var(--red); }
+
+.note-body em { font-style:normal; color:var(--gold); font-weight:700; }
+.note-body b  { color:var(--cyan); font-weight:700; }
+.note-body .r { color:#ff8099; font-weight:600; }
+
+.note-body table {
+  width:100%;
+  border-collapse:collapse;
+  font-size:12.5px;
+  margin-top:6px;
+  display:block;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+}
+.note-body th {
+  background:rgba(240,192,64,.1);
+  color:var(--gold);
+  font-weight:700;
+  padding:7px 10px;
+  text-align:left;
+  border-bottom:2px solid var(--gold2);
+  white-space:nowrap;
+}
+.note-body td { padding:7px 10px; border-bottom:1px solid var(--border); }
+.note-body tr:last-child td { border-bottom:none; }
+.note-body td.g { color:var(--gold); font-weight:600; }
+.note-body td.c { color:var(--cyan); font-weight:600; }
+.note-body td.r { color:#ff8099; font-weight:600; }
+
+.layers { border-radius: 8px; overflow: hidden; margin-top: 8px; }
+.layer  { padding:10px 14px; display:flex; justify-content:space-between; align-items:center; gap:8px; }
+.layer-mix    { background:rgba(61,214,200,.13); border-left:4px solid var(--cyan); }
+.layer-thermo { background:rgba(240,192,64,.10);  border-left:4px solid var(--gold); }
+.layer-deep   { background:rgba(100,120,220,.13); border-left:4px solid #6080ee; }
+.lname { font-weight:700; font-size:13px; }
+.layer-mix .lname    { color:var(--cyan); }
+.layer-thermo .lname { color:var(--gold); }
+.layer-deep .lname   { color:#8aabff; }
+.ldetail { font-size:11.5px; color:var(--muted); text-align:right; flex-shrink:0; }
+
+.tip {
+  background:rgba(255,74,110,.07);
+  border:1px solid rgba(255,74,110,.28);
+  border-radius:8px;
+  padding:10px 12px;
+  margin-top:8px;
+  font-size:12.5px;
+  color:#ffccd5;
+  line-height:1.65;
+}
+
+.note-body hr { border:none; border-top:1px solid var(--border); margin:20px 0; }
+
+/* wip */
+.wip-screen {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  min-height:55vh; text-align:center; gap:10px;
+}
+.wip-screen .wt { font-family:'Share Tech Mono',monospace; font-size:9px; color:var(--muted); letter-spacing:3px; }
+.wip-screen .wn { font-size:20px; font-weight:900; }
+.wip-screen .ws { font-size:13px; color:var(--muted); line-height:1.7; }
+.blink { animation:blink 1.2s step-end infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* scanline */
+body::after {
+  content:'';
+  pointer-events:none;
+  position:fixed; inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.04) 2px,rgba(0,0,0,.04) 4px);
+  z-index:9999;
+}
+
+/* ── 雜誌單字表 (mag) ── */
+.mag-unit { margin-bottom:24px; }
+.mag-unit-hdr { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--cyan); letter-spacing:2px; margin-bottom:8px; display:flex; align-items:center; gap:8px; }
+.mag-unit-hdr::after { content:''; flex:1; height:1px; background:var(--border); }
+.mag-unit-title { font-size:13px; font-weight:700; color:var(--text); margin-bottom:8px; padding-left:4px; }
+.vtbl { width:100%; border-collapse:collapse; font-size:12.5px; margin-bottom:6px; display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+.vtbl th { padding:6px 10px; text-align:left; font-weight:700; border-bottom-width:2px; border-bottom-style:solid; font-family:'Share Tech Mono',monospace; font-size:9px; letter-spacing:1px; white-space:nowrap; }
+.vtbl th.g { background:rgba(240,192,64,.1); color:var(--gold); border-bottom-color:var(--gold2); }
+.vtbl th.c { background:rgba(61,214,200,.08); color:var(--cyan); border-bottom-color:rgba(61,214,200,.5); }
+.vtbl th.s { background:rgba(80,80,100,.15); color:var(--muted); border-bottom-color:#3a3a4a; }
+.vtbl td { padding:6px 10px; border-bottom:1px solid var(--border); vertical-align:top; }
+.vtbl tr:last-child td { border-bottom:none; }
+.vtbl td.w { font-family:'Share Tech Mono',monospace; color:var(--gold); width:40%; }
+.vtbl td.w.ph { color:var(--cyan); }
+.vtbl td.w.sm { color:var(--muted); font-size:11px; }
+.vtbl td.zh { font-size:12.5px; line-height:1.5; }
+.vtbl td.zh .pos { font-size:10px; color:var(--muted); font-family:'Share Tech Mono',monospace; margin-right:2px; }
+.vtbl td.zh.sm { font-size:11.5px; color:#9999bb; }
+.mag-card-s { border-color:#3a3a4a !important; background:#0e0e16 !important; }
+.mag-card-c { border-color:rgba(61,214,200,.35) !important; }
+
+/* ── 公民 tabs (cv) ── */
+.cv-tab-bar { display:flex; border-bottom:2px solid var(--border); position:sticky; top:52px; background:rgba(9,9,15,.95); backdrop-filter:blur(12px); z-index:5; }
+.cv-tab { flex:1; padding:10px 4px; text-align:center; font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--muted); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-2px; transition:all .2s; letter-spacing:1px; }
+.cv-tab.active { color:#60cc80; border-bottom-color:#60cc80; }
+.cv-sec { display:none; padding-top:16px; }
+.cv-sec.active { display:block; }
+.cv-sub { font-size:13px; font-weight:700; color:var(--cyan); margin:14px 0 8px; border-left:3px solid var(--cyan); padding-left:10px; }
+.cv-eg { display:flex; gap:8px; align-items:flex-start; background:rgba(61,214,200,.06); border:1px solid rgba(61,214,200,.2); border-radius:6px; padding:9px 12px; margin-top:8px; font-size:12.5px; color:#a8f0e8; line-height:1.65; }
+.cv-eg-lbl { font-family:'Share Tech Mono',monospace; font-size:9px; background:var(--cyan); color:#000; padding:1px 6px; border-radius:2px; flex-shrink:0; margin-top:2px; }
+.cmp-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+.cmp-g { background:rgba(240,192,64,.08); border:1px solid rgba(240,192,64,.35); border-radius:6px; padding:12px 14px; }
+.cmp-c { background:rgba(61,214,200,.08); border:1px solid rgba(61,214,200,.35); border-radius:6px; padding:12px 14px; }
+.cmp-tag { display:inline-block; font-size:10px; font-family:'Share Tech Mono',monospace; padding:1px 7px; border-radius:10px; margin-bottom:5px; }
+.cmp-g .cmp-tag { background:rgba(240,192,64,.2); color:var(--gold); }
+.cmp-c .cmp-tag { background:rgba(61,214,200,.2); color:var(--cyan); }
+.cmp-g .cmp-title { font-size:14px; font-weight:900; color:var(--gold); margin-bottom:5px; }
+.cmp-c .cmp-title { font-size:14px; font-weight:900; color:var(--cyan); margin-bottom:5px; }
+.cmp-body { font-size:12.5px; color:var(--text); line-height:1.65; }
+.feat-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:10px; }
+.feat-card { background:rgba(240,192,64,.06); border:1px solid rgba(240,192,64,.25); border-radius:6px; padding:10px 12px; text-align:center; }
+.feat-title { font-size:13px; font-weight:900; color:var(--gold); margin-bottom:4px; }
+.feat-body { font-size:11.5px; color:var(--muted); line-height:1.5; }
+.div-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:10px; }
+.div-r { background:rgba(255,74,110,.07); border:1px solid rgba(255,74,110,.28); border-radius:6px; padding:10px 12px; }
+.div-y { background:rgba(240,192,64,.07); border:1px solid rgba(240,192,64,.28); border-radius:6px; padding:10px 12px; }
+.div-c { background:rgba(61,214,200,.07); border:1px solid rgba(61,214,200,.28); border-radius:6px; padding:10px 12px; }
+.div-dtitle { font-size:12px; font-weight:900; margin-bottom:5px; }
+.div-r .div-dtitle { color:#ff8099; }
+.div-y .div-dtitle { color:var(--gold); }
+.div-c .div-dtitle { color:var(--cyan); }
+.div-dbody { font-size:11px; color:var(--muted); line-height:1.5; }
+.checklist { background:rgba(240,192,64,.04); border:1px solid var(--gold2); border-radius:6px; padding:14px 16px; margin-bottom:12px; }
+
+/* ── 數學 (math) ── */
+.math-block { background:rgba(0,0,0,.35); border-left:3px solid #9b8fff; padding:10px 14px; margin:8px 0; border-radius:0 8px 8px 0; font-size:13px; line-height:1.9; }
+.math-warn { background:rgba(255,74,110,.07); border-left:3px solid var(--red); padding:10px 14px; margin:8px 0; border-radius:0 8px 8px 0; font-size:12.5px; color:rgba(255,150,150,.85); }
+.math-hi  { color:#9b8fff; font-weight:600; }
+.math-hi2 { color:var(--red); font-weight:600; }
+.math-hi3 { color:var(--cyan); font-weight:600; }
+.math-hi4 { color:var(--gold); font-weight:600; }
+.fml-group { margin-bottom:16px; }
+.fml-label { font-family:'Share Tech Mono',monospace; font-size:9px; color:var(--muted); letter-spacing:2px; margin-bottom:5px; }
+
+/* ── 國文 (chinese) ── */
+.cn-poem-line { display:grid; grid-template-columns:1fr 1fr; gap:0; border-bottom:1px solid var(--border); padding:10px 14px; }
+.cn-poem-line:first-child { border-top:1px solid var(--border); }
+.cn-pl-orig { font-size:15px; color:#c8c0a0; letter-spacing:2px; line-height:1.7; }
+.cn-pl-tran { font-size:13px; color:var(--text); line-height:1.7; }
+.cn-tip-r { background:rgba(255,74,110,.07); border:1px solid rgba(255,74,110,.28); border-radius:6px; padding:10px 14px; margin-top:8px; font-size:13px; color:#ffccd5; line-height:1.65; }
+.cn-tip-c { background:rgba(61,214,200,.06); border:1px solid rgba(61,214,200,.25); border-radius:6px; padding:10px 14px; margin-top:8px; font-size:13px; color:#b0f0ea; line-height:1.65; }
+.cn-tip-y { background:rgba(240,192,64,.06); border:1px solid rgba(240,192,64,.22); border-radius:6px; padding:10px 14px; margin-top:8px; font-size:13px; color:#f0e0a0; line-height:1.65; }
+.cn-cmp { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+.cn-cmp-g { background:rgba(240,192,64,.06); border:1px solid var(--gold2); border-radius:6px; padding:12px 14px; }
+.cn-cmp-c { background:rgba(61,214,200,.06); border:1px solid var(--cyan); border-radius:6px; padding:12px 14px; }
+.cn-cmp-title { font-family:'Share Tech Mono',monospace; font-size:11px; letter-spacing:1px; margin-bottom:8px; }
+.cn-cmp-g .cn-cmp-title { color:var(--gold); }
+.cn-cmp-c .cn-cmp-title { color:var(--cyan); }
+.cn-exam { background:linear-gradient(135deg,rgba(240,192,64,.05),rgba(255,74,110,.04)); border:1px solid rgba(240,192,64,.35); border-radius:6px; padding:14px 16px; margin-bottom:10px; }
+.cn-exam-title { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--red); letter-spacing:2px; margin-bottom:10px; }
+.cn-chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:10px; }
+.cn-chip { font-size:11px; padding:2px 9px; border-radius:20px; background:rgba(240,192,64,.1); border:1px solid var(--gold2); color:var(--gold); }
+.cn-chip.c { background:rgba(61,214,200,.08); border-color:var(--cyan); color:var(--cyan); }
+.cn-art-hdr { display:flex; align-items:center; gap:12px; margin:28px 0 14px; flex-wrap:wrap; }
+.cn-art-badge { font-family:'Share Tech Mono',monospace; font-size:10px; background:var(--gold); color:#000; padding:2px 9px; border-radius:2px; white-space:nowrap; }
+.cn-art-badge.c { background:var(--cyan); }
+.cn-art-h2 { font-size:18px; font-weight:900; color:var(--gold); }
+.cn-art-h2.c { color:var(--cyan); }
+.cn-art-author { font-size:11px; color:var(--muted); font-family:'Share Tech Mono',monospace; margin-left:auto; white-space:nowrap; }
+
+/* ── 歷史 (history) ── */
+.sub-title { font-size:13px; font-weight:700; color:var(--cyan); margin:14px 0 8px; border-left:3px solid var(--cyan); padding-left:10px; }
+.eg { display:flex; gap:8px; align-items:flex-start; background:rgba(61,214,200,.06); border:1px solid rgba(61,214,200,.2); border-radius:6px; padding:9px 12px; margin-top:8px; font-size:12.5px; color:#a8f0e8; line-height:1.65; }
+.eg-label { font-family:'Share Tech Mono',monospace; font-size:9px; background:var(--cyan); color:#000; padding:1px 6px; border-radius:2px; flex-shrink:0; margin-top:2px; }
+.compare-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+.three-col { display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-top:10px; }
+.cmp-card { border-radius:6px; padding:12px 14px; }
+.cmp-card.gold { background:rgba(240,192,64,.08); border:1px solid rgba(240,192,64,.35); }
+.cmp-card.cyan { background:rgba(61,214,200,.08); border:1px solid rgba(61,214,200,.35); }
+.cmp-card.red  { background:rgba(255,74,110,.08); border:1px solid rgba(255,74,110,.35); }
+.cmp-title { font-size:13px; font-weight:900; margin-bottom:5px; }
+.cmp-card.gold .cmp-title { color:var(--gold); }
+.cmp-card.cyan .cmp-title { color:var(--cyan); }
+.cmp-card.red  .cmp-title { color:#ff8099; }
+.cmp-tag { display:inline-block; font-size:10px; font-family:'Share Tech Mono',monospace; padding:1px 7px; border-radius:10px; margin-bottom:5px; }
+.cmp-card.gold .cmp-tag { background:rgba(240,192,64,.2); color:var(--gold); }
+.cmp-card.cyan .cmp-tag { background:rgba(61,214,200,.2); color:var(--cyan); }
+.cmp-card.red  .cmp-tag { background:rgba(255,74,110,.2); color:#ff8099; }
+.cmp-body { font-size:12.5px; color:var(--text); line-height:1.6; }
+.checklist-card { background:rgba(240,192,64,.04); border:1px solid var(--gold2); border-radius:6px; padding:14px 16px; margin-bottom:12px; }
+td.g { color:var(--gold); font-weight:600; }
+td.c { color:var(--cyan); font-weight:600; }
+td.r { color:#ff8099; font-weight:600; }
+
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- ═══ PAGE 0: HOME ═══ -->
+  <div class="page state-active" id="page-home">
+    <div class="home-hero">
+      <div class="sys-label">EXAM NOTES SYSTEM</div>
+      <div class="sys-title">NOTE.SYS</div>
+      <div class="sys-sub">選科目 → 選章節 → 開讀</div>
+    </div>
+    <div class="subj-list" id="subj-list"></div>
+  </div>
+
+  <!-- ═══ PAGE 1: SUBJECT ═══ -->
+  <div class="page state-hidden-right" id="page-subject">
+    <div class="topbar" id="subj-topbar">
+      <button class="back-btn" id="subj-back" onclick="goBack('page-home','page-subject')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        科目
+      </button>
+      <div class="topbar-title" id="subj-topbar-title">—</div>
+      <div class="topbar-spacer"></div>
+    </div>
+    <div class="chapter-scroll" id="chapter-scroll"></div>
+  </div>
+
+  <!-- ═══ PAGE 2: NOTE ═══ -->
+  <div class="page state-hidden-right" id="page-note">
+    <div class="topbar" id="note-topbar">
+      <button class="back-btn" id="note-back" onclick="goBack('page-subject','page-note')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+        <span id="note-back-label">返回</span>
+      </button>
+      <div class="topbar-title" id="note-topbar-title">—</div>
+      <div class="topbar-spacer"></div>
+    </div>
+    <div class="note-scroll">
+      <div class="note-body" id="note-body"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   DATA
+═══════════════════════════════════════════════ */
+const SUBJECTS = [
+  {
+    id:'chinese', name:'國文', tag:'CHINESE', pub:'翰林版',
+    color:'#f0c040',
+    units:[
+      { label:'現代詩選', chapters:[
+        { id:'c-love1', name:'愛的辯證（一）' },
+        { id:'c-love2', name:'愛的辯證（二）' },
+        { id:'c-water', name:'水紋' },
+      ]},
+      { label:'台灣古詩文選', chapters:[
+        { id:'c-juk', name:'畫菊自序', ready:true },
+        { id:'c-shi', name:'誓志其二', ready:true },
+      ]},
+      { label:'出師表', chapters:[
+        { id:'c-szb', name:'出師表' },
+      ]},
+      { label:'孟子選', chapters:[
+        { id:'c-mc1', name:'孟子選（一）' },
+        { id:'c-mc2', name:'孟子選（二）' },
+        { id:'c-mc3', name:'孟子選（三）' },
+      ]},
+    ]
+  },
+  {
+    id:'english', name:'英文', tag:'ENGLISH', pub:'龍騰版 ＋ 空中美語',
+    color:'#3dd6c8',
+    units:[
+      { label:'龍騰課文', chapters:[
+        { id:'e-L7', name:'L7 TED Talks', ready:true },
+        { id:'e-L8', name:'L8 Ban-Don', ready:true },
+        { id:'e-L9', name:'L9 The Story Behind Eponyms', ready:true },
+      ]},
+      { label:'空中美語', chapters:[
+        { id:'e-st6', name:'空中美語 6月號', ready:true },
+      ]},
+      { label:'單字 4500', chapters:[
+        { id:'e-v75', name:'Units 7-5', ready:true },
+        { id:'e-v81', name:'Units 8-1', ready:true },
+        { id:'e-v82', name:'Units 8-2', ready:true },
+        { id:'e-v83', name:'Units 8-3', ready:true },
+      ]},
+    ]
+  },
+  {
+    id:'math', name:'數學', tag:'MATH', pub:'龍騰版',
+    color:'#9b8fff',
+    units:[
+      { label:'機率與統計', chapters:[
+        { id:'m-exp', name:'期望值' },
+      ]},
+      { label:'三角函數', chapters:[
+        { id:'m-t1', name:'直角三角形定義', ready:true },
+        { id:'m-t2', name:'廣義角', ready:true },
+        { id:'m-t3', name:'三角比性質', ready:true },
+      ]},
+    ]
+  },
+  {
+    id:'history', name:'歷史', tag:'HISTORY', pub:'三民版',
+    color:'#ff9955',
+    units:[
+      { label:'Units 5–6', chapters:[
+        { id:'h-u5', name:'Unit 5', ready:true },
+        { id:'h-u6', name:'Unit 6' },
+      ]},
+    ]
+  },
+  {
+    id:'civics', name:'公民', tag:'CIVICS', pub:'翰林版',
+    color:'#60cc80',
+    units:[
+      { label:'Units 5–6', chapters:[
+        { id:'cv-u5', name:'Unit 5', ready:true },
+        { id:'cv-u6', name:'Unit 6' },
+      ]},
+    ]
+  },
+  {
+    id:'earth', name:'地科', tag:'EARTH SCI', pub:'康宇版',
+    color:'#55bbff',
+    units:[
+      { label:'U5 變動的海洋', chapters:[
+        { id:'es-5-1', name:'5-1 海水的組成與結構', ready:true },
+        { id:'es-5-2', name:'5-2 波浪', ready:true },
+        { id:'es-5-3', name:'5-3 海浪與潮汐' },
+      ]},
+      { label:'U6 颱風', chapters:[
+        { id:'es-6-1', name:'6-1 颱風（考試範圍）' },
+      ]},
+      { label:'U7 全球氣候變遷', chapters:[
+        { id:'es-7-1', name:'7-1 氣候變遷' },
+        { id:'es-7-2', name:'7-2 人類的因應' },
+      ]},
+    ]
+  },
+  {
+    id:'physics', name:'物理', tag:'PHYSICS', pub:'龍騰版',
+    color:'#ff6b9d',
+    units:[
+      { label:'第三章 運動', chapters:[
+        { id:'ph-3-1', name:'3-1 描述運動' },
+        { id:'ph-3-2', name:'3-2 牛頓定律' },
+        { id:'ph-3-3', name:'3-3 天體運動' },
+      ]},
+      { label:'第四章 電磁', chapters:[
+        { id:'ph-4-0', name:'4-0 電磁概論' },
+        { id:'ph-4-1', name:'4-1 電場' },
+        { id:'ph-4-2', name:'4-2 電流與磁場' },
+        { id:'ph-4-3', name:'4-3 電磁感應' },
+      ]},
+    ]
+  },
+];
+
+/* ═══════════════════════════════════════════════
+   NOTES  — 之後新增在這裡加 key: `HTML`
+═══════════════════════════════════════════════ */
+
+
+const NOTES = {
+
+/* ════════ 歷史 Unit 5 ════════ */
+'h-u5': `
+<div class="note-header-block" style="border-left-color:#ff9955;">
+  <div class="nh-tag" style="color:#c86020;">HISTORY ／ 第五章 ／ 三民版 ／ 段考完整版</div>
+  <h1 style="color:#ff9955;">傳統與現代的交會</h1>
+  <div class="nh-sub">第1節 東亞國家對西力衝擊的回應　・　第2節 現代東亞國家的形成</div>
+</div>
+
+<div class="cv-tab-bar" style="--cv-active:#ff9955;">
+  <div class="cv-tab" style="--cv-color:#ff9955;" onclick="htTab(0,this)">第1節 西力衝擊的回應</div>
+  <div class="cv-tab" style="--cv-color:#ff9955;" onclick="htTab(1,this)">第2節 現代東亞的形成</div>
+</div>
+
+<div class="cv-sec active" id="ht0">
+<div class="section active" id="s0">
+
+  <div class="sec-title"><span class="num">一</span><h2>西力東漸下的中國</h2></div>
+  <div class="card hl">
+    <div class="sub-title">（一）明末清初西學輸入</div>
+    <div class="pts">
+      <div class="pt"><div class="dot"></div><div>16世紀葡萄牙人在<em>澳門</em>建立據點，天主教正式進入中國</div></div>
+      <div class="pt"><div class="dot c"></div><div><em>利瑪竇</em>（1583年至廣東）：身穿儒服、以中文詮釋教義、同意祭祖祭孔 → 帶入西方文化知識、繪製坤輿萬國全圖、翻譯書籍介紹西方數學與科技、西洋曆法傳入</div></div>
+      <div class="pt"><div class="dot r"></div><div><em>西學中斷</em>：1704年羅馬教宗禁止祭天、祭祖、祭孔 → 康熙不滿 → 1720年禁教 → 1723年雍正重申 → 天主教傳教及中西文化交流受挫</div></div>
+    </div>
+    <div class="sub-title">（二）鴉片戰爭（1840）</div>
+    <div class="pts">
+      <div class="pt"><div class="dot"></div><div>背景：清廷腐敗；1757年限定<em>廣州</em>一口通商，外商須透過<em>十三行</em>中介；英國為改善貿易逆差向中國傾銷鴉片</div></div>
+      <div class="pt"><div class="dot r"></div><div>導火線：1839年<em>林則徐</em>至廣州查禁鴉片，英國要求賠償被拒 → 1840年英國開戰</div></div>
+      <div class="pt"><div class="dot c"></div><div>結果：清廷戰敗，1842年簽訂《<em>南京條約</em>》= <em>第一個不平等條約</em></div></div>
+    </div>
+    <div class="eg"><span class="eg-label">南京條約</span>賠款、開放五口通商（廣、廈、福、寧、滬）、割讓香港、兩國官方平等交往；附約：<em>領事裁判權、片面最惠國待遇、協定關稅</em></div>
+    <div class="eg"><span class="eg-label">重要人物</span>林則徐首倡「師夷長技以制夷」；魏源據林則徐收集的資料編成《<em>海國圖志</em>》，著重西方船堅砲利與實用工藝</div>
+    <div class="sub-title">（三）兩次英法聯軍</div>
+    <table>
+      <tr><th></th><th>第一次（1857）</th><th>第二次（1860）</th></tr>
+      <tr><td class="g">起因</td><td>英人要求修約遭拒；廣西林教案</td><td>清廷阻撓英法公使至北京換約</td></tr>
+      <tr><td class="c">條約</td><td>《天津條約》（1858）</td><td>《北京條約》（1860）</td></tr>
+      <tr><td>重要條款</td><td>賠款、公使駐京、增開十口通商、外人可入內地傳教遊歷、開放內河航行、<em>鴉片貿易合法化</em></td><td>賠款、增加<em>天津</em>為商埠、割讓九龍司給英國、允許外國教士在內地購置地產</td></tr>
+    </table>
+    <div class="sub-title">（四）晚清的圖強運動（自強運動，1861起）</div>
+    <div class="pts">
+      <div class="pt"><div class="dot"></div><div>目的：富國強兵，學習西洋<em>器物技藝</em>；推動者：<em>曾國藩、左宗棠、李鴻章</em>等各省督撫</div></div>
+    </div>
+    <div class="three-col" style="margin-top:10px;">
+      <div class="feat-card">
+        <div class="feat-title">軍事</div>
+        <div class="feat-body">機器製造局、船政局；建立北洋水師</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-title">外交</div>
+        <div class="feat-body">設立<em>總理各國事務衙門</em>處理外交</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-title">民生＋教育</div>
+        <div class="feat-body">輪船招商局、鐵路電報、煤礦；新式學堂、派遣留學生赴歐美</div>
+      </div>
+    </div>
+    <div class="tip">⚠️ 自強運動只改「<em>器物</em>」，不改「制度」→ 甲午戰敗後被批評失敗的核心原因</div>
+  </div>
+
+  <div class="sec-title"><span class="num">二</span><h2>西方文化與勢力傳入日本</h2></div>
+  <div class="card hl">
+    <div class="sub-title">（一）西學引進（蘭學）</div>
+    <div class="pts">
+      <div class="pt"><div class="dot"></div><div>17世紀江戶幕府<em>鎖國</em>，僅允許中、荷商船至長崎貿易</div></div>
+      <div class="pt"><div class="dot c"></div><div>18世紀後引進外國書籍，允許部分學者學習荷蘭文 → 吸收西方醫學、地理、物理、化學等 → 形成「<em>蘭學</em>」</div></div>
+    </div>
+    <div class="sub-title">（二）西方勢力強勢入侵</div>
+    <div class="pts">
+      <div class="pt"><div class="dot r"></div><div>1853年美國將領<em>培里</em>以武力迫使日本門戶開放，隔年簽訂《<em>日美親善條約</em>》（神奈川條約）</div></div>
+      <div class="pt"><div class="dot r"></div><div>1858年後，列強要求簽訂不平等條約：多項主權受損（領事裁判權、關稅自主）</div></div>
+    </div>
+    <div class="sub-title">（三）大政奉還（1867）</div>
+    <div class="pts">
+      <div class="pt"><div class="dot r"></div><div>開放通商口岸後，幣值貶值、物價暴漲，社會動盪不安</div></div>
+      <div class="pt"><div class="dot c"></div><div>接觸過西方的諸侯與武士，如<em>坂本龍馬</em>提出「尊王攘夷」口號，展開反幕府運動</div></div>
+      <div class="pt"><div class="dot c"></div><div>1867年幕府宣布「<em>大政奉還</em>」，政權交還明治天皇，幕府政治結束</div></div>
+    </div>
+    <div class="sub-title">（四）明治維新（1868起）</div>
+    <div class="pts">
+      <div class="pt"><div class="dot"></div><div><b>中央集權</b>：廢藩置縣（廢除藩主）、1889年頒布《<em>大日本帝國憲法</em>》</div></div>
+      <div class="pt"><div class="dot"></div><div><b>工業化、新式軍隊</b>（徵兵制）、義務教育</div></div>
+      <div class="pt"><div class="dot"></div><div><b>經濟</b>：建立金融機構、軍工業，由財閥經營；拒絕外資，買回外資企業</div></div>
+    </div>
+    <div class="tip">⚠️ 明治維新資金：初期籌措造成農民困苦；<em>後期靠甲午戰爭賠款</em>獲得發展費用</div>
+    <div class="sub-title">（五）向外擴張</div>
+    <div class="pts">
+      <div class="pt"><div class="dot r"></div><div><em>併吞琉球</em>：1871年牡丹社事件 → 1879年設置沖繩縣</div></div>
+      <div class="pt"><div class="dot r"></div><div><em>進駐朝鮮</em>：1875年以武力威嚇，朝鮮被迫簽訂《日朝修好條規》；1884年激進開化派政變，清日約定若朝鮮有事共同出兵</div></div>
+    </div>
+  </div>
+
+  <div class="sec-title"><span class="num">三</span><h2>甲午戰爭（1894–1895）</h2></div>
+  <div class="card hl">
+    <div class="pts">
+      <div class="pt"><div class="dot r"></div><div>爆發原因：1894年朝鮮內亂，清、日兩國出兵，形成對峙</div></div>
+      <div class="pt"><div class="dot r"></div><div>過程：黃海海戰，日本重創北洋艦隊；日本占領朝鮮半島</div></div>
+      <div class="pt"><div class="dot r"></div><div>結果：1895年簽訂《<em>馬關條約</em>》：割讓臺灣、澎湖及遼東半島（後被贖回）；賠款<em>二億兩</em>；允許日人在口岸設工廠</div></div>
+    </div>
+    <div class="sub-title">戰爭成敗分析</div>
+    <div class="compare-row">
+      <div class="cmp-card red">
+        <span class="cmp-tag">清帝國（敗）</span>
+        <div class="cmp-title">為何輸</div>
+        <div class="cmp-body">未發展出現代國家體制；主事者指揮不統一；領導層腐化、陋習；<em>自強運動追求現代化失敗的象徵</em></div>
+      </div>
+      <div class="cmp-card cyan">
+        <span class="cmp-tag">日本（勝）</span>
+        <div class="cmp-title">為何贏</div>
+        <div class="cmp-body">已發展出<em>現代國家體制</em>，可動員全國力量進行戰爭</div>
+      </div>
+    </div>
+    <div class="sub-title">甲午戰後影響</div>
+    <div class="pts">
+      <div class="pt"><div class="dot r"></div><div>列強開始爭奪中國勢力範圍（德→膠州灣、俄→遼東、英→威海衛、法→廣州灣）</div></div>
+      <div class="pt"><div class="dot c"></div><div>美國提出「<em>門戶開放</em>」政策（1899），保護各列強既得利益，避免列強衝突（非保障中國）</div></div>
+      <div class="pt"><div class="dot r"></div><div>朝鮮：1897年改號「大韓帝國」；1910年《日韓合併條約》→ 成為<em>日本殖民地</em></div></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<div class="cv-sec" id="ht1">
+<div class="section" id="s1">
+
+  <div class="sec-title"><span class="num">一</span><h2>中國傳統帝制的崩解</h2></div>
+  <div class="card hl">
+    <div class="sub-title">（一）戊戌變法（1898）</div>
+    <div class="pts">
+      <div class="pt"><div class="dot"></div><div>推動者：<em>光緒皇帝、康有為、梁啟超</em>；借鏡日本明治維新</div></div>
+      <div class="pt"><div class="dot c"></div><div>改革：廢八股、試策論；開學堂、練新軍；裁冗員、廢漕運</div></div>
+      <div class="pt"><div class="dot r"></div><div>失敗原因：急於求成未考慮配套；缺乏行政經驗；<em>慈禧太后</em>與守舊派反對 → 除京師大學堂外全數取消</div></div>
+    </div>
+    <div class="sub-title">（二）庚子後新政（1901）</div>
+    <div class="pts">
+      <div class="pt"><div class="dot"></div><div>背景：1900年八國聯軍，翌年簽訂《<em>辛丑議定書</em>》→ 道歉、賠款、使館駐兵</div></div>
+      <div class="pt"><div class="dot c"></div><div>慈禧推行新政，內容多與戊戌變法相同；<em>1905年廢除科舉制度</em></div></div>
+      <div class="pt"><div class="dot r"></div><div>1906年立憲運動：日俄戰爭日本勝 → 君主立憲較優越 → 清廷預備立憲，但內閣多皇族 → 支持者失望轉向革命</div></div>
+    </div>
+    <div class="sub-title">（三）辛亥革命（1911）</div>
+    <div class="pts">
+      <div class="pt"><div class="dot c"></div><div>1911年10月10日，湖北武昌起事，各地響應，多省宣告脫離清帝國獨立</div></div>
+      <div class="pt"><div class="dot c"></div><div>1912年1月<em>中華民國臨時政府</em>成立；2月溥儀退位，王朝終結</div></div>
+    </div>
+    <div class="sub-title">（四）民初分裂與北伐統一</div>
+    <table>
+      <tr><th>時期</th><th>狀況</th></tr>
+      <tr><td class="g">1912–1916</td><td><em>袁世凱</em>就任臨時大總統 → 1916年恢復帝制，受反對，因病暴卒</td></tr>
+      <tr><td class="g">1917–1926</td><td>段祺瑞不願恢復國會；孫中山「護法運動」；南北分裂及<em>軍閥混戰</em></td></tr>
+      <tr><td class="c">1926–1928</td><td>蔣中正北伐，東北張學良歸附；<em>名義上統一</em>，各地仍有地方勢力</td></tr>
+    </table>
+    <div class="sub-title">（五）民初思想改革</div>
+    <div class="pts">
+      <div class="pt"><div class="dot c"></div><div><em>傳統與西化</em>：陳獨秀創辦《青年雜誌》（後改名《新青年》），擁護民主與科學，挑戰傳統；白話文學興起</div></div>
+      <div class="pt"><div class="dot c"></div><div><em>新思潮引進</em>：馬克思主義引進 → 1921年中國共產黨成立</div></div>
+      <div class="pt"><div class="dot c"></div><div><em>社會觀念轉變</em>：女性地位提高、婦女運動興起</div></div>
+    </div>
+    <div class="eg"><span class="eg-label">五四運動（1919）</span>原因：一戰後日本侵入山東，巴黎和會決議由日本繼承德國在山東利權 → 5/4北京學生示威，民意壓力下中國拒絕在和約簽字；影響：「救亡」與「啟蒙」決心、馬克思主義漸興、擴大新文化運動</div>
+    <div class="eg"><span class="eg-label">比較</span>自強運動（器物）→ 戊戌變法（制度）→ 新文化運動（思想）：三層次逐步深化</div>
+  </div>
+
+  <div class="sec-title"><span class="num">二</span><h2>日本應變圖強</h2></div>
+  <div class="card hl">
+    <div class="sub-title">（一）脫亞入歐</div>
+    <div class="pts">
+      <div class="pt"><div class="dot c"></div><div><em>福澤諭吉</em> 1880年代提出「脫亞入歐」，主張向文明開化的西方看齊；主張占領殖民地是「促進文明開化」→ 成為軍國主義思想起源之一</div></div>
+    </div>
+    <div class="sub-title">（二）軍國主義</div>
+    <div class="pts">
+      <div class="pt"><div class="dot r"></div><div>19世紀「砲艦外交」→ 建立現代軍事教育體制；對外戰爭勝利 → 獲殖民地、用賠款擴充軍備、國際地位提高</div></div>
+      <div class="pt"><div class="dot r"></div><div>1930年代全球經濟大蕭條 → 企業破產、農村貧困 → 極右軍部希望透過<em>對外擴張</em>解決經濟問題</div></div>
+    </div>
+  </div>
+
+  <div class="sec-title"><span class="num">三</span><h2>朝鮮反殖民運動</h2></div>
+  <div class="card hl">
+    <div class="sub-title">日本殖民（1910年合併後）</div>
+    <div class="pts">
+      <div class="pt"><div class="dot r"></div><div>設置「<em>朝鮮總督府</em>」，掌有軍、立、行、司法全部權力</div></div>
+      <div class="pt"><div class="dot r"></div><div>掠取糧食、礦產、原料；傾銷工業產品；打擊朝鮮本地產業</div></div>
+    </div>
+    <div class="sub-title">三一獨立運動（1919.3.1）</div>
+    <div class="pts">
+      <div class="pt"><div class="dot c"></div><div>受民族自決潮流鼓舞，朝鮮人民發表《獨立宣言書》，<em>兩百多萬人</em>示威抗議</div></div>
+      <div class="pt"><div class="dot c"></div><div>為朝鮮近代史上規模最大的反日運動，催化朝鮮民族獨立意識</div></div>
+      <div class="pt"><div class="dot"></div><div>知識分子投入文化事業，灌輸獨立意識與民族思想</div></div>
+    </div>
+  </div>
+
+  <div class="sec-title"><span class="num">四</span><h2>越南淪為法國殖民地</h2></div>
+  <div class="card hl">
+    <div class="pts">
+      <div class="pt"><div class="dot"></div><div>1874年《法越和平同盟條約》；1882年法國占領河內 → 清法戰爭爆發</div></div>
+      <div class="pt"><div class="dot r"></div><div>1885年清法條約：清廷承認法國「<em>保護權</em>」；19世紀末法國組成<em>法屬印度支那</em></div></div>
+      <div class="pt"><div class="dot c"></div><div>法國統治：興建交通汲取資源、推廣羅馬拼音越文（國語字）、西式學校、天主教</div></div>
+      <div class="pt"><div class="dot c"></div><div>愛國學者<em>潘佩珠</em>：成立越南維新會；著《越南亡國史》；白話文體寫作；1925年遭拘押</div></div>
+    </div>
+  </div>
+
+  <div class="sec-title"><span class="num">五</span><h2>現代化生活</h2></div>
+  <div class="card hl">
+    <div class="pts">
+      <div class="pt"><div class="dot"></div><div>背景：19世紀中葉起，東亞各國被迫開放通商口岸、劃定租界，現代化城市興起</div></div>
+    </div>
+    <table>
+      <tr><th>項目</th><th>內容與影響</th></tr>
+      <tr><td class="g">電燈</td><td>1865年煤氣燈進中國租界；1882年英商在上海辦電力公司 → 改變傳統作息，<em>形成都市夜生活</em></td></tr>
+      <tr><td class="g">時鐘</td><td>19世紀後期流行 → 時間觀念深入人心；「作六休一」星期制 → <em>產生娛樂生活</em></td></tr>
+      <tr><td class="c">公共建設</td><td>排水汲水設施（衛生自來水）；碎磚圓卵石道路；電車和鐵路設施</td></tr>
+      <tr><td class="c">休閒娛樂</td><td>人民追求時尚穿著；街道有新式休閒場所，如公園、戲院</td></tr>
+    </table>
+    <div class="tip">⚠️ 東亞各地城市（如吉隆坡）在不同殖民國家下，展現出別具風格的現代化生活</div>
+  </div>
+
+  <hr>
+  <div class="sec-title"><span class="num">⚡</span><h2>必背重點 &amp; 易混淆</h2></div>
+  <div class="checklist-card">
+    <div class="pts">
+      <div class="pt"><div class="dot r"></div><div>《南京條約》（1842）= <em>第一個不平等條約</em>；附約才有領事裁判權</div></div>
+      <div class="pt"><div class="dot r"></div><div>第一次英法聯軍→《天津條約》（1858）；第二次→《北京條約》（1860）增加天津</div></div>
+      <div class="pt"><div class="dot r"></div><div>自強運動：只改<em>器物</em>，不改制度；中學為體，西學為用</div></div>
+      <div class="pt"><div class="dot r"></div><div>培里叩關（1853）→《日美親善條約》→ 大政奉還（1867）→ 明治維新（1868）</div></div>
+      <div class="pt"><div class="dot r"></div><div>牡丹社事件（1874）→ 1879年併吞琉球，設置沖繩縣</div></div>
+      <div class="pt"><div class="dot r"></div><div>甲午戰爭（1894–1895）→《馬關條約》：割臺灣澎湖、賠款二億兩</div></div>
+      <div class="pt"><div class="dot r"></div><div>門戶開放（1899）= 美國提出，保護列強既得利益，<em>非</em>保障中國</div></div>
+      <div class="pt"><div class="dot r"></div><div>戊戌變法失敗三原因：急於求成 + 缺乏經驗 + 慈禧反對</div></div>
+      <div class="pt"><div class="dot r"></div><div>1905年廢除科舉；1911年辛亥革命；1912年中華民國成立</div></div>
+      <div class="pt"><div class="dot r"></div><div>五四運動（1919）= 山東問題 + 巴黎和會 → 北京學生示威</div></div>
+      <div class="pt"><div class="dot r"></div><div>三一獨立運動（1919.3.1）= 朝鮮反日，兩百多萬人示威</div></div>
+      <div class="pt"><div class="dot r"></div><div>越南保護國（1885）→ 法屬印度支那；潘佩珠 = 《越南亡國史》</div></div>
+    </div>
+  </div>
+
+</div>
+</div>
+`,
+
+/* ════════ 英文 e-L7 ════════ */
+'e-L7': `
+<div class="note-header-block" style="border-left-color:#3dd6c8;">
+  <div class="nh-tag" style="color:#1fa09a;">ENGLISH ／ 段考單字</div>
+  <h1 style="color:#3dd6c8;">L7 TED Talks</h1>
+  <div class="nh-sub">共 36 個單字／片語</div>
+</div>
+<div class="card hl" style="border-color:#1fa09a;padding:0;overflow:hidden;">
+  <table class="vtbl">
+    <tr><th class="c">WORD / PHRASE</th><th class="c">中文</th></tr>
+<tr><td class="w">as well as</td><td class="zh">和；除了…以外</td></tr>
+<tr><td class="w">at present</td><td class="zh">目前；現在</td></tr>
+<tr><td class="w">audience</td><td class="zh">觀眾；聽眾</td></tr>
+<tr><td class="w">broad</td><td class="zh">(adj.) 廣泛的；寬闊的</td></tr>
+<tr><td class="w">broaden</td><td class="zh">拓展</td></tr>
+<tr><td class="w">broaden one's horizons</td><td class="zh">拓展（某人的）視野</td></tr>
+<tr><td class="w">celebrity</td><td class="zh">名人</td></tr>
+<tr><td class="w">collect</td><td class="zh">收集；收取</td></tr>
+<tr><td class="w">collection</td><td class="zh">(n.) 一堆、一批…；收藏品</td></tr>
+<tr><td class="w">conference</td><td class="zh">會議；研討會</td></tr>
+<tr><td class="w">discuss</td><td class="zh">(vt.) 探討、闡述；討論</td></tr>
+<tr><td class="w">discussion</td><td class="zh">(n.) 討論</td></tr>
+<tr><td class="w">fascinate</td><td class="zh">使人著迷；吸引</td></tr>
+<tr><td class="w">fascination</td><td class="zh">(n.) 著迷；吸引力</td></tr>
+<tr><td class="w">fiction</td><td class="zh">小說</td></tr>
+<tr><td class="w">field</td><td class="zh">領域</td></tr>
+<tr><td class="w">for free</td><td class="zh">免費</td></tr>
+<tr><td class="w">found</td><td class="zh">(vt.) 創立；建設</td></tr>
+<tr><td class="w">foundation</td><td class="zh">(n.) 基金會；基礎</td></tr>
+<tr><td class="w">give...a try</td><td class="zh">嘗試…</td></tr>
+<tr><td class="w">increase</td><td class="zh">增加（動詞／名詞）</td></tr>
+<tr><td class="w">increasingly</td><td class="zh">愈來愈…</td></tr>
+<tr><td class="w">launch</td><td class="zh">(vt.) 發行；發起、開始從事</td></tr>
+<tr><td class="w">method</td><td class="zh">方式</td></tr>
+<tr><td class="w">numerous</td><td class="zh">許多的</td></tr>
+<tr><td class="w">organization</td><td class="zh">組織；機構</td></tr>
+<tr><td class="w">organize</td><td class="zh">組織；籌辦</td></tr>
+<tr><td class="w">organizer</td><td class="zh">組織者；籌辦者</td></tr>
+<tr><td class="w">philosophy</td><td class="zh">哲學</td></tr>
+<tr><td class="w">range</td><td class="zh">(n.) 種類；範圍　(vi.) 範圍包括…</td></tr>
+<tr><td class="w">seek</td><td class="zh">尋求；尋找</td></tr>
+<tr><td class="w">series</td><td class="zh">系列</td></tr>
+<tr><td class="w">technological</td><td class="zh">科技的</td></tr>
+<tr><td class="w">technology</td><td class="zh">科技</td></tr>
+<tr><td class="w">worth</td><td class="zh">(adj.) 值得…的　(n.) 價值；意義</td></tr>
+<tr><td class="w">worthy</td><td class="zh">值得…的</td></tr>
+  </table>
+</div>
+`,
+
+/* ════════ 英文 e-L8 ════════ */
+'e-L8': `
+<div class="note-header-block" style="border-left-color:#3dd6c8;">
+  <div class="nh-tag" style="color:#1fa09a;">ENGLISH ／ 段考單字</div>
+  <h1 style="color:#3dd6c8;">L8 Ban-Don</h1>
+  <div class="nh-sub">共 37 個單字／片語</div>
+</div>
+<div class="card hl" style="border-color:#1fa09a;padding:0;overflow:hidden;">
+  <table class="vtbl">
+    <tr><th class="c">WORD / PHRASE</th><th class="c">中文</th></tr>
+<tr><td class="w">arrange</td><td class="zh">(vt./vi.) 安排</td></tr>
+<tr><td class="w">arrangement</td><td class="zh">(n.) 安排</td></tr>
+<tr><td class="w">aspect</td><td class="zh">方面</td></tr>
+<tr><td class="w">assist</td><td class="zh">(vt./vi.) 幫助</td></tr>
+<tr><td class="w">assistance</td><td class="zh">幫助</td></tr>
+<tr><td class="w">assistant</td><td class="zh">助手；助理</td></tr>
+<tr><td class="w">come about</td><td class="zh">發生</td></tr>
+<tr><td class="w">contain</td><td class="zh">(vt.) 包含</td></tr>
+<tr><td class="w">container</td><td class="zh">(n.) 容器</td></tr>
+<tr><td class="w">cooperate</td><td class="zh">(vi.) 合作</td></tr>
+<tr><td class="w">cooperation</td><td class="zh">(n.) 合作</td></tr>
+<tr><td class="w">curiosity</td><td class="zh">好奇心</td></tr>
+<tr><td class="w">curious</td><td class="zh">好奇的</td></tr>
+<tr><td class="w">elder</td><td class="zh">(n.) 長輩　(adj.) 較年長的</td></tr>
+<tr><td class="w">elderly</td><td class="zh">(adj.) 年紀大的</td></tr>
+<tr><td class="w">event</td><td class="zh">事件</td></tr>
+<tr><td class="w">exchange</td><td class="zh">(n.) 交流；交換（計畫）　(vt.) 交換</td></tr>
+<tr><td class="w">expect</td><td class="zh">預期</td></tr>
+<tr><td class="w">expectation</td><td class="zh">期望；預期</td></tr>
+<tr><td class="w">fierce</td><td class="zh">(adj.) 強烈的；激烈的</td></tr>
+<tr><td class="w">hand out</td><td class="zh">發放</td></tr>
+<tr><td class="w">help (...) out</td><td class="zh">幫忙</td></tr>
+<tr><td class="w">neighborhood</td><td class="zh">鄰近地區</td></tr>
+<tr><td class="w">occupation</td><td class="zh">職業</td></tr>
+<tr><td class="w">occupy</td><td class="zh">(vt.) 占據（時間/空間）；占領</td></tr>
+<tr><td class="w">origin</td><td class="zh">(n.) 起源</td></tr>
+<tr><td class="w">original</td><td class="zh">(adj.) 原本的</td></tr>
+<tr><td class="w">originate</td><td class="zh">(vi.) 起源</td></tr>
+<tr><td class="w">relax</td><td class="zh">(vi.) 放鬆</td></tr>
+<tr><td class="w">shelter</td><td class="zh">(vt.) 遮蔽　(n.) 庇護處</td></tr>
+<tr><td class="w">spirit</td><td class="zh">(n.) 基本精神、本質；精神、心靈</td></tr>
+<tr><td class="w">spiritual</td><td class="zh">(adj.) 精神上的</td></tr>
+<tr><td class="w">stroll</td><td class="zh">散步（動詞／名詞）</td></tr>
+<tr><td class="w">take part in</td><td class="zh">參加</td></tr>
+<tr><td class="w">take place</td><td class="zh">舉行；發生</td></tr>
+<tr><td class="w">temporary</td><td class="zh">臨時的；暫時的</td></tr>
+<tr><td class="w">vehicle</td><td class="zh">車輛；交通工具</td></tr>
+  </table>
+</div>
+`,
+
+/* ════════ 英文 e-L9 ════════ */
+'e-L9': `
+<div class="note-header-block" style="border-left-color:#3dd6c8;">
+  <div class="nh-tag" style="color:#1fa09a;">ENGLISH ／ 段考單字</div>
+  <h1 style="color:#3dd6c8;">L9 The Story Behind Eponyms</h1>
+  <div class="nh-sub">共 32 個單字／片語</div>
+</div>
+<div class="card hl" style="border-color:#1fa09a;padding:0;overflow:hidden;">
+  <table class="vtbl">
+    <tr><th class="c">WORD / PHRASE</th><th class="c">中文</th></tr>
+<tr><td class="w">alternative</td><td class="zh">(adj.) 另類的、非傳統的；替代的　(n.) 替代方案</td></tr>
+<tr><td class="w">brand</td><td class="zh">(n.) 品牌</td></tr>
+<tr><td class="w">chase</td><td class="zh">追逐（動詞／名詞）</td></tr>
+<tr><td class="w">combination</td><td class="zh">(n.) 結合</td></tr>
+<tr><td class="w">combine</td><td class="zh">(vt./vi.) 結合</td></tr>
+<tr><td class="w">constant</td><td class="zh">(adj.) 持續的；不斷的</td></tr>
+<tr><td class="w">constantly</td><td class="zh">(adv.) 持續地</td></tr>
+<tr><td class="w">derive</td><td class="zh">(vt.) 起源於；得到、獲得</td></tr>
+<tr><td class="w">digital</td><td class="zh">(adj.) 數位的</td></tr>
+<tr><td class="w">digitally</td><td class="zh">(adv.) 數位地</td></tr>
+<tr><td class="w">edit</td><td class="zh">(vt.) 編輯</td></tr>
+<tr><td class="w">edition</td><td class="zh">(n.) 版本</td></tr>
+<tr><td class="w">exist</td><td class="zh">(vi.) 存在</td></tr>
+<tr><td class="w">existence</td><td class="zh">(n.) 存在</td></tr>
+<tr><td class="w">existing</td><td class="zh">(adj.) 現有的；現存的</td></tr>
+<tr><td class="w">feature</td><td class="zh">(vt.) 以…為特色　(n.) 特色、特點</td></tr>
+<tr><td class="w">general</td><td class="zh">(adj.) 一般的、非專門的；普遍的</td></tr>
+<tr><td class="w">gossip</td><td class="zh">(n.) 流言、八卦　(vi.) 說八卦</td></tr>
+<tr><td class="w">image</td><td class="zh">(n.) 影像；形象</td></tr>
+<tr><td class="w">in the beginning</td><td class="zh">起初</td></tr>
+<tr><td class="w">later on</td><td class="zh">之後</td></tr>
+<tr><td class="w">modification</td><td class="zh">(n.) 修改</td></tr>
+<tr><td class="w">modify</td><td class="zh">(vt.) 修改</td></tr>
+<tr><td class="w">play a/an...role (in)</td><td class="zh">扮演…的角色</td></tr>
+<tr><td class="w">release</td><td class="zh">(vt.) 公開發行；釋放　(n.) 發行；釋放、排放</td></tr>
+<tr><td class="w">reveal</td><td class="zh">(vt.) 洩漏；透露</td></tr>
+<tr><td class="w">standard</td><td class="zh">(adj.) 標準的　(n.) 標準</td></tr>
+<tr><td class="w">take on</td><td class="zh">開始具有</td></tr>
+<tr><td class="w">think up</td><td class="zh">想出</td></tr>
+<tr><td class="w">too...to...</td><td class="zh">太…而無法…</td></tr>
+<tr><td class="w">usage</td><td class="zh">(n.) 用法</td></tr>
+<tr><td class="w">widespread</td><td class="zh">(adj.) 廣泛的</td></tr>
+  </table>
+</div>
+`,
+
+/* ════════ 英文 e-v75 ════════ */
+'e-v75': `
+<div class="note-header-block" style="border-left-color:#3dd6c8;">
+  <div class="nh-tag" style="color:#1fa09a;">ENGLISH ／ 段考單字</div>
+  <h1 style="color:#3dd6c8;">單字 4500 — Units 7-5</h1>
+  <div class="nh-sub">共 51 個單字／片語</div>
+</div>
+<div class="card hl" style="border-color:#1fa09a;padding:0;overflow:hidden;">
+  <table class="vtbl">
+    <tr><th class="c">WORD / PHRASE</th><th class="c">中文</th></tr>
+<tr><td class="w">relaxation</td><td class="zh">放鬆</td></tr>
+<tr><td class="w">religious</td><td class="zh">宗教的</td></tr>
+<tr><td class="w">remark</td><td class="zh">評論</td></tr>
+<tr><td class="w">republic</td><td class="zh">共和國</td></tr>
+<tr><td class="w">research</td><td class="zh">研究</td></tr>
+<tr><td class="w">revise</td><td class="zh">修訂</td></tr>
+<tr><td class="w">revision</td><td class="zh">修訂（版）</td></tr>
+<tr><td class="w">revolution</td><td class="zh">革命</td></tr>
+<tr><td class="w">revolutionary</td><td class="zh">革命性的</td></tr>
+<tr><td class="w">reward</td><td class="zh">報酬</td></tr>
+<tr><td class="w">rhyme</td><td class="zh">押韻</td></tr>
+<tr><td class="w">rhythm</td><td class="zh">韻律</td></tr>
+<tr><td class="w">riddle</td><td class="zh">謎語</td></tr>
+<tr><td class="w">romance</td><td class="zh">浪漫</td></tr>
+<tr><td class="w">rush</td><td class="zh">匆忙</td></tr>
+<tr><td class="w">sacrifice</td><td class="zh">犧牲</td></tr>
+<tr><td class="w">savings</td><td class="zh">儲蓄</td></tr>
+<tr><td class="w">scholarship</td><td class="zh">獎學金</td></tr>
+<tr><td class="w">sculpture</td><td class="zh">雕刻品</td></tr>
+<tr><td class="w">sightseeing</td><td class="zh">觀光</td></tr>
+<tr><td class="w">signature</td><td class="zh">簽名</td></tr>
+<tr><td class="w">sin</td><td class="zh">罪</td></tr>
+<tr><td class="w">singular</td><td class="zh">單數的</td></tr>
+<tr><td class="w">skate</td><td class="zh">溜冰</td></tr>
+<tr><td class="w">sketch</td><td class="zh">素描</td></tr>
+<tr><td class="w">ski</td><td class="zh">滑雪</td></tr>
+<tr><td class="w">slogan</td><td class="zh">口號</td></tr>
+<tr><td class="w">summarize</td><td class="zh">概述</td></tr>
+<tr><td class="w">summary</td><td class="zh">總結</td></tr>
+<tr><td class="w">survey</td><td class="zh">調查</td></tr>
+<tr><td class="w">syllable</td><td class="zh">音節</td></tr>
+<tr><td class="w">theme</td><td class="zh">主題</td></tr>
+<tr><td class="w">theory</td><td class="zh">理論</td></tr>
+<tr><td class="w">tourism</td><td class="zh">旅遊（業）</td></tr>
+<tr><td class="w">tragedy</td><td class="zh">悲劇</td></tr>
+<tr><td class="w">tragic</td><td class="zh">悲劇的</td></tr>
+<tr><td class="w">translate</td><td class="zh">翻譯</td></tr>
+<tr><td class="w">translation</td><td class="zh">翻譯</td></tr>
+<tr><td class="w">trend</td><td class="zh">趨勢</td></tr>
+<tr><td class="w">tribal</td><td class="zh">部落的</td></tr>
+<tr><td class="w">trumpet</td><td class="zh">小喇叭</td></tr>
+<tr><td class="w">tune</td><td class="zh">曲調</td></tr>
+<tr><td class="w">usage</td><td class="zh">用法</td></tr>
+<tr><td class="w">verse</td><td class="zh">韻文</td></tr>
+<tr><td class="w">virtue</td><td class="zh">美德</td></tr>
+<tr><td class="w">volleyball</td><td class="zh">排球</td></tr>
+<tr><td class="w">voyage</td><td class="zh">航行</td></tr>
+<tr><td class="w">wage</td><td class="zh">工資</td></tr>
+<tr><td class="w">welfare</td><td class="zh">福利</td></tr>
+<tr><td class="w">wisdom</td><td class="zh">智慧</td></tr>
+<tr><td class="w">workout</td><td class="zh">鍛鍊</td></tr>
+  </table>
+</div>
+`,
+
+/* ════════ 英文 e-v81 ════════ */
+'e-v81': `
+<div class="note-header-block" style="border-left-color:#3dd6c8;">
+  <div class="nh-tag" style="color:#1fa09a;">ENGLISH ／ 段考單字</div>
+  <h1 style="color:#3dd6c8;">單字 4500 — Units 8-1</h1>
+  <div class="nh-sub">共 42 個單字／片語</div>
+</div>
+<div class="card hl" style="border-color:#1fa09a;padding:0;overflow:hidden;">
+  <table class="vtbl">
+    <tr><th class="c">WORD / PHRASE</th><th class="c">中文</th></tr>
+<tr><td class="w">atmosphere</td><td class="zh">氣氛</td></tr>
+<tr><td class="w">bacteria</td><td class="zh">細菌</td></tr>
+<tr><td class="w">bamboo</td><td class="zh">竹子</td></tr>
+<tr><td class="w">bay</td><td class="zh">海灣</td></tr>
+<tr><td class="w">beast</td><td class="zh">野獸</td></tr>
+<tr><td class="w">beetle</td><td class="zh">甲蟲</td></tr>
+<tr><td class="w">berry</td><td class="zh">莓果</td></tr>
+<tr><td class="w">bloom</td><td class="zh">開花</td></tr>
+<tr><td class="w">blossom</td><td class="zh">花</td></tr>
+<tr><td class="w">brass</td><td class="zh">黃銅</td></tr>
+<tr><td class="w">breed</td><td class="zh">品種</td></tr>
+<tr><td class="w">breeze</td><td class="zh">微風</td></tr>
+<tr><td class="w">bubble</td><td class="zh">泡沫</td></tr>
+<tr><td class="w">bud</td><td class="zh">花蕾</td></tr>
+<tr><td class="w">buffalo</td><td class="zh">水牛</td></tr>
+<tr><td class="w">bull</td><td class="zh">公牛</td></tr>
+<tr><td class="w">bush</td><td class="zh">灌木叢</td></tr>
+<tr><td class="w">canyon</td><td class="zh">峽谷</td></tr>
+<tr><td class="w">cattle</td><td class="zh">牛群</td></tr>
+<tr><td class="w">cave</td><td class="zh">山洞</td></tr>
+<tr><td class="w">cherry</td><td class="zh">櫻桃</td></tr>
+<tr><td class="w">claw</td><td class="zh">爪子</td></tr>
+<tr><td class="w">cliff</td><td class="zh">懸崖</td></tr>
+<tr><td class="w">cock</td><td class="zh">公雞</td></tr>
+<tr><td class="w">continent</td><td class="zh">大陸</td></tr>
+<tr><td class="w">crab</td><td class="zh">螃蟹</td></tr>
+<tr><td class="w">creation</td><td class="zh">創造</td></tr>
+<tr><td class="w">creature</td><td class="zh">生物</td></tr>
+<tr><td class="w">cricket</td><td class="zh">蟋蟀</td></tr>
+<tr><td class="w">crop</td><td class="zh">農作物</td></tr>
+<tr><td class="w">dawn</td><td class="zh">黎明</td></tr>
+<tr><td class="w">dew</td><td class="zh">露水</td></tr>
+<tr><td class="w">dinosaur</td><td class="zh">恐龍</td></tr>
+<tr><td class="w">dirt</td><td class="zh">泥土</td></tr>
+<tr><td class="w">divine</td><td class="zh">神聖的</td></tr>
+<tr><td class="w">dolphin</td><td class="zh">海豚</td></tr>
+<tr><td class="w">donkey</td><td class="zh">驢子</td></tr>
+<tr><td class="w">dragonfly</td><td class="zh">蜻蜓</td></tr>
+<tr><td class="w">dust</td><td class="zh">灰塵</td></tr>
+<tr><td class="w">echo</td><td class="zh">回音</td></tr>
+<tr><td class="w">feather</td><td class="zh">羽毛</td></tr>
+<tr><td class="w">flame</td><td class="zh">火焰</td></tr>
+  </table>
+</div>
+`,
+
+/* ════════ 英文 e-v82 ════════ */
+'e-v82': `
+<div class="note-header-block" style="border-left-color:#3dd6c8;">
+  <div class="nh-tag" style="color:#1fa09a;">ENGLISH ／ 段考單字</div>
+  <h1 style="color:#3dd6c8;">單字 4500 — Units 8-2</h1>
+  <div class="nh-sub">共 41 個單字／片語</div>
+</div>
+<div class="card hl" style="border-color:#1fa09a;padding:0;overflow:hidden;">
+  <table class="vtbl">
+    <tr><th class="c">WORD / PHRASE</th><th class="c">中文</th></tr>
+<tr><td class="w">flea</td><td class="zh">跳蚤</td></tr>
+<tr><td class="w">flood</td><td class="zh">洪水</td></tr>
+<tr><td class="w">foggy</td><td class="zh">有霧的</td></tr>
+<tr><td class="w">frost</td><td class="zh">霜</td></tr>
+<tr><td class="w">fur</td><td class="zh">毛皮</td></tr>
+<tr><td class="w">geography</td><td class="zh">地理學</td></tr>
+<tr><td class="w">germ</td><td class="zh">細菌</td></tr>
+<tr><td class="w">ginger</td><td class="zh">薑</td></tr>
+<tr><td class="w">grasshopper</td><td class="zh">蚱蜢</td></tr>
+<tr><td class="w">grassy</td><td class="zh">長滿草的</td></tr>
+<tr><td class="w">gulf</td><td class="zh">海灣</td></tr>
+<tr><td class="w">hawk</td><td class="zh">鷹</td></tr>
+<tr><td class="w">hay</td><td class="zh">乾草</td></tr>
+<tr><td class="w">horizon</td><td class="zh">地平線</td></tr>
+<tr><td class="w">humid</td><td class="zh">潮濕的</td></tr>
+<tr><td class="w">hurricane</td><td class="zh">颱風</td></tr>
+<tr><td class="w">hydrogen</td><td class="zh">氫</td></tr>
+<tr><td class="w">ivory</td><td class="zh">象牙</td></tr>
+<tr><td class="w">jungle</td><td class="zh">叢林</td></tr>
+<tr><td class="w">kangaroo</td><td class="zh">袋鼠</td></tr>
+<tr><td class="w">koala</td><td class="zh">無尾熊</td></tr>
+<tr><td class="w">landscape</td><td class="zh">風景</td></tr>
+<tr><td class="w">lawn</td><td class="zh">草坪</td></tr>
+<tr><td class="w">leopard</td><td class="zh">豹</td></tr>
+<tr><td class="w">lightning</td><td class="zh">閃電</td></tr>
+<tr><td class="w">lily</td><td class="zh">百合花</td></tr>
+<tr><td class="w">lobster</td><td class="zh">龍蝦</td></tr>
+<tr><td class="w">log</td><td class="zh">木材</td></tr>
+<tr><td class="w">marble</td><td class="zh">大理石</td></tr>
+<tr><td class="w">meadow</td><td class="zh">草地</td></tr>
+<tr><td class="w">mineral</td><td class="zh">礦物</td></tr>
+<tr><td class="w">mist</td><td class="zh">霧</td></tr>
+<tr><td class="w">mosquito</td><td class="zh">蚊子</td></tr>
+<tr><td class="w">moth</td><td class="zh">蛾</td></tr>
+<tr><td class="w">mountainous</td><td class="zh">多山的</td></tr>
+<tr><td class="w">muddy</td><td class="zh">泥濘的</td></tr>
+<tr><td class="w">mule</td><td class="zh">騾子</td></tr>
+<tr><td class="w">murmur</td><td class="zh">低聲說話</td></tr>
+<tr><td class="w">nest</td><td class="zh">鳥巢</td></tr>
+<tr><td class="w">oak</td><td class="zh">橡木</td></tr>
+<tr><td class="w">orbit</td><td class="zh">軌道</td></tr>
+  </table>
+</div>
+`,
+
+/* ════════ 英文 e-v83 ════════ */
+'e-v83': `
+<div class="note-header-block" style="border-left-color:#3dd6c8;">
+  <div class="nh-tag" style="color:#1fa09a;">ENGLISH ／ 段考單字</div>
+  <h1 style="color:#3dd6c8;">單字 4500 — Units 8-3</h1>
+  <div class="nh-sub">共 38 個單字／片語</div>
+</div>
+<div class="card hl" style="border-color:#1fa09a;padding:0;overflow:hidden;">
+  <table class="vtbl">
+    <tr><th class="c">WORD / PHRASE</th><th class="c">中文</th></tr>
+<tr><td class="w">owl</td><td class="zh">貓頭鷹</td></tr>
+<tr><td class="w">ox</td><td class="zh">牛</td></tr>
+<tr><td class="w">oxygen</td><td class="zh">氧氣</td></tr>
+<tr><td class="w">parrot</td><td class="zh">鸚鵡</td></tr>
+<tr><td class="w">paw</td><td class="zh">爪子</td></tr>
+<tr><td class="w">pea</td><td class="zh">碗豆</td></tr>
+<tr><td class="w">pearl</td><td class="zh">珍珠</td></tr>
+<tr><td class="w">penguin</td><td class="zh">企鵝</td></tr>
+<tr><td class="w">pest</td><td class="zh">害蟲</td></tr>
+<tr><td class="w">phenomenon</td><td class="zh">現象</td></tr>
+<tr><td class="w">pigeon</td><td class="zh">鴿子</td></tr>
+<tr><td class="w">pine</td><td class="zh">松樹</td></tr>
+<tr><td class="w">plum</td><td class="zh">李子</td></tr>
+<tr><td class="w">pour</td><td class="zh">倒；灌</td></tr>
+<tr><td class="w">reflect</td><td class="zh">反射</td></tr>
+<tr><td class="w">reflection</td><td class="zh">倒影</td></tr>
+<tr><td class="w">resource</td><td class="zh">資源</td></tr>
+<tr><td class="w">scenery</td><td class="zh">風景</td></tr>
+<tr><td class="w">seal</td><td class="zh">密封</td></tr>
+<tr><td class="w">shrimp</td><td class="zh">蝦子</td></tr>
+<tr><td class="w">slope</td><td class="zh">斜坡</td></tr>
+<tr><td class="w">solar</td><td class="zh">太陽的</td></tr>
+<tr><td class="w">spark</td><td class="zh">火花</td></tr>
+<tr><td class="w">species</td><td class="zh">物種</td></tr>
+<tr><td class="w">squirrel</td><td class="zh">松鼠</td></tr>
+<tr><td class="w">steam</td><td class="zh">蒸汽</td></tr>
+<tr><td class="w">stem</td><td class="zh">莖</td></tr>
+<tr><td class="w">stormy</td><td class="zh">有暴風雨的</td></tr>
+<tr><td class="w">summit</td><td class="zh">山頂</td></tr>
+<tr><td class="w">swan</td><td class="zh">天鵝</td></tr>
+<tr><td class="w">tide</td><td class="zh">潮汐</td></tr>
+<tr><td class="w">tortoise</td><td class="zh">烏龜</td></tr>
+<tr><td class="w">trunk</td><td class="zh">樹幹</td></tr>
+<tr><td class="w">twig</td><td class="zh">小樹枝</td></tr>
+<tr><td class="w">violet</td><td class="zh">紫羅蘭</td></tr>
+<tr><td class="w">waterfall</td><td class="zh">瀑布</td></tr>
+<tr><td class="w">weed</td><td class="zh">雜草</td></tr>
+<tr><td class="w">wheat</td><td class="zh">小麥</td></tr>
+  </table>
+</div>
+`,
+
+
+/* ════════ 國文：台灣古典詩文選（畫菊自序＋誓志其二）════════ */
+'c-juk': '\n<div class="note-header-block">\n  <div class="nh-tag">CHINESE LITERATURE ／ 段考範圍</div>\n  <h1>CH.4\u3000台灣古典詩文選</h1>\n  <div class="nh-sub">（一）畫菊自序・（二）誓志其二</div>\n</div>\n\n<div class="cn-art-hdr">\n  <span class="cn-art-badge">篇一</span>\n  <span class="cn-art-h2">畫菊自序</span>\n  <span class="cn-art-author">◎ 張李德和</span>\n</div>\n\n<div class="sec-title"><span class="num">作者</span><h2 style="color:var(--gold)">張李德和</h2></div>\n<div class="card hl">\n  <div class="pts">\n    <div class="pt"><div class="dot"></div><div>清末至日治時期台灣女詩人、畫家，嘉義人</div></div>\n    <div class="pt"><div class="dot"></div><div>出身書香門第，<em>飽讀詩書</em>，以詩書之藝發揮才情</div></div>\n    <div class="pt"><div class="dot"></div><div>不屈於「<em>女子無才便是德</em>」的傳統觀念，精進自我</div></div>\n    <div class="pt"><div class="dot c"></div><div>著有《琳瑯山閣詩文集》，提倡女性文學教育</div></div>\n  </div>\n</div>\n\n<div class="sec-title"><span class="num">題解</span><h2 style="color:var(--gold)">本文重點</h2></div>\n<div class="card hl">\n  <div class="pts">\n    <div class="pt"><div class="dot"></div><div>文體：<em>序文（自序）</em>，為自己畫菊詩文集所寫的前言</div></div>\n    <div class="pt"><div class="dot"></div><div>主旨：<em>以畫菊自述志向</em>，追求詩畫成就，開展才華</div></div>\n    <div class="pt"><div class="dot c"></div><div>借李白（追隨李白才情）、管夫人（管道昇留芳千古）為標竿，表明自己畫作之意向</div></div>\n    <div class="pt"><div class="dot r"></div><div>期望：留住秋菊的<em>高潔風姿</em>，更期待彰顯高潔的風範</div></div>\n  </div>\n</div>\n\n<div class="sec-title"><span class="num">翻譯</span><h2 style="color:var(--gold)">原文逐段翻譯</h2></div>\n<div class="card hl">\n  <table>\n    <tr><th>原文</th><th>白話翻譯</th></tr>\n    <tr>\n      <td style="color:#c8c0a0;width:42%;vertical-align:top;font-size:13px;">本文選自張李德和詩文集，自述作畫之旨趣，志在追求詩畫成就，以畫菊流傳高風亮節。</td>\n      <td>本文是她自述作畫旨趣的文章，志在追求詩畫上的成就，以畫菊的方式傳揚高尚的節操。</td>\n    </tr>\n    <tr>\n      <td style="color:var(--gold);width:42%;vertical-align:top;font-size:13px;">夫教子之餘，追隨李白，深切仰慕管夫人留芳千古的情，表明自己畫作不僅留住秋菊的風姿，更期待彰顯高潔的風範。</td>\n      <td>在教導子女之餘，心嚮往李白的才情，深仰慕管夫人（管道昇）能留芳千古的精神，表明自己的畫作不只留住秋菊的姿態，更希望彰顯高潔的風範。</td>\n    </tr>\n    <tr>\n      <td style="color:#c8c0a0;width:42%;vertical-align:top;font-size:13px;">作者不屈於「女子無才便是德」的傳統觀念，希望飽讀詩書，以詩畫之藝發揮才情，精進自我。</td>\n      <td>作者不甘屈服於傳統觀念，希望藉由詩歌和繪畫的技藝發揮才情，不斷精進自我。文中大量引用典故，對仗工整的駢句，展現了典雅的文字風格與深厚的文化素養。</td>\n    </tr>\n  </table>\n</div>\n\n<div class="sec-title"><span class="num">寫法</span><h2 style="color:var(--gold)">藝術特色</h2></div>\n<div class="card hl">\n  <div class="pts">\n    <div class="pt"><div class="dot"></div><div><em>用典</em>：引李白追求詩才、管夫人（管道昇）留芳千古，作為自我期許的標竿</div></div>\n    <div class="pt"><div class="dot"></div><div><em>駢句對仗</em>：句式工整，呈現典雅文字風格與深厚文化素養</div></div>\n    <div class="pt"><div class="dot c"></div><div><b>菊的象徵</b>：秋菊 = <em>高潔、堅貞</em>的人格象徵，以物言志</div></div>\n    <div class="pt"><div class="dot c"></div><div><b>序文結構</b>：先言旨趣 → 再舉例（典故）→ 最後表明志向</div></div>\n  </div>\n  <div class="cn-tip-y" style="margin-top:10px;">💡 <strong>以物言志</strong>：以「畫菊」比附自己追求高潔、不屈傳統的精神，菊＝作者的人格投射</div>\n</div>\n\n<hr>\n\n<div class="cn-art-hdr">\n  <span class="cn-art-badge c">篇二</span>\n  <span class="cn-art-h2 c">誓志其二</span>\n  <span class="cn-art-author">◎ 蔡旨禪</span>\n</div>\n\n<div class="sec-title"><span class="num" style="border-color:var(--cyan);color:var(--cyan);">作者</span><h2 style="color:var(--cyan)">蔡旨禪</h2></div>\n<div class="card" style="border-color:var(--cyan);">\n  <div class="pts">\n    <div class="pt"><div class="dot c"></div><div>台灣第一位<em>女塾師</em>（女老師），新竹人，約生於 1881 年</div></div>\n    <div class="pt"><div class="dot c"></div><div>投身<em>教育事業</em>，自主規劃人生，獨立生活</div></div>\n    <div class="pt"><div class="dot c"></div><div>生活的時代背景：<b>嚴格社會和文化限制女性</b>的時代（日治初期）</div></div>\n    <div class="pt"><div class="dot r"></div><div>《誓志》共兩首，本課選第二首，約作於 <em>1900 年</em></div></div>\n  </div>\n</div>\n\n<div class="sec-title"><span class="num" style="border-color:var(--cyan);color:var(--cyan);">題解</span><h2 style="color:var(--cyan)">本詩重點</h2></div>\n<div class="card" style="border-color:var(--cyan);">\n  <div class="pts">\n    <div class="pt"><div class="dot c"></div><div>文體：<b>七言絕句</b>（七言、四句、共二十八字）</div></div>\n    <div class="pt"><div class="dot c"></div><div>主旨：表達<em>不依賴婚姻家庭</em>，以獨立之力投身教育，實踐自我</div></div>\n    <div class="pt"><div class="dot c"></div><div>核心精神：欲擺脫傳統對女性的束縛，<em>以一己之力充實自我</em>，擁有獨立的人生</div></div>\n    <div class="pt"><div class="dot r"></div><div>展現新穎奮進的思想、堅定自信的心志，<em>對傳統性別框架的勇敢突破</em></div></div>\n  </div>\n</div>\n\n<div class="sec-title"><span class="num" style="border-color:var(--cyan);color:var(--cyan);">語意</span><h2 style="color:var(--cyan)">核心句意分析</h2></div>\n<div class="card" style="border-color:var(--cyan);">\n  <div class="pts">\n    <div class="pt"><div class="dot c"></div><div><b>「刻板印象」句</b>：點出時代困境，女性被要求只能依賴婚姻家庭</div></div>\n    <div class="pt"><div class="dot c"></div><div><b>「充實自我」句</b>：宣示以一己之力實踐教育志業，奉養雙親</div></div>\n    <div class="pt"><div class="dot c"></div><div><b>「擺脫框架」句</b>：明確表示欲脫離傳統對女性的期許與限制</div></div>\n    <div class="pt"><div class="dot c"></div><div><b>「獨立人生」句</b>：展現新女性思想，以傳統七言絕句包裝現代進步觀念</div></div>\n  </div>\n  <div class="cn-tip-c" style="margin-top:8px;">⚠️ 詩句原文請對照課本填入，考試會考<em>每句白話翻譯</em>，建議直接背課本的翻譯版本。</div>\n</div>\n\n<div class="sec-title"><span class="num" style="border-color:var(--cyan);color:var(--cyan);">寫法</span><h2 style="color:var(--cyan)">藝術特色</h2></div>\n<div class="card" style="border-color:var(--cyan);">\n  <div class="pts">\n    <div class="pt"><div class="dot c"></div><div><b>淺白語言</b>：不用艱澀詞彙，直接表達志向，語言明確有力</div></div>\n    <div class="pt"><div class="dot c"></div><div><b>以傳統體裁表現新思想</b>：七言絕句（傳統形式）包裝女性獨立意識（現代精神）</div></div>\n    <div class="pt"><div class="dot r"></div><div>對比：<em>刻板印象（社會對女性期待）vs. 自我期許（詩人的志向）</em></div></div>\n  </div>\n  <div class="cn-tip-c" style="margin-top:8px;">💡 核心張力：傳統文學形式 ✕ 突破性別框架的現代意識 → 這就是本詩的文學價值所在</div>\n</div>\n\n<hr>\n\n<div class="sec-title"><span class="num">比較</span><h2 style="color:var(--gold)">兩篇對照一覽</h2></div>\n<div class="cn-cmp">\n  <div class="cn-cmp-g">\n    <div class="cn-cmp-title">畫菊自序</div>\n    <div class="pts">\n      <div class="pt"><div class="dot" style="margin-top:6px;"></div><div style="font-size:13px;"><em>作者</em>：張李德和</div></div>\n      <div class="pt"><div class="dot" style="margin-top:6px;"></div><div style="font-size:13px;"><em>文體</em>：序文（散文）</div></div>\n      <div class="pt"><div class="dot" style="margin-top:6px;"></div><div style="font-size:13px;"><em>主旨</em>：以畫菊自述志向</div></div>\n      <div class="pt"><div class="dot" style="margin-top:6px;"></div><div style="font-size:13px;"><em>手法</em>：用典＋駢句對仗</div></div>\n      <div class="pt"><div class="dot" style="margin-top:6px;"></div><div style="font-size:13px;"><em>象徵</em>：菊＝高潔、堅貞</div></div>\n    </div>\n  </div>\n  <div class="cn-cmp-c">\n    <div class="cn-cmp-title">誓志其二</div>\n    <div class="pts">\n      <div class="pt"><div class="dot c" style="margin-top:6px;"></div><div style="font-size:13px;"><b>作者</b>：蔡旨禪</div></div>\n      <div class="pt"><div class="dot c" style="margin-top:6px;"></div><div style="font-size:13px;"><b>文體</b>：七言絕句（詩歌）</div></div>\n      <div class="pt"><div class="dot c" style="margin-top:6px;"></div><div style="font-size:13px;"><b>主旨</b>：宣示女性獨立，投身教育</div></div>\n      <div class="pt"><div class="dot c" style="margin-top:6px;"></div><div style="font-size:13px;"><b>手法</b>：淺白語言＋傳統體裁</div></div>\n      <div class="pt"><div class="dot c" style="margin-top:6px;"></div><div style="font-size:13px;"><b>精神</b>：突破性別框架，自主人生</div></div>\n    </div>\n  </div>\n</div>\n<div class="cn-tip-y">🔑 <strong>共同點</strong>：兩位都是台灣女性文人，都在傳統束縛中<em>以文學表達自我意志</em>，都展現了對「女子無才便是德」觀念的反抗。</div>\n\n<hr>\n\n<div class="sec-title"><span class="num">考點</span><h2 style="color:var(--gold)">段考必背清單</h2></div>\n<div class="cn-exam">\n  <div class="cn-exam-title">⚡ HIGH PRIORITY ITEMS</div>\n  <div class="pts">\n    <div class="pt"><div class="dot r"></div><div>張李德和不屈於「<em>女子無才便是德</em>」→ 考最多！</div></div>\n    <div class="pt"><div class="dot r"></div><div>菊的象徵意義：<em>高潔、堅貞</em>，以物言志</div></div>\n    <div class="pt"><div class="dot r"></div><div>畫菊自序文體：<em>序文（自序）</em>，非詩非論</div></div>\n    <div class="pt"><div class="dot r"></div><div>誓志文體：<em>七言絕句</em>（四句、每句七字）</div></div>\n    <div class="pt"><div class="dot r"></div><div>蔡旨禪：台灣<em>第一位女塾師</em>，投身教育</div></div>\n    <div class="pt"><div class="dot r"></div><div>誓志核心：<em>不依賴婚姻家庭</em>，以一己之力充實自我</div></div>\n    <div class="pt"><div class="dot r"></div><div>兩篇共同精神：<em>反抗傳統性別束縛、追求自我實現</em></div></div>\n    <div class="pt"><div class="dot r"></div><div>用典：李白、<em>管夫人（管道昇）</em> → 畫菊自序的標竿人物</div></div>\n  </div>\n</div>\n<div class="cn-chips">\n  <span class="cn-chip">張李德和</span>\n  <span class="cn-chip">蔡旨禪</span>\n  <span class="cn-chip">序文</span>\n  <span class="cn-chip">七言絕句</span>\n  <span class="cn-chip">以物言志</span>\n  <span class="cn-chip">用典</span>\n  <span class="cn-chip c">女塾師</span>\n  <span class="cn-chip c">性別框架</span>\n  <span class="cn-chip c">女性獨立</span>\n  <span class="cn-chip c">管道昇</span>\n</div>\n',
+'c-shi': '\n<div class="note-header-block">\n  <div class="nh-tag">CHINESE LITERATURE ／ 段考範圍</div>\n  <h1>CH.4\u3000台灣古典詩文選</h1>\n  <div class="nh-sub">（一）畫菊自序・（二）誓志其二</div>\n</div>\n\n<div class="cn-art-hdr">\n  <span class="cn-art-badge">篇一</span>\n  <span class="cn-art-h2">畫菊自序</span>\n  <span class="cn-art-author">◎ 張李德和</span>\n</div>\n\n<div class="sec-title"><span class="num">作者</span><h2 style="color:var(--gold)">張李德和</h2></div>\n<div class="card hl">\n  <div class="pts">\n    <div class="pt"><div class="dot"></div><div>清末至日治時期台灣女詩人、畫家，嘉義人</div></div>\n    <div class="pt"><div class="dot"></div><div>出身書香門第，<em>飽讀詩書</em>，以詩書之藝發揮才情</div></div>\n    <div class="pt"><div class="dot"></div><div>不屈於「<em>女子無才便是德</em>」的傳統觀念，精進自我</div></div>\n    <div class="pt"><div class="dot c"></div><div>著有《琳瑯山閣詩文集》，提倡女性文學教育</div></div>\n  </div>\n</div>\n\n<div class="sec-title"><span class="num">題解</span><h2 style="color:var(--gold)">本文重點</h2></div>\n<div class="card hl">\n  <div class="pts">\n    <div class="pt"><div class="dot"></div><div>文體：<em>序文（自序）</em>，為自己畫菊詩文集所寫的前言</div></div>\n    <div class="pt"><div class="dot"></div><div>主旨：<em>以畫菊自述志向</em>，追求詩畫成就，開展才華</div></div>\n    <div class="pt"><div class="dot c"></div><div>借李白（追隨李白才情）、管夫人（管道昇留芳千古）為標竿，表明自己畫作之意向</div></div>\n    <div class="pt"><div class="dot r"></div><div>期望：留住秋菊的<em>高潔風姿</em>，更期待彰顯高潔的風範</div></div>\n  </div>\n</div>\n\n<div class="sec-title"><span class="num">翻譯</span><h2 style="color:var(--gold)">原文逐段翻譯</h2></div>\n<div class="card hl">\n  <table>\n    <tr><th>原文</th><th>白話翻譯</th></tr>\n    <tr>\n      <td style="color:#c8c0a0;width:42%;vertical-align:top;font-size:13px;">本文選自張李德和詩文集，自述作畫之旨趣，志在追求詩畫成就，以畫菊流傳高風亮節。</td>\n      <td>本文是她自述作畫旨趣的文章，志在追求詩畫上的成就，以畫菊的方式傳揚高尚的節操。</td>\n    </tr>\n    <tr>\n      <td style="color:var(--gold);width:42%;vertical-align:top;font-size:13px;">夫教子之餘，追隨李白，深切仰慕管夫人留芳千古的情，表明自己畫作不僅留住秋菊的風姿，更期待彰顯高潔的風範。</td>\n      <td>在教導子女之餘，心嚮往李白的才情，深仰慕管夫人（管道昇）能留芳千古的精神，表明自己的畫作不只留住秋菊的姿態，更希望彰顯高潔的風範。</td>\n    </tr>\n    <tr>\n      <td style="color:#c8c0a0;width:42%;vertical-align:top;font-size:13px;">作者不屈於「女子無才便是德」的傳統觀念，希望飽讀詩書，以詩畫之藝發揮才情，精進自我。</td>\n      <td>作者不甘屈服於傳統觀念，希望藉由詩歌和繪畫的技藝發揮才情，不斷精進自我。文中大量引用典故，對仗工整的駢句，展現了典雅的文字風格與深厚的文化素養。</td>\n    </tr>\n  </table>\n</div>\n\n<div class="sec-title"><span class="num">寫法</span><h2 style="color:var(--gold)">藝術特色</h2></div>\n<div class="card hl">\n  <div class="pts">\n    <div class="pt"><div class="dot"></div><div><em>用典</em>：引李白追求詩才、管夫人（管道昇）留芳千古，作為自我期許的標竿</div></div>\n    <div class="pt"><div class="dot"></div><div><em>駢句對仗</em>：句式工整，呈現典雅文字風格與深厚文化素養</div></div>\n    <div class="pt"><div class="dot c"></div><div><b>菊的象徵</b>：秋菊 = <em>高潔、堅貞</em>的人格象徵，以物言志</div></div>\n    <div class="pt"><div class="dot c"></div><div><b>序文結構</b>：先言旨趣 → 再舉例（典故）→ 最後表明志向</div></div>\n  </div>\n  <div class="cn-tip-y" style="margin-top:10px;">💡 <strong>以物言志</strong>：以「畫菊」比附自己追求高潔、不屈傳統的精神，菊＝作者的人格投射</div>\n</div>\n\n<hr>\n\n<div class="cn-art-hdr">\n  <span class="cn-art-badge c">篇二</span>\n  <span class="cn-art-h2 c">誓志其二</span>\n  <span class="cn-art-author">◎ 蔡旨禪</span>\n</div>\n\n<div class="sec-title"><span class="num" style="border-color:var(--cyan);color:var(--cyan);">作者</span><h2 style="color:var(--cyan)">蔡旨禪</h2></div>\n<div class="card" style="border-color:var(--cyan);">\n  <div class="pts">\n    <div class="pt"><div class="dot c"></div><div>台灣第一位<em>女塾師</em>（女老師），新竹人，約生於 1881 年</div></div>\n    <div class="pt"><div class="dot c"></div><div>投身<em>教育事業</em>，自主規劃人生，獨立生活</div></div>\n    <div class="pt"><div class="dot c"></div><div>生活的時代背景：<b>嚴格社會和文化限制女性</b>的時代（日治初期）</div></div>\n    <div class="pt"><div class="dot r"></div><div>《誓志》共兩首，本課選第二首，約作於 <em>1900 年</em></div></div>\n  </div>\n</div>\n\n<div class="sec-title"><span class="num" style="border-color:var(--cyan);color:var(--cyan);">題解</span><h2 style="color:var(--cyan)">本詩重點</h2></div>\n<div class="card" style="border-color:var(--cyan);">\n  <div class="pts">\n    <div class="pt"><div class="dot c"></div><div>文體：<b>七言絕句</b>（七言、四句、共二十八字）</div></div>\n    <div class="pt"><div class="dot c"></div><div>主旨：表達<em>不依賴婚姻家庭</em>，以獨立之力投身教育，實踐自我</div></div>\n    <div class="pt"><div class="dot c"></div><div>核心精神：欲擺脫傳統對女性的束縛，<em>以一己之力充實自我</em>，擁有獨立的人生</div></div>\n    <div class="pt"><div class="dot r"></div><div>展現新穎奮進的思想、堅定自信的心志，<em>對傳統性別框架的勇敢突破</em></div></div>\n  </div>\n</div>\n\n<div class="sec-title"><span class="num" style="border-color:var(--cyan);color:var(--cyan);">語意</span><h2 style="color:var(--cyan)">核心句意分析</h2></div>\n<div class="card" style="border-color:var(--cyan);">\n  <div class="pts">\n    <div class="pt"><div class="dot c"></div><div><b>「刻板印象」句</b>：點出時代困境，女性被要求只能依賴婚姻家庭</div></div>\n    <div class="pt"><div class="dot c"></div><div><b>「充實自我」句</b>：宣示以一己之力實踐教育志業，奉養雙親</div></div>\n    <div class="pt"><div class="dot c"></div><div><b>「擺脫框架」句</b>：明確表示欲脫離傳統對女性的期許與限制</div></div>\n    <div class="pt"><div class="dot c"></div><div><b>「獨立人生」句</b>：展現新女性思想，以傳統七言絕句包裝現代進步觀念</div></div>\n  </div>\n  <div class="cn-tip-c" style="margin-top:8px;">⚠️ 詩句原文請對照課本填入，考試會考<em>每句白話翻譯</em>，建議直接背課本的翻譯版本。</div>\n</div>\n\n<div class="sec-title"><span class="num" style="border-color:var(--cyan);color:var(--cyan);">寫法</span><h2 style="color:var(--cyan)">藝術特色</h2></div>\n<div class="card" style="border-color:var(--cyan);">\n  <div class="pts">\n    <div class="pt"><div class="dot c"></div><div><b>淺白語言</b>：不用艱澀詞彙，直接表達志向，語言明確有力</div></div>\n    <div class="pt"><div class="dot c"></div><div><b>以傳統體裁表現新思想</b>：七言絕句（傳統形式）包裝女性獨立意識（現代精神）</div></div>\n    <div class="pt"><div class="dot r"></div><div>對比：<em>刻板印象（社會對女性期待）vs. 自我期許（詩人的志向）</em></div></div>\n  </div>\n  <div class="cn-tip-c" style="margin-top:8px;">💡 核心張力：傳統文學形式 ✕ 突破性別框架的現代意識 → 這就是本詩的文學價值所在</div>\n</div>\n\n<hr>\n\n<div class="sec-title"><span class="num">比較</span><h2 style="color:var(--gold)">兩篇對照一覽</h2></div>\n<div class="cn-cmp">\n  <div class="cn-cmp-g">\n    <div class="cn-cmp-title">畫菊自序</div>\n    <div class="pts">\n      <div class="pt"><div class="dot" style="margin-top:6px;"></div><div style="font-size:13px;"><em>作者</em>：張李德和</div></div>\n      <div class="pt"><div class="dot" style="margin-top:6px;"></div><div style="font-size:13px;"><em>文體</em>：序文（散文）</div></div>\n      <div class="pt"><div class="dot" style="margin-top:6px;"></div><div style="font-size:13px;"><em>主旨</em>：以畫菊自述志向</div></div>\n      <div class="pt"><div class="dot" style="margin-top:6px;"></div><div style="font-size:13px;"><em>手法</em>：用典＋駢句對仗</div></div>\n      <div class="pt"><div class="dot" style="margin-top:6px;"></div><div style="font-size:13px;"><em>象徵</em>：菊＝高潔、堅貞</div></div>\n    </div>\n  </div>\n  <div class="cn-cmp-c">\n    <div class="cn-cmp-title">誓志其二</div>\n    <div class="pts">\n      <div class="pt"><div class="dot c" style="margin-top:6px;"></div><div style="font-size:13px;"><b>作者</b>：蔡旨禪</div></div>\n      <div class="pt"><div class="dot c" style="margin-top:6px;"></div><div style="font-size:13px;"><b>文體</b>：七言絕句（詩歌）</div></div>\n      <div class="pt"><div class="dot c" style="margin-top:6px;"></div><div style="font-size:13px;"><b>主旨</b>：宣示女性獨立，投身教育</div></div>\n      <div class="pt"><div class="dot c" style="margin-top:6px;"></div><div style="font-size:13px;"><b>手法</b>：淺白語言＋傳統體裁</div></div>\n      <div class="pt"><div class="dot c" style="margin-top:6px;"></div><div style="font-size:13px;"><b>精神</b>：突破性別框架，自主人生</div></div>\n    </div>\n  </div>\n</div>\n<div class="cn-tip-y">🔑 <strong>共同點</strong>：兩位都是台灣女性文人，都在傳統束縛中<em>以文學表達自我意志</em>，都展現了對「女子無才便是德」觀念的反抗。</div>\n\n<hr>\n\n<div class="sec-title"><span class="num">考點</span><h2 style="color:var(--gold)">段考必背清單</h2></div>\n<div class="cn-exam">\n  <div class="cn-exam-title">⚡ HIGH PRIORITY ITEMS</div>\n  <div class="pts">\n    <div class="pt"><div class="dot r"></div><div>張李德和不屈於「<em>女子無才便是德</em>」→ 考最多！</div></div>\n    <div class="pt"><div class="dot r"></div><div>菊的象徵意義：<em>高潔、堅貞</em>，以物言志</div></div>\n    <div class="pt"><div class="dot r"></div><div>畫菊自序文體：<em>序文（自序）</em>，非詩非論</div></div>\n    <div class="pt"><div class="dot r"></div><div>誓志文體：<em>七言絕句</em>（四句、每句七字）</div></div>\n    <div class="pt"><div class="dot r"></div><div>蔡旨禪：台灣<em>第一位女塾師</em>，投身教育</div></div>\n    <div class="pt"><div class="dot r"></div><div>誓志核心：<em>不依賴婚姻家庭</em>，以一己之力充實自我</div></div>\n    <div class="pt"><div class="dot r"></div><div>兩篇共同精神：<em>反抗傳統性別束縛、追求自我實現</em></div></div>\n    <div class="pt"><div class="dot r"></div><div>用典：李白、<em>管夫人（管道昇）</em> → 畫菊自序的標竿人物</div></div>\n  </div>\n</div>\n<div class="cn-chips">\n  <span class="cn-chip">張李德和</span>\n  <span class="cn-chip">蔡旨禪</span>\n  <span class="cn-chip">序文</span>\n  <span class="cn-chip">七言絕句</span>\n  <span class="cn-chip">以物言志</span>\n  <span class="cn-chip">用典</span>\n  <span class="cn-chip c">女塾師</span>\n  <span class="cn-chip c">性別框架</span>\n  <span class="cn-chip c">女性獨立</span>\n  <span class="cn-chip c">管道昇</span>\n</div>\n',
+
+/* ════════ 英文 空中美語 6月號（修正版）════════ */
+'e-st6': '\n<div class="note-header-block">\n  <div class="nh-tag">ENGLISH MAGAZINE ／ JUNE 2026 ／ 12 UNITS</div>\n  <h1>空中美語 6月號\u3000單字表</h1>\n  <div class="nh-sub">單字 · 字彙小補帖 · 片語\u3000同課合一 · 共 12 課</div>\n</div>\n\n<div class="mag-unit">\n<div class="mag-unit-hdr">UNIT 1</div>\n<div class="mag-unit-title">Celebrating the Many Faces of Graduation!</div>\n<div class="card hl"><table class="vtbl"><tr><th class="g">WORD</th><th class="g">中文</th></tr>\n<tr><td class="w">stadium</td><td class="zh">n. 運動場；體育場</td></tr>\n<tr><td class="w">inspiring</td><td class="zh">adj. 具啟發性的；激勵人心的</td></tr>\n<tr><td class="w">toss</td><td class="zh">v. 拋；扔</td></tr>\n<tr><td class="w">mood</td><td class="zh">n. 氣圍</td></tr>\n<tr><td class="w">emotional</td><td class="zh">adj. 激起強烈情感的</td></tr>\n<tr><td class="w">sticky</td><td class="zh">adj. 黏的</td></tr>\n</table></div>\n<div class="card mag-card-s"><table class="vtbl"><tr><th class="s">字彙小補帖</th><th class="s">中文</th></tr>\n<tr><td class="w sm">graduation</td><td class="zh sm">n. 畢業（典禮）</td></tr>\n<tr><td class="w sm">graduate</td><td class="zh sm">n. 畢業生</td></tr>\n<tr><td class="w sm">ceremony</td><td class="zh sm">n. 儀式；典禮</td></tr>\n<tr><td class="w sm">diploma</td><td class="zh sm">n. 畢業證書；學位證書</td></tr>\n<tr><td class="w sm">orderly</td><td class="zh sm">adj. 守秩序的；有秩序的</td></tr>\n<tr><td class="w sm">messy</td><td class="zh sm">adj. 髒亂的；淩亂的</td></tr>\n</table></div>\n<div class="card mag-card-c"><table class="vtbl"><tr><th class="c">PHRASE</th><th class="c">中文</th></tr>\n<tr><td class="w ph">one by one</td><td class="zh">逐一地；一個接一個地</td></tr>\n<tr><td class="w ph">along the way</td><td class="zh">在這期間；在這過程中</td></tr>\n<tr><td class="w ph">such as</td><td class="zh">比如</td></tr>\n</table></div>\n</div>\n\n<div class="mag-unit">\n<div class="mag-unit-hdr">UNIT 2</div>\n<div class="mag-unit-title">Interview Day Ahead? Let\'s Walk Through the Conversation!</div>\n<div class="card hl"><table class="vtbl"><tr><th class="g">WORD</th><th class="g">中文</th></tr>\n<tr><td class="w">weekly</td><td class="zh">adj. 每週的</td></tr>\n<tr><td class="w">task</td><td class="zh">n. 工作；差事</td></tr>\n<tr><td class="w">risk</td><td class="zh">n. 風險；危險</td></tr>\n<tr><td class="w">scattered</td><td class="zh">adj. 分散的；零散的</td></tr>\n<tr><td class="w">industry</td><td class="zh">n. 產業；行業</td></tr>\n<tr><td class="w">eager</td><td class="zh">adj. 熱切的；渴望的（eager to V）</td></tr>\n<tr><td class="w">briefly</td><td class="zh">adv. 簡短地；簡潔地</td></tr>\n<tr><td class="w">impressive</td><td class="zh">adj. 令人印象深刻的；令人欽佩的</td></tr>\n<tr><td class="w">attitude</td><td class="zh">n. 態度；看法（attitude toward sth/sb）</td></tr>\n<tr><td class="w">situation</td><td class="zh">n. 狀況；情勢</td></tr>\n<tr><td class="w">salary</td><td class="zh">n. 薪水</td></tr>\n<tr><td class="w">within</td><td class="zh">prep. 在（某段時間）之內</td></tr>\n</table></div>\n<div class="card mag-card-s"><table class="vtbl"><tr><th class="s">字彙小補帖</th><th class="s">中文</th></tr>\n<tr><td class="w sm">content</td><td class="zh sm">n. 內容</td></tr>\n<tr><td class="w sm">draft</td><td class="zh sm">n. 草案；草稿</td></tr>\n<tr><td class="w sm">realistic</td><td class="zh sm">adj. 實際的；實際可行的</td></tr>\n<tr><td class="w sm">deadline</td><td class="zh sm">n. 最後期限；截止期限</td></tr>\n<tr><td class="w sm">contribute</td><td class="zh sm">v. 出力；貢獻</td></tr>\n<tr><td class="w sm">eventually</td><td class="zh sm">adv. 最終</td></tr>\n<tr><td class="w sm">overtime</td><td class="zh sm">n. 加班</td></tr>\n<tr><td class="w sm">labor</td><td class="zh sm">n. 勞工</td></tr>\n<tr><td class="w sm">insurance</td><td class="zh sm">n. 保險</td></tr>\n<tr><td class="w sm">application</td><td class="zh sm">n. 申請</td></tr>\n</table></div>\n<div class="card mag-card-c"><table class="vtbl"><tr><th class="c">PHRASE</th><th class="c">中文</th></tr>\n<tr><td class="w ph">have trouble V-ing</td><td class="zh">做某件事有困難</td></tr>\n<tr><td class="w ph">work on sth</td><td class="zh">從事某事；致力於某事</td></tr>\n<tr><td class="w ph">keep an eye on sth/sb</td><td class="zh">注意…；留意…</td></tr>\n<tr><td class="w ph">look forward to V-ing</td><td class="zh">期待…</td></tr>\n<tr><td class="w ph">make sure</td><td class="zh">確認；確保</td></tr>\n<tr><td class="w ph">mess up sth</td><td class="zh">把…搞砸；把…弄糟</td></tr>\n<tr><td class="w ph">on track</td><td class="zh">進展順利；進展如預期</td></tr>\n<tr><td class="w ph">set the trend</td><td class="zh">引領潮流</td></tr>\n</table></div>\n</div>\n\n<div class="mag-unit">\n<div class="mag-unit-hdr">UNIT 3</div>\n<div class="mag-unit-title">U3 單字</div>\n<div class="card hl"><table class="vtbl"><tr><th class="g">WORD / PHRASE</th><th class="g">中文</th></tr>\n<tr><td class="w">advantage</td><td class="zh">優勢；有利條件</td></tr>\n<tr><td class="w">connection</td><td class="zh">（人們之間的）關係；聯繫</td></tr>\n<tr><td class="w">creative</td><td class="zh">創作的；有創意的（creator n. 創作者）</td></tr>\n<tr><td class="w">deserve</td><td class="zh">值得；應得</td></tr>\n<tr><td class="w">detail</td><td class="zh">細節</td></tr>\n<tr><td class="w">efficient</td><td class="zh">有效率的；效率高的</td></tr>\n<tr><td class="w">hateful</td><td class="zh">充滿憎恨的</td></tr>\n<tr><td class="w">idol</td><td class="zh">偶像</td></tr>\n<tr><td class="w">meaningful</td><td class="zh">有意義的；重要的</td></tr>\n<tr><td class="w">ownership</td><td class="zh">所有權</td></tr>\n<tr><td class="w">performer</td><td class="zh">表演者；演出者</td></tr>\n<tr><td class="w">release</td><td class="zh">發行；推出</td></tr>\n<tr><td class="w ph">around the clock</td><td class="zh">日夜不停；夜以繼日</td></tr>\n<tr><td class="w ph">at once</td><td class="zh">同時</td></tr>\n<tr><td class="w ph">be linked to sth/sb</td><td class="zh">與…相關</td></tr>\n<tr><td class="w ph">open to debate</td><td class="zh">尚未定論的；仍有爭議的</td></tr>\n<tr><td class="w ph">over time</td><td class="zh">隨著時間過去</td></tr>\n<tr><td class="w ph">result in sth</td><td class="zh">導致…；促成…</td></tr>\n<tr><td class="w ph">stand out</td><td class="zh">出眾</td></tr>\n</table></div>\n</div>\n\n<div class="mag-unit">\n<div class="mag-unit-hdr">UNIT 4</div>\n<div class="mag-unit-title">U4 單字</div>\n<div class="card hl"><table class="vtbl"><tr><th class="g">WORD / PHRASE</th><th class="g">中文</th></tr>\n<tr><td class="w">chill</td><td class="zh">寒冷；寒意</td></tr>\n<tr><td class="w">cone</td><td class="zh">（錐形的）冰淇淋甜筒</td></tr>\n<tr><td class="w">contrast</td><td class="zh">對比；差異</td></tr>\n<tr><td class="w">flavor</td><td class="zh">風味；味道</td></tr>\n<tr><td class="w">ingredient</td><td class="zh">（食品的）成分，原料</td></tr>\n<tr><td class="w">melt</td><td class="zh">融化</td></tr>\n<tr><td class="w">peanut</td><td class="zh">花生</td></tr>\n<tr><td class="w">pour</td><td class="zh">倒</td></tr>\n<tr><td class="w">prefer</td><td class="zh">偏好</td></tr>\n<tr><td class="w">range</td><td class="zh">範圍包括…（range from A to B）</td></tr>\n<tr><td class="w">smooth</td><td class="zh">滑順無顆粒的</td></tr>\n<tr><td class="w ph">cool off</td><td class="zh">（使…）降溫，涼快</td></tr>\n<tr><td class="w ph">either way</td><td class="zh">不管是哪種情況</td></tr>\n<tr><td class="w ph">in season</td><td class="zh">（水果或蔬菜）當令的，當季的</td></tr>\n<tr><td class="w ph">keep sth at bay</td><td class="zh">令人不快的事無法靠近/發生</td></tr>\n<tr><td class="w ph">on the go</td><td class="zh">在旅途中</td></tr>\n<tr><td class="w ph">warm up</td><td class="zh">（使…）變暖和，變溫暖</td></tr>\n</table></div>\n</div>\n\n<div class="mag-unit">\n<div class="mag-unit-hdr">UNIT 5</div>\n<div class="mag-unit-title">U5 單字</div>\n<div class="card hl"><table class="vtbl"><tr><th class="g">WORD / PHRASE</th><th class="g">中文</th></tr>\n<tr><td class="w">bang</td><td class="zh">猛擊；猛敲</td></tr>\n<tr><td class="w">charge</td><td class="zh">猛衝</td></tr>\n<tr><td class="w">dash</td><td class="zh">猛衝；飛奔</td></tr>\n<tr><td class="w">encounter</td><td class="zh">偶遇；遇到</td></tr>\n<tr><td class="w">spray</td><td class="zh">噴劑</td></tr>\n<tr><td class="w ph">above all</td><td class="zh">最重要的是</td></tr>\n<tr><td class="w ph">be home to sth</td><td class="zh">是…的所在地</td></tr>\n<tr><td class="w ph">in the end</td><td class="zh">說到底；總而言之</td></tr>\n<tr><td class="w ph">outdoors</td><td class="zh">在戶外</td></tr>\n<tr><td class="w ph">play dead</td><td class="zh">裝死</td></tr>\n<tr><td class="w ph">within range</td><td class="zh">在有效距離內</td></tr>\n</table></div>\n</div>\n\n<div class="mag-unit">\n<div class="mag-unit-hdr">UNIT 6</div>\n<div class="mag-unit-title">U6 單字</div>\n<div class="card hl"><table class="vtbl"><tr><th class="g">WORD / PHRASE</th><th class="g">中文</th></tr>\n<tr><td class="w">announcement</td><td class="zh">公告；宣告</td></tr>\n<tr><td class="w">casual</td><td class="zh">偶爾的</td></tr>\n<tr><td class="w">competition</td><td class="zh">競賽；比賽（compete v. 競賽）</td></tr>\n<tr><td class="w">connected</td><td class="zh">有來往的；有關聯的</td></tr>\n<tr><td class="w">continent</td><td class="zh">洲；大陸</td></tr>\n<tr><td class="w">electric</td><td class="zh">令人興奮的；緊張刺激的</td></tr>\n<tr><td class="w">expand</td><td class="zh">（使）擴展/發展/增加</td></tr>\n<tr><td class="w">global</td><td class="zh">全球的（globalized adj. 全球化的）</td></tr>\n<tr><td class="w">mostly</td><td class="zh">主要地</td></tr>\n<tr><td class="w">opportunity</td><td class="zh">機會（opportunity to V）</td></tr>\n<tr><td class="w">scale</td><td class="zh">規模</td></tr>\n<tr><td class="w">unite</td><td class="zh">（使）團結；（使）聯合</td></tr>\n<tr><td class="w ph">all eyes be on sth/sb</td><td class="zh">目光都聚集在…</td></tr>\n<tr><td class="w ph">along with sth</td><td class="zh">連同；一起</td></tr>\n<tr><td class="w ph">(beV) known as sth</td><td class="zh">被稱作…</td></tr>\n<tr><td class="w ph">kick off</td><td class="zh">（足球比賽）開球，開始</td></tr>\n<tr><td class="w ph">move on to sth</td><td class="zh">繼續進行…</td></tr>\n</table></div>\n</div>\n\n<div class="mag-unit">\n<div class="mag-unit-hdr">UNIT 7</div>\n<div class="mag-unit-title">U7 單字</div>\n<div class="card hl"><table class="vtbl"><tr><th class="g">WORD / PHRASE</th><th class="g">中文</th></tr>\n<tr><td class="w">constant</td><td class="zh">持續不斷的；經常發生的</td></tr>\n<tr><td class="w">continuous</td><td class="zh">連續不斷的</td></tr>\n<tr><td class="w">digital</td><td class="zh">數位的</td></tr>\n<tr><td class="w">harm</td><td class="zh">危害；損害</td></tr>\n<tr><td class="w">permission</td><td class="zh">許可；允許</td></tr>\n<tr><td class="w">privacy</td><td class="zh">隱私（private adj. 私密的；個人的）</td></tr>\n<tr><td class="w">recognize</td><td class="zh">認出；辨識</td></tr>\n<tr><td class="w">specific</td><td class="zh">特定的</td></tr>\n<tr><td class="w">virus</td><td class="zh">電腦病毒</td></tr>\n<tr><td class="w ph">as for sth/sb</td><td class="zh">至於…</td></tr>\n<tr><td class="w ph">automatically</td><td class="zh">自動地</td></tr>\n<tr><td class="w ph">by design</td><td class="zh">按照設計；有意地</td></tr>\n<tr><td class="w ph">for instance</td><td class="zh">例如</td></tr>\n<tr><td class="w ph">manage to V</td><td class="zh">（設法）做成…，辦到…</td></tr>\n<tr><td class="w ph">on the other hand</td><td class="zh">另一方面</td></tr>\n<tr><td class="w ph">rather than</td><td class="zh">而不是</td></tr>\n</table></div>\n</div>\n\n<div class="mag-unit">\n<div class="mag-unit-hdr">UNIT 8</div>\n<div class="mag-unit-title">U8 單字</div>\n<div class="card hl"><table class="vtbl"><tr><th class="g">WORD / PHRASE</th><th class="g">中文</th></tr>\n<tr><td class="w">barrier</td><td class="zh">障礙物</td></tr>\n<tr><td class="w">bleeding</td><td class="zh">出血；流血</td></tr>\n<tr><td class="w">concert</td><td class="zh">演唱會；音樂會</td></tr>\n<tr><td class="w">escape</td><td class="zh">逃離；逃脫</td></tr>\n<tr><td class="w">feature</td><td class="zh">功能；特色</td></tr>\n<tr><td class="w">firm</td><td class="zh">有力的；堅定的</td></tr>\n<tr><td class="w">injury</td><td class="zh">傷害；損傷</td></tr>\n<tr><td class="w">kit</td><td class="zh">成套工具；成套設備</td></tr>\n<tr><td class="w">padding</td><td class="zh">護墊；襯墊</td></tr>\n<tr><td class="w">priority</td><td class="zh">優先考慮的事</td></tr>\n<tr><td class="w">protective</td><td class="zh">防護的；保護性的（protect v. 保護）</td></tr>\n<tr><td class="w">resist</td><td class="zh">反抗；抵抗</td></tr>\n<tr><td class="w">solid</td><td class="zh">堅固的</td></tr>\n<tr><td class="w">suspicious</td><td class="zh">可疑的</td></tr>\n<tr><td class="w">victim</td><td class="zh">受害者</td></tr>\n<tr><td class="w">violent</td><td class="zh">暴力的</td></tr>\n<tr><td class="w ph">as well as</td><td class="zh">以及</td></tr>\n<tr><td class="w ph">focus on sth</td><td class="zh">著重於…</td></tr>\n<tr><td class="w ph">freeze</td><td class="zh">僵住；呆住</td></tr>\n<tr><td class="w ph">get away</td><td class="zh">逃脫</td></tr>\n<tr><td class="w ph">in addition (to)</td><td class="zh">除此之外</td></tr>\n<tr><td class="w ph">in place</td><td class="zh">已建立的；已安排</td></tr>\n<tr><td class="w ph">in real time</td><td class="zh">即時</td></tr>\n<tr><td class="w ph">out of sb\'s sight</td><td class="zh">在某人的視野之外</td></tr>\n<tr><td class="w ph">wrap</td><td class="zh">用…包/裹/圍</td></tr>\n</table></div>\n</div>\n\n<div class="mag-unit">\n<div class="mag-unit-hdr">UNIT 9</div>\n<div class="mag-unit-title">U9 單字</div>\n<div class="card hl"><table class="vtbl"><tr><th class="g">WORD / PHRASE</th><th class="g">中文</th></tr>\n<tr><td class="w">classic</td><td class="zh">經典的</td></tr>\n<tr><td class="w">discovery</td><td class="zh">發現</td></tr>\n<tr><td class="w">exposure</td><td class="zh">接觸；體驗（exposure to sth）</td></tr>\n<tr><td class="w">garlic</td><td class="zh">蒜；大蒜</td></tr>\n<tr><td class="w">honor</td><td class="zh">表揚；向…表示敬意</td></tr>\n<tr><td class="w">yearly</td><td class="zh">每年的；一年一次的</td></tr>\n<tr><td class="w ph">bring about sth</td><td class="zh">促成…；引起…</td></tr>\n<tr><td class="w ph">lead to sth</td><td class="zh">促成…；導致…</td></tr>\n<tr><td class="w ph">look at sth</td><td class="zh">檢視…；審視…</td></tr>\n<tr><td class="w ph">turn out</td><td class="zh">結果是（尤指出乎意料的結果）</td></tr>\n</table></div>\n</div>\n\n<div class="mag-unit">\n<div class="mag-unit-hdr">UNIT 10</div>\n<div class="mag-unit-title">U10 單字</div>\n<div class="card hl"><table class="vtbl"><tr><th class="g">WORD / PHRASE</th><th class="g">中文</th></tr>\n<tr><td class="w">artificial</td><td class="zh">人造的；人工的</td></tr>\n<tr><td class="w">calorie</td><td class="zh">卡路里（low-calorie adj. 低熱量的）</td></tr>\n<tr><td class="w">comparison</td><td class="zh">比較（by comparison 相較之下）</td></tr>\n<tr><td class="w">consume</td><td class="zh">吃；喝；攝取（正式用字）</td></tr>\n<tr><td class="w">impact</td><td class="zh">影響；衝擊（impact on sth）</td></tr>\n<tr><td class="w">moist</td><td class="zh">濕潤的</td></tr>\n<tr><td class="w">occur</td><td class="zh">存在；被發現（occur in/among/etc.）</td></tr>\n<tr><td class="w">process</td><td class="zh">（食品）處理，加工</td></tr>\n<tr><td class="w">sauce</td><td class="zh">醬汁；調味汁</td></tr>\n<tr><td class="w">standard</td><td class="zh">普通的；標準的</td></tr>\n<tr><td class="w">taste bud</td><td class="zh">味蕾</td></tr>\n<tr><td class="w">tender</td><td class="zh">（食物）軟的，嫩的</td></tr>\n<tr><td class="w ph">beV made from</td><td class="zh">由…製成（看不出原本形態）</td></tr>\n<tr><td class="w ph">come with sth</td><td class="zh">伴隨著…；附有…</td></tr>\n<tr><td class="w ph">on top of sth</td><td class="zh">除了…之外（還有…）</td></tr>\n<tr><td class="w ph">rely on sth/sb</td><td class="zh">倚賴…；依靠…</td></tr>\n</table></div>\n</div>\n\n<div class="mag-unit">\n<div class="mag-unit-hdr">UNIT 11</div>\n<div class="mag-unit-title">Why Do Some Memories Stay Painful? Understanding PTSD</div>\n<div class="card hl"><table class="vtbl"><tr><th class="g">WORD</th><th class="g">中文</th></tr>\n<tr><td class="w">tough</td><td class="zh">adj. 困難的；艱難的</td></tr>\n<tr><td class="w">scary</td><td class="zh">adj. 可怕的；嚇人的</td></tr>\n<tr><td class="w">mental</td><td class="zh">adj. 精神的；心理的</td></tr>\n<tr><td class="w">reaction</td><td class="zh">n. 反應（reaction to sth）</td></tr>\n<tr><td class="w">vivid</td><td class="zh">adj. 生動的；清晰的</td></tr>\n<tr><td class="w">realistic</td><td class="zh">adj. 寫實的；真實的；栩栩如生的</td></tr>\n<tr><td class="w">frequently</td><td class="zh">adv. 頻繁地；經常地</td></tr>\n<tr><td class="w">disaster</td><td class="zh">n. 災害；災難</td></tr>\n<tr><td class="w">significantly</td><td class="zh">adv. 顯著地</td></tr>\n<tr><td class="w">network</td><td class="zh">n. 關係網；聯絡網</td></tr>\n<tr><td class="w">heal</td><td class="zh">v. （情感）康復，修復</td></tr>\n<tr><td class="w">process</td><td class="zh">v. 消化，處理，排解</td></tr>\n</table></div>\n<div class="card mag-card-s"><table class="vtbl"><tr><th class="s">字彙小補帖</th><th class="s">中文</th></tr>\n<tr><td class="w sm">overwhelm</td><td class="zh sm">v. 難以承受（overwhelming adj. 難以承受的）</td></tr>\n<tr><td class="w sm">trauma</td><td class="zh sm">n. 心理創傷（traumatic adj. 造成創傷的）</td></tr>\n<tr><td class="w sm">disorder</td><td class="zh sm">n. 障礙；失調；病</td></tr>\n<tr><td class="w sm">trigger</td><td class="zh sm">v. 觸發</td></tr>\n<tr><td class="w sm">flashback</td><td class="zh sm">n. 痛苦往事的重現，再現</td></tr>\n<tr><td class="w sm">empathy</td><td class="zh sm">n. 同理心</td></tr>\n<tr><td class="w sm">profession</td><td class="zh sm">n. 職業（professional adj. 專業的）</td></tr>\n<tr><td class="w sm">recovery</td><td class="zh sm">n. 恢復；康復</td></tr>\n<tr><td class="w sm">specialist</td><td class="zh sm">n. 專科醫生；專家</td></tr>\n<tr><td class="w sm">therapy</td><td class="zh sm">n. 心理治療</td></tr>\n<tr><td class="w sm">resilience</td><td class="zh sm">n. 適應力，復原力</td></tr>\n</table></div>\n<div class="card mag-card-c"><table class="vtbl"><tr><th class="c">PHRASE</th><th class="c">中文</th></tr>\n<tr><td class="w ph">shut (sth) down</td><td class="zh">關閉…；使…停止運轉</td></tr>\n<tr><td class="w ph">as though</td><td class="zh">好像；似乎</td></tr>\n<tr><td class="w ph">around the corner</td><td class="zh">即將來臨；在附近</td></tr>\n<tr><td class="w ph">tend to V</td><td class="zh">傾向於…；往往會…</td></tr>\n<tr><td class="w ph">once more</td><td class="zh">重新</td></tr>\n<tr><td class="w ph">play a role (in sth)</td><td class="zh">扮演某種角色/起某種作用</td></tr>\n</table></div>\n</div>\n\n<div class="mag-unit">\n<div class="mag-unit-hdr">UNIT 12</div>\n<div class="mag-unit-title">Why Do I Sound like That? The Science of Voice Confrontation</div>\n<div class="card hl"><table class="vtbl"><tr><th class="g">WORD</th><th class="g">中文</th></tr>\n<tr><td class="w">variety</td><td class="zh">n. 種類；各式各樣（a variety of sth）</td></tr>\n<tr><td class="w">physical</td><td class="zh">adj. 生理的；身體的</td></tr>\n<tr><td class="w">structure</td><td class="zh">n. 結構；構造</td></tr>\n<tr><td class="w">grasp</td><td class="zh">v. 理解；領會</td></tr>\n<tr><td class="w">inner</td><td class="zh">adj. 內部的（inner ear n. 內耳）</td></tr>\n<tr><td class="w">audio</td><td class="zh">n. 聲音</td></tr>\n<tr><td class="w">accurate</td><td class="zh">adj. 準確的；正確無誤的</td></tr>\n<tr><td class="w">dislike</td><td class="zh">n. 不喜歡；厭惡</td></tr>\n<tr><td class="w">gap</td><td class="zh">n. 差距（a gap between A and B）</td></tr>\n<tr><td class="w">confidence</td><td class="zh">n. 自信心</td></tr>\n<tr><td class="w">flexible</td><td class="zh">adj. 可變通的；靈活的</td></tr>\n<tr><td class="w">familiar</td><td class="zh">adj. 熟悉的（unfamiliar adj. 不熟悉的）</td></tr>\n</table></div>\n<div class="card mag-card-s"><table class="vtbl"><tr><th class="s">字彙小補帖</th><th class="s">中文</th></tr>\n<tr><td class="w sm">conduction</td><td class="zh sm">n. 傳導</td></tr>\n<tr><td class="w sm">vibration</td><td class="zh sm">n. 振動</td></tr>\n<tr><td class="w sm">skull</td><td class="zh sm">n. 頭骨；顱骨</td></tr>\n<tr><td class="w sm">filter</td><td class="zh sm">n. 過濾器</td></tr>\n<tr><td class="w sm">frequency</td><td class="zh sm">n. 頻率</td></tr>\n<tr><td class="w sm">confrontation</td><td class="zh sm">n. 衝突；對立</td></tr>\n<tr><td class="w sm">cue</td><td class="zh sm">n. 提示；線索；暗示</td></tr>\n<tr><td class="w sm">subtle</td><td class="zh sm">adj. 微妙的；難以察覺的</td></tr>\n<tr><td class="w sm">adjust</td><td class="zh sm">v. 適應</td></tr>\n<tr><td class="w sm">version</td><td class="zh sm">n. 版本</td></tr>\n</table></div>\n<div class="card mag-card-c"><table class="vtbl"><tr><th class="c">PHRASE</th><th class="c">中文</th></tr>\n<tr><td class="w ph">to begin with</td><td class="zh">首先</td></tr>\n<tr><td class="w ph">(beV) based on sth</td><td class="zh">根據…</td></tr>\n<tr><td class="w ph">what\'s more</td><td class="zh">再者；而且</td></tr>\n<tr><td class="w ph">go away</td><td class="zh">消失</td></tr>\n</table></div>\n</div>\n',
+
+/* ════════ 公民 Unit 5 ════════ */
+'cv-u5': '\n<div class="note-header-block" style="border-left-color:#60cc80;">\n  <div class="nh-tag" style="color:#3a9a55;">CIVICS ／ 第五章 ／ 翰林版 ／ 段考完整版</div>\n  <h1 style="color:#60cc80;">公共意見與媒體</h1>\n  <div class="nh-sub">5-1 媒體對公共意見的影響\u3000・\u30005-2 民眾的媒體近用權\u3000・\u30005-3 科技發展與公共意見</div>\n</div>\n\n\n\n<div class="cv-tab-bar">\n  <div class="cv-tab active" onclick="cvTab(0,this)">5-1</div>\n  <div class="cv-tab" onclick="cvTab(1,this)">5-2</div>\n  <div class="cv-tab" onclick="cvTab(2,this)">5-3</div>\n  <div class="cv-tab" onclick="cvTab(3,this)">⚡考點</div>\n</div>\n\n<!-- 5-1 -->\n<div class="cv-sec active" id="cv0">\n  <div class="sec-title"><span class="num">概念</span><h2>公共意見（Public Opinion）</h2></div>\n  <div class="card hl">\n    <div class="pts">\n      <div class="pt"><div class="dot"></div><div>定義：社會上一群人對<em>某項公共事務</em>所表達的意見或立場，也叫「<em>民意</em>」或「<em>輿論</em>」</div></div>\n      <div class="pt"><div class="dot"></div><div>與民主政治密不可分，民眾透過各種管道表達意見，進而<em>影響政策</em></div></div>\n    </div>\n    <div class="cv-sub">傳統表達管道（4個必背）</div>\n    <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;">\n      <span style="font-size:12px;background:rgba(240,192,64,.12);color:var(--gold);border:1px solid rgba(240,192,64,.3);padding:2px 10px;border-radius:20px;">民調</span>\n      <span style="font-size:12px;background:rgba(240,192,64,.12);color:var(--gold);border:1px solid rgba(240,192,64,.3);padding:2px 10px;border-radius:20px;">意見領袖／專家學者</span>\n      <span style="font-size:12px;background:rgba(240,192,64,.12);color:var(--gold);border:1px solid rgba(240,192,64,.3);padding:2px 10px;border-radius:20px;">公聽會／聽證會</span>\n      <span style="font-size:12px;background:rgba(240,192,64,.12);color:var(--gold);border:1px solid rgba(240,192,64,.3);padding:2px 10px;border-radius:20px;">社會運動</span>\n    </div>\n  </div>\n  <div class="sec-title"><span class="num">一</span><h2>媒體與公共意見的關係</h2></div>\n  <div class="card hl">\n    <div class="cv-sub">（一）媒體帶動公共議題的傳播</div>\n    <div class="pts">\n      <div class="pt"><div class="dot"></div><div>媒體報導 → 民眾知悉 → 社會對話 → <em>公共意見形成</em></div></div>\n      <div class="pt"><div class="dot c"></div><div>有助了解公共事務、<b>促進政治參與</b>、強化民意對政府監督</div></div>\n    </div>\n    <div class="cv-sub">（二）新聞自由與第四權</div>\n    <div class="pts">\n      <div class="pt"><div class="dot"></div><div>媒體須查證事實、傳遞資訊、守望社會 → <em>不受當權者控制</em></div></div>\n      <div class="pt"><div class="dot"></div><div>行政、立法、司法三權之後，媒體被稱為「<em>第四權</em>」</div></div>\n    </div>\n    <div class="cv-eg"><span class="cv-eg-lbl">法律</span>憲法第11條：人民有言論、講學、著作及出版之自由 → 保障媒體採訪、報導、出版等新聞自由</div>\n  </div>\n  <div class="sec-title"><span class="num">二</span><h2>4種媒體所有權</h2></div>\n  <div class="card hl">\n    <table>\n      <tr><th>類型</th><th>所有權</th><th>特色</th><th>例子</th></tr>\n      <tr><td class="g">公共媒體</td><td>全體民眾</td><td>不受商業/政治干預，<em>較中立</em></td><td>公視、客家台</td></tr>\n      <tr><td class="r">商業媒體</td><td>私人企業</td><td>目的獲利→易追求點閱率；可能<em>媒體集團化</em></td><td>TVBS、三立</td></tr>\n      <tr><td class="c">獨立媒體</td><td>民間獨立</td><td><em>關注弱勢議題</em>，多以網站形式</td><td>報導者</td></tr>\n      <tr><td>自媒體</td><td>個人或團體</td><td>傳播快速、即時；藉社群媒體表達公共意見</td><td>YouTube頻道</td></tr>\n    </table>\n    <div class="tip">⚠️ 媒體集團化：多平台整合 → 通常由財團出資 → 可能<em>壟斷議題</em>、閱聽人難接觸多元訊息</div>\n  </div>\n  <div class="sec-title"><span class="num">三</span><h2>媒體產製對公共意見的影響</h2></div>\n  <div class="card hl">\n    <div class="pts">\n      <div class="pt"><div class="dot"></div><div>對新聞資訊進行捨取的人 = <em>守門人（gate-keeper）</em></div></div>\n      <div class="pt"><div class="dot c"></div><div>記者為避免退稿，配合媒體立場 = 「<em>新聞室的社會控制</em>」</div></div>\n    </div>\n    <div class="cv-eg"><span class="cv-eg-lbl">例</span>同一場勞工抗爭：A台「勞工爭取大眾權利」、B台「勞工無秩序堵塞交通」→ 閱聽人形成截然不同的印象</div>\n  </div>\n  <div class="sec-title"><span class="num">四</span><h2>媒體再現對公共意見的影響</h2></div>\n  <div class="card hl">\n    <div class="pts">\n      <div class="pt"><div class="dot"></div><div><em>媒體再現</em>：媒體加工後的「二度呈現」，非第一手資料</div></div>\n      <div class="pt"><div class="dot r"></div><div>追求點閱率 → 報導血腥、煽情議題 → 公共議題版面被<em>排擠</em></div></div>\n      <div class="pt"><div class="dot r"></div><div><em>帶風向</em>：刻意錯誤報導 → 引發網路肉搜或圍剿</div></div>\n      <div class="pt"><div class="dot c"></div><div><b>過濾泡泡</b>：演算法依偏好篩選 → <em>同溫層</em> → 認知單一化</div></div>\n      <div class="pt"><div class="dot"></div><div><em>置入性行銷</em>：廣告商或政府付費將產品化為媒體內容 → 侵蝕第四權獨立性</div></div>\n    </div>\n    <div class="cv-eg"><span class="cv-eg-lbl">法律</span>2015年廣電三法：<em>新聞與兒童節目不得置入性行銷</em></div>\n    <div class="cv-sub">假訊息 vs 假新聞</div>\n    <div class="pts">\n      <div class="pt"><div class="dot"></div><div><em>假訊息</em>：任何人捏造的不實內容</div></div>\n      <div class="pt"><div class="dot"></div><div><em>假新聞</em>：具查證功能的媒體<b>刻意</b>編造虛假事件（差別在「媒體刻意」）</div></div>\n    </div>\n  </div>\n  <div class="sec-title"><span class="num">五</span><h2>媒體再現的不平等（3類）</h2></div>\n  <div class="card hl">\n    <table>\n      <tr><th>對象</th><th>問題</th><th>例子</th></tr>\n      <tr><td class="g">特定族群</td><td>刻意簡化呈現 → 產生歧視認知</td><td>Pangoyod穿傳統服飾領獎，媒體以「不雅」標題報導</td></tr>\n      <tr><td class="c">身心障礙者</td><td>將案件歸因「特殊性」→ 民眾誤解法律公平正義</td><td>「因思覺失調可免除刑責」→ 貼標籤</td></tr>\n      <tr><td class="r">性別與性傾向</td><td>特別聚焦當事人性別 → 加劇刻板印象</td><td>口罩報導「婆婆媽媽排隊」</td></tr>\n    </table>\n  </div>\n</div>\n\n<!-- 5-2 -->\n<div class="cv-sec" id="cv1">\n  <div class="sec-title"><span class="num">概念</span><h2>媒體近用權</h2></div>\n  <div class="card hl">\n    <div class="pts">\n      <div class="pt"><div class="dot"></div><div><em>媒體近用權</em>：人民得依一定條件，要求媒體提供版面或時間，讓其<em>行使表達意見之權利</em></div></div>\n    </div>\n    <div class="cv-eg"><span class="cv-eg-lbl">釋憲</span>1994年釋字第<em>364</em>號：確立「接近使用傳播媒體權」。國家應對電波頻率公平分配，尊重人民接近使用傳播媒體之權利</div>\n  </div>\n  <div class="sec-title"><span class="num">一</span><h2>接近權 vs 使用權</h2></div>\n  <div class="card hl">\n    <div class="cmp-row">\n      <div class="cmp-g">\n        <span class="cmp-tag">被動・有限度</span>\n        <div class="cmp-title">接近權</div>\n        <div class="cmp-body">人民有權在媒體上發表言論，回應媒體報導<br><br>・<em>更正權</em>：媒體不實報導 → 可要求訂正<br>・<em>答辯權</em>：媒體報導時 → 可要求說明或解釋</div>\n      </div>\n      <div class="cmp-c">\n        <span class="cmp-tag">主動・積極</span>\n        <div class="cmp-title">使用權</div>\n        <div class="cmp-body">人民可自行提供或製作節目，用原聲原音在大眾媒體發言，不被剪裁<br><br>包含：要求播送、自行經營媒體、申請頻道（<em>使用頻道權</em>）</div>\n      </div>\n    </div>\n    <div class="tip">⚠️ 核心差異：接近權 = <em>事後被動回應</em>｜使用權 = <em>主動出擊</em><br>⚠️ NCC規定自製比例 = <em>使用權</em>，不是接近權！</div>\n  </div>\n  <div class="cv-eg"><span class="cv-eg-lbl">例</span>香蕉假新聞（2018）：蕉農行使<em>更正權</em>要求刊謠、行使<em>答辯權</em>上電視說明、行使<em>使用權</em>自拍澄清影片要求完整播出</div>\n  <div class="sec-title"><span class="num">二</span><h2>媒體近用的不平等</h2></div>\n  <div class="card hl">\n    <div class="cv-sub">（一）原住民族</div>\n    <div class="pts">\n      <div class="pt"><div class="dot"></div><div>主流媒體報導原住民篇幅偏少，多聚焦<em>抗爭衝突畫面</em></div></div>\n      <div class="pt"><div class="dot c"></div><div>政府設立<em>原住民族電視台（原視）</em>→ 增加發聲管道、破除刻板印象</div></div>\n      <div class="pt"><div class="dot c"></div><div>2010年原視創設 <em>WATTA</em>（Web Access To Tribal Actions）新聞平臺</div></div>\n    </div>\n    <div class="cv-sub">（二）新住民</div>\n    <div class="pts">\n      <div class="pt"><div class="dot"></div><div>東南亞籍新住民為<em>我國第五大族群</em>，傳播環境以華語為主 → 缺乏資訊管道</div></div>\n      <div class="pt"><div class="dot c"></div><div>改善：<em>四方報</em>（多國語言民營報紙）；移民署「<em>新住民全球新聞網</em>」（中英越印泰語）</div></div>\n    </div>\n  </div>\n  <div class="sec-title"><span class="num">三</span><h2>如何監督媒體？</h2></div>\n  <div class="card hl">\n    <table>\n      <tr><th>監督方式</th><th>代表機構</th><th>成立年份</th><th>特色</th></tr>\n      <tr><td class="g">政府監督</td><td>NCC（國家通訊傳播委員會）</td><td class="g">2006年</td><td>獨立機關，監理廣電傳播事業</td></tr>\n      <tr><td class="c">人民監督</td><td>台灣媒體觀察教育基金會</td><td class="c">1999年</td><td>第一個媒體監督民間團體，推廣媒體素養</td></tr>\n      <tr><td>媒體自律</td><td>媒體自行建立自律機制</td><td>—</td><td>確保準確性與公正性</td></tr>\n    </table>\n    <div class="tip">⚠️ 背景：1988解除報禁 → 1994開放有線電視 → 媒體亂象 → 人民監督出現<br>⚠️ 要發揮第四權 = <em>政府 ＋ 人民 ＋ 媒體自律</em>三方共同監督</div>\n  </div>\n</div>\n\n<!-- 5-3 -->\n<div class="cv-sec" id="cv2">\n  <div class="sec-title"><span class="num">背景</span><h2>社群媒體的誕生</h2></div>\n  <div class="card hl">\n    <div class="pts">\n      <div class="pt"><div class="dot"></div><div>1990年起，美國國會開放網際網路 → 民用普及 → <em>世界地球村</em>誕生</div></div>\n      <div class="pt"><div class="dot c"></div><div>社群網路讓閱聽人從「<em>被動接受</em>」→「<em>主動傳播</em>」資訊</div></div>\n    </div>\n    <div class="cv-sub">社群媒體三大特性</div>\n    <div class="feat-row">\n      <div class="feat-card"><div class="feat-title">互動性</div><div class="feat-body">閱聽人可與傳播者進行雙向或多向的互動溝通</div></div>\n      <div class="feat-card"><div class="feat-title">便利性</div><div class="feat-body">透過搜尋引擎或線上資料庫，便能取得想要的資訊</div></div>\n      <div class="feat-card"><div class="feat-title">即時性</div><div class="feat-body">能迅速蒐集資訊，透過直播或轉傳即時傳播</div></div>\n    </div>\n  </div>\n  <div class="sec-title"><span class="num">一</span><h2>科技發展提升公共生活的參與</h2></div>\n  <div class="card hl">\n    <div class="pts">\n      <div class="pt"><div class="dot"></div><div>網路科技讓民眾即時傳遞、互動與討論 → 降低<em>政治冷漠</em>感，提升參與機會、意願和能力</div></div>\n      <div class="pt"><div class="dot c"></div><div>許多社會運動透過網路發起串連，有助公共意見的<em>討論與運動的參與</em></div></div>\n    </div>\n    <div class="cv-eg"><span class="cv-eg-lbl">例</span>2023年臺南市女童遭汽車撞死 → 民眾自發網路串聯，舉辦「<em>還路於民</em>」大遊行</div>\n    <div class="cv-eg"><span class="cv-eg-lbl">例</span>2020年「<em>Taiwan can Help</em>」：社群媒體號召 → 群眾募資 → 紐約時報全版廣告 → 增加台灣能見度</div>\n    <div class="tip">⚠️ 鍵盤參與困境：「<em>萬人響應、一人到場</em>」→ 公民應進一步<em>親身參與社會辯論</em></div>\n  </div>\n  <div class="sec-title"><span class="num">二</span><h2>數位落差（Digital Divide）</h2></div>\n  <div class="card hl">\n    <div class="pts">\n      <div class="pt"><div class="dot"></div><div><em>數位機會</em>：個人具有資訊科技使用能力，並透過科技取得進步的可能性</div></div>\n      <div class="pt"><div class="dot r"></div><div><em>數位落差</em>：民眾因性別、經濟、教育與居住區域等因素不同，在數位工具的<em>物質、動機和技能</em>上有差異</div></div>\n    </div>\n    <div class="cv-sub">造成數位落差的三大原因</div>\n    <div class="div-row">\n      <div class="div-r"><div class="div-dtitle">① 物質上的落差</div><div class="div-dbody">是否擁有電腦、手機、網路<br><br>偏遠山區網路覆蓋率低</div></div>\n      <div class="div-y"><div class="div-dtitle">② 技能上的落差</div><div class="div-dbody">操作資訊科技能力不同<br><br>教育部推「邁向數位平權推動計畫」；成立<em>DOC（數位機會中心）</em>協助偏鄉</div></div>\n      <div class="div-c"><div class="div-dtitle">③ 動機上的落差</div><div class="div-dbody">對數位科技缺乏認知，或擔心資訊洩漏<br><br>→ 不願學新科技，偏好傳統媒介</div></div>\n    </div>\n  </div>\n  <div class="sec-title"><span class="num">三</span><h2>數位落差對公共參與的影響</h2></div>\n  <div class="card hl">\n    <div class="pts">\n      <div class="pt"><div class="dot r"></div><div>弱勢群體意見難以透過數位管道表達 → 政府制定政策時<em>忽略弱勢利益</em></div></div>\n      <div class="pt"><div class="dot r"></div><div>網路民調排除不上網民眾 → 媒體呈現的公共意見可能只是「<em>冰山一角</em>」</div></div>\n      <div class="pt"><div class="dot r"></div><div>同溫層效應 → 只看到「自己想看的」資訊 → <em>限縮資訊廣泛接收</em></div></div>\n    </div>\n    <div class="cv-eg"><span class="cv-eg-lbl">例</span>臺北市 i-Voting（2018年停止發送元宵節小提燈案）：全體市民267.4萬，僅1.4萬人參與 → 網路投票<em>排擠不使用網路的民眾</em></div>\n    <div class="tip">⚠️ 科技能促進公共參與，但也可能<em>製造新的不平等</em></div>\n  </div>\n</div>\n\n<!-- 考點 -->\n<div class="cv-sec" id="cv3">\n  <div class="sec-title"><span class="num">5-1</span><h2>必背清單</h2></div>\n  <div class="checklist">\n    <div class="pts">\n      <div class="pt"><div class="dot r"></div><div>公共意見 = 民意 = 輿論；4種表達管道要記</div></div>\n      <div class="pt"><div class="dot r"></div><div>媒體為「<em>第四權</em>」→ 行政、立法、司法之外</div></div>\n      <div class="pt"><div class="dot r"></div><div>4種媒體：<em>公共（公視）、商業（TVBS）、獨立（報導者）、自媒體</em></div></div>\n      <div class="pt"><div class="dot r"></div><div><em>守門人（gate-keeper）</em>= 決定新聞資訊捨取的人</div></div>\n      <div class="pt"><div class="dot r"></div><div><em>新聞室的社會控制</em> = 記者配合媒體立場以避免退稿</div></div>\n      <div class="pt"><div class="dot r"></div><div><em>媒體再現</em>= 媒體加工後的二度呈現，非第一手資料</div></div>\n      <div class="pt"><div class="dot r"></div><div>過濾泡泡 → 同溫層 → 認知單一化、意識型態化</div></div>\n      <div class="pt"><div class="dot r"></div><div>置入性行銷：2015廣電三法，<em>新聞與兒童節目不得置入</em></div></div>\n      <div class="pt"><div class="dot r"></div><div>假訊息 ≠ 假新聞（假新聞是有查證功能的媒體<em>刻意</em>捏造）</div></div>\n      <div class="pt"><div class="dot r"></div><div>媒體再現不平等三類：<em>族群、身心障礙者、性別與性傾向</em></div></div>\n    </div>\n  </div>\n  <div class="sec-title"><span class="num">5-2</span><h2>必背清單</h2></div>\n  <div class="checklist">\n    <div class="pts">\n      <div class="pt"><div class="dot r"></div><div>媒體近用權 = 要求媒體提供版面/時間，以<em>表達意見</em>的權利</div></div>\n      <div class="pt"><div class="dot r"></div><div>釋字第<em>364</em>號（1994）= 確立「接近使用傳播媒體權」</div></div>\n      <div class="pt"><div class="dot r"></div><div><em>接近權</em>（被動、有限度）= 更正權 ＋ 答辯權</div></div>\n      <div class="pt"><div class="dot r"></div><div><em>使用權</em>（主動、積極）= 自製節目 ＋ 要求播出 ＋ 使用頻道權</div></div>\n      <div class="pt"><div class="dot r"></div><div>考題陷阱：NCC規定自製比例 = <em>使用權</em>，不是接近權！</div></div>\n      <div class="pt"><div class="dot r"></div><div>新住民 = 第五大族群；四方報（多語民營）；新住民全球新聞網（移民署）</div></div>\n      <div class="pt"><div class="dot r"></div><div>原視 = 原住民族電視台；<em>WATTA</em> = 原視2010年創設的網路新聞平台</div></div>\n      <div class="pt"><div class="dot r"></div><div>NCC = 國家通訊傳播委員會，<em>2006年</em>成立，獨立機關</div></div>\n      <div class="pt"><div class="dot r"></div><div>台灣媒體觀察教育基金會 = <em>1999年</em>，第一個人民媒體監督團體</div></div>\n      <div class="pt"><div class="dot r"></div><div>1988解除報禁 → 1994開放有線電視 → 媒體亂象 → 人民監督出現</div></div>\n    </div>\n  </div>\n  <div class="sec-title"><span class="num">5-3</span><h2>必背清單</h2></div>\n  <div class="checklist">\n    <div class="pts">\n      <div class="pt"><div class="dot r"></div><div>社群媒體三特性：<em>互動性、便利性、即時性</em></div></div>\n      <div class="pt"><div class="dot r"></div><div>1990年美國國會開放網際網路 → 新興媒體誕生</div></div>\n      <div class="pt"><div class="dot r"></div><div>科技讓閱聽人從「被動接受」→「<em>主動傳播</em>」</div></div>\n      <div class="pt"><div class="dot r"></div><div>鍵盤參與困境：「<em>萬人響應、一人到場</em>」</div></div>\n      <div class="pt"><div class="dot r"></div><div>數位落差三原因：<em>物質（有無設備）、技能（會不會用）、動機（想不想用）</em></div></div>\n      <div class="pt"><div class="dot r"></div><div>教育部「邁向數位平權推動計畫」；<em>DOC（數位機會中心）</em>協助偏鄉</div></div>\n      <div class="pt"><div class="dot r"></div><div>i-Voting案 → 網路投票排擠不上網民眾 → 公共意見只是<em>冰山一角</em></div></div>\n      <div class="pt"><div class="dot r"></div><div>同溫層效應 → 資訊接收限縮 → 影響公共意見廣度</div></div>\n      <div class="pt"><div class="dot r"></div><div>Taiwan can Help（2020）→ 社群號召 → 群眾募資 → 紐時廣告</div></div>\n    </div>\n  </div>\n  <hr>\n  <div class="sec-title"><span class="num">超考</span><h2>最容易混淆的題型</h2></div>\n  <div class="card hl">\n    <table>\n      <tr><th>情境</th><th>答案</th><th>理由</th></tr>\n      <tr><td>NCC規定電視台播出自製節目比例</td><td class="g">使用權</td><td>主動規定播出內容，不是事後回應</td></tr>\n      <tr><td>當事人要求媒體更正不實報導</td><td class="c">更正權（接近權）</td><td>事後被動，針對已發出的報導</td></tr>\n      <tr><td>蕉農自拍影片要求電視完整播出</td><td class="g">使用權</td><td>主動提供內容、要求播送</td></tr>\n      <tr><td>商業媒體大篇幅報導命案，忽略其他議題</td><td class="r">議題排擠效應</td><td>追求點閱率 → 公共議題版面被排擠</td></tr>\n      <tr><td>媒體接受政府付費，在新聞中宣傳政策</td><td class="r">置入性行銷</td><td>政府付費讓媒體內容變廣告</td></tr>\n      <tr><td>假訊息 vs 假新聞</td><td>假新聞 = 媒體刻意</td><td>假訊息是任何人捏造；假新聞限定「有查證功能的媒體」刻意造假</td></tr>\n    </table>\n  </div>\n</div>\n\n',
+
+/* ════════ 數學：直角三角形定義 ════════ */
+'m-t1': '\n<div class="note-header-block" style="border-left-color:#9b8fff;">\n  <div class="nh-tag" style="color:#6a58e0;">MATH ／ 三角函數 ／ 龍騰版</div>\n  <h1 style="color:#9b8fff;">直角三角形三角比</h1>\n  <div class="nh-sub">基本定義・大小比較・角平分線・中線題型</div>\n</div>\n\n\n\n<div class="sec-title"><span class="num" style="background:#9b8fff;">定義</span><h2 style="color:#9b8fff;">基本定義</h2></div>\n<div class="card hl" style="border-color:#6a58e0;">\n  <div class="pts">\n    <div class="pt"><div class="dot" style="background:#9b8fff;"></div><div>在直角三角形中，設斜邊為 r，對邊為 y，鄰邊為 x：</div></div>\n  </div>\n  <div class="math-block">\n    <span class="math-hi">sin θ = 對邊/斜邊 = y/r</span>（正弦，上下）<br>\n    <span class="math-hi">cos θ = 鄰邊/斜邊 = x/r</span>（餘弦，水平）<br>\n    <span class="math-hi">tan θ = 對邊/鄰邊 = y/x</span>（正切，圓外）\n  </div>\n</div>\n\n<div class="sec-title"><span class="num" style="background:#9b8fff;">比較</span><h2 style="color:#9b8fff;">sin vs cos vs tan 大小比較（0°&lt;θ&lt;90°）</h2></div>\n<div class="card hl" style="border-color:#6a58e0;">\n  <div class="math-block">\n    θ &lt; 45°：<span class="math-hi">sinθ &lt; cosθ</span>（sin較小）<br>\n    θ = 45°：<span class="math-hi">sinθ = cosθ</span><br>\n    θ &gt; 45°：<span class="math-hi">sinθ &gt; cosθ</span>\n  </div>\n  <div class="pts" style="margin-top:8px;">\n    <div class="pt"><div class="dot" style="background:#9b8fff;"></div><div>0° &lt; θ ≤ 38°10\'：tan 夾在 sin 和 cos 之間</div></div>\n    <div class="pt"><div class="dot" style="background:var(--red);"></div><div>38°10\' &lt; θ &lt; 45°：<span class="math-hi2">tanθ 最大</span></div></div>\n    <div class="pt"><div class="dot" style="background:#9b8fff;"></div><div>45° &lt; θ &lt; 90°：<span class="math-hi">tanθ &gt; sinθ &gt; cosθ</span></div></div>\n  </div>\n</div>\n\n<div class="sec-title"><span class="num" style="background:#9b8fff;">題型</span><h2 style="color:#9b8fff;">角平分線 + 差角 題型技巧</h2></div>\n<div class="card hl" style="border-color:#6a58e0;">\n  <div class="math-warn">⚠️ 遇到角平分線，角 A = 2θ，不要直接用 A，要先用 tan2θ 求出邊長！</div>\n  <div class="pts" style="margin-top:8px;">\n    <div class="pt"><div class="dot" style="background:var(--cyan);"></div><div><span class="math-hi3">解題流程：</span></div></div>\n  </div>\n  <div class="math-block">\n    1. 用 tanθ 設出邊長（設小三角形的邊）<br>\n    2. 用 tan(2θ) = 2tanθ/(1-tan²θ) 算出整個大角的 tan<br>\n    3. 再從大直角三角形求 sinA、cosA\n  </div>\n  <div class="pts" style="margin-top:8px;">\n    <div class="pt"><div class="dot" style="background:var(--cyan);"></div><div><span class="math-hi3">差角技巧：</span>θ = α - β 時，用 tan(α-β) 公式拆開<br>例：tan(∠DAB) = tan(∠BAC - ∠DAC)</div></div>\n  </div>\n</div>\n\n<div class="sec-title"><span class="num" style="background:#9b8fff;">題型</span><h2 style="color:#9b8fff;">中線題型技巧</h2></div>\n<div class="card hl" style="border-color:#6a58e0;">\n  <div class="pts">\n    <div class="pt"><div class="dot" style="background:#9b8fff;"></div><div>D 為 BC 中點 → BD = DC = BC/2</div></div>\n    <div class="pt"><div class="dot" style="background:#9b8fff;"></div><div>求 AD = √(AC² + DC²)（若 ∠ACD = 90°）</div></div>\n    <div class="pt"><div class="dot" style="background:var(--red);"></div><div>θ 是哪個角要<span class="math-hi2">看清楚圖</span>，別假設 θ 就是整個 ∠A</div></div>\n  </div>\n</div>\n',
+
+/* ════════ 數學：廣義角 ════════ */
+'m-t2': '\n<div class="note-header-block" style="border-left-color:#9b8fff;">\n  <div class="nh-tag" style="color:#6a58e0;">MATH ／ 三角函數 ／ 龍騰版</div>\n  <h1 style="color:#9b8fff;">廣義角與三角函數</h1>\n  <div class="nh-sub">標準位置角・象限角・θ/n象限題型・廣義角三角函數定義・參考角</div>\n</div>\n\n\n\n<div class="sec-title"><span class="num" style="background:#9b8fff;">定義</span><h2 style="color:#9b8fff;">標準位置角</h2></div>\n<div class="card hl" style="border-color:#6a58e0;">\n  <div class="pts">\n    <div class="pt"><div class="dot" style="background:#9b8fff;"></div><div>以 x 軸正方向為始邊，逆時針 → <span class="math-hi">正角</span>，順時針 → <span class="math-hi2">負角</span></div></div>\n    <div class="pt"><div class="dot" style="background:var(--cyan);"></div><div><span class="math-hi3">同界角：</span>θ + 360°×k（k∈Z）</div></div>\n    <div class="pt"><div class="dot" style="background:var(--cyan);"></div><div>判斷兩角是否同界：α - β = 360°×k</div></div>\n  </div>\n</div>\n\n<div class="sec-title"><span class="num" style="background:#9b8fff;">象限</span><h2 style="color:#9b8fff;">象限角（廣義）</h2></div>\n<div class="card hl" style="border-color:#6a58e0;">\n  <div class="math-block">\n    第一象限：0° + 360°k &lt; θ &lt; 90° + 360°k<br>\n    第二象限：90° + 360°k &lt; θ &lt; 180° + 360°k<br>\n    第三象限：180° + 360°k &lt; θ &lt; 270° + 360°k<br>\n    第四象限：270° + 360°k &lt; θ &lt; 360° + 360°k<br><br>\n    軸上角（非象限角）：θ = 90°k\n  </div>\n</div>\n\n<div class="sec-title"><span class="num" style="background:#9b8fff;">⭐題型</span><h2 style="color:#9b8fff;">θ/n 的象限題型（超頻考點！）</h2></div>\n<div class="card hl" style="border-color:#6a58e0;">\n  <div class="math-warn">⚠️ 這是超頻考點！若 θ 為第 X 象限角，求 θ/3 為第幾象限</div>\n  <div class="math-block">\n    1. 先寫出 θ 的不等式（含 k）<br>\n    2. 三邊除以 3<br>\n    3. 代 k = 0, 1, 2 各看落哪個象限<br>\n    4. 三次循環後重複 → 最多三種答案\n  </div>\n</div>\n\n<div class="sec-title"><span class="num" style="background:#9b8fff;">定義</span><h2 style="color:#9b8fff;">廣義角三角函數定義</h2></div>\n<div class="card hl" style="border-color:#6a58e0;">\n  <div class="pts">\n    <div class="pt"><div class="dot" style="background:#9b8fff;"></div><div>單位圓上 P(x,y)，r = OP 長度：</div></div>\n  </div>\n  <div class="math-block">\n    <span class="math-hi">sin θ = y/r，cos θ = x/r，tan θ = y/x</span><br><br>\n    值域：-1 ≤ sinθ ≤ 1，-1 ≤ cosθ ≤ 1，tanθ ∈ R\n  </div>\n</div>\n\n<div class="sec-title"><span class="num" style="background:#9b8fff;">流程</span><h2 style="color:#9b8fff;">參考角求值流程</h2></div>\n<div class="card hl" style="border-color:#6a58e0;">\n  <div class="math-block">\n    1. 先把角化到 0°~360°（加減 360°）<br>\n    2. 判斷在哪個象限 → 確定正負<br>\n    3. 求<span class="math-hi3">參考角</span>（與 x 軸夾的銳角）<br>\n    4. 用參考角查特殊角值，加上正負號\n  </div>\n  <div class="math-block" style="border-left-color:var(--cyan);">\n    sin 160° = sin 20°（二象限 sin 正，參考角 20°）<br>\n    cos(-105°) = -cos 75°（三象限 cos 負，參考角 75°）<br>\n    tan 2010° → 2010 = 5×360 + 210 → tan 210° = tan 30° = 1/√3\n  </div>\n</div>\n\n<div class="sec-title"><span class="num" style="background:#9b8fff;">題型</span><h2 style="color:#9b8fff;">值域最大值題型</h2></div>\n<div class="card hl" style="border-color:#6a58e0;">\n  <div class="pts">\n    <div class="pt"><div class="dot" style="background:#9b8fff;"></div><div>cos⁶θ + cos³⁶⁰θ + cos³⁰⁰θ = 3 這類題：</div></div>\n    <div class="pt"><div class="dot" style="background:var(--red);"></div><div><span class="math-hi">cos 的最大值是 1</span>，三個都要等於 1 才能讓和為 3<br>→ cosθ = 1 → θ = 0°, 360°</div></div>\n  </div>\n</div>\n\n<hr>\n\n<div class="sec-title"><span class="num" style="background:#9b8fff;">速查</span><h2 style="color:#9b8fff;">象限正負號速查</h2></div>\n<div class="card hl" style="border-color:#6a58e0;">\n  <table>\n    <tr><th>象限</th><th>sin</th><th>cos</th><th>tan</th></tr>\n    <tr><td>一（0°~90°）</td><td class="g">+</td><td class="g">+</td><td class="g">+</td></tr>\n    <tr><td>二（90°~180°）</td><td class="g">+</td><td class="r">-</td><td class="r">-</td></tr>\n    <tr><td>三（180°~270°）</td><td class="r">-</td><td class="r">-</td><td class="g">+</td></tr>\n    <tr><td>四（270°~360°）</td><td class="r">-</td><td class="g">+</td><td class="r">-</td></tr>\n  </table>\n  <div style="padding:8px 0 0;font-size:12.5px;color:var(--muted);">記法：<em>全、正弦、正切、餘弦</em> → 一二三四象限正的那個</div>\n</div>\n',
+
+/* ════════ 數學：三角比性質（公式庫）════════ */
+'m-t3': '\n<div class="note-header-block" style="border-left-color:#9b8fff;">\n  <div class="nh-tag" style="color:#6a58e0;">MATH ／ 三角函數 ／ 龍騰版</div>\n  <h1 style="color:#9b8fff;">三角比性質・公式庫</h1>\n  <div class="nh-sub">基本關係・恆等式・和差角・倍角・半角・x/y軸轉化・正弦/餘弦定理</div>\n</div>\n\n\n\n<div class="sec-title"><span class="num" style="background:#9b8fff;">基本</span><h2 style="color:#9b8fff;">基本關係</h2></div>\n<div class="card hl" style="border-color:#6a58e0;">\n  <div class="fml-group">\n    <div class="fml-label">平方關係</div>\n    <div class="math-block"><span class="math-hi">sin²θ + cos²θ = 1</span></div>\n  </div>\n  <div class="fml-group">\n    <div class="fml-label">商數關係</div>\n    <div class="math-block">\n      <span class="math-hi">tan θ = sin θ / cos θ</span><br>\n      <span class="math-hi">cos²θ = 1 / (1 + tan²θ)</span>\n    </div>\n  </div>\n  <div class="fml-group">\n    <div class="fml-label">互餘</div>\n    <div class="math-block">\n      <span class="math-hi">sin(90°-θ) = cos θ</span><br>\n      <span class="math-hi">cos(90°-θ) = sin θ</span>\n    </div>\n  </div>\n</div>\n\n<div class="sec-title"><span class="num" style="background:#9b8fff;">技巧</span><h2 style="color:#9b8fff;">恆等式技巧</h2></div>\n<div class="card hl" style="border-color:#6a58e0;">\n  <div class="fml-group">\n    <div class="fml-label">展開平方</div>\n    <div class="math-block">\n      <span class="math-hi">(sinθ+cosθ)²</span> = 1 + 2sinθcosθ<br>\n      <span class="math-hi">(sinθ-cosθ)²</span> = 1 - 2sinθcosθ\n    </div>\n  </div>\n  <div class="fml-group">\n    <div class="fml-label">tan轉化技巧</div>\n    <div class="math-block">\n      A cos²θ + B cosθ sinθ + C sin²θ<br>\n      = <span class="math-hi3">(A + B tanθ + C tan²θ) / (1 + tan²θ)</span><br><br>\n      <span class="math-hi4">用途：把混合式全部換成 tanθ 再解方程</span>\n    </div>\n  </div>\n  <div class="fml-group">\n    <div class="fml-label">tanθ + 1/tanθ</div>\n    <div class="math-block">tanθ + 1/tanθ = <span class="math-hi">1 / (sinθ cosθ)</span></div>\n  </div>\n</div>\n\n<div class="sec-title"><span class="num" style="background:#9b8fff;">公式</span><h2 style="color:#9b8fff;">和差角公式</h2></div>\n<div class="card hl" style="border-color:#6a58e0;">\n  <div class="fml-group">\n    <div class="fml-label">sin</div>\n    <div class="math-block">\n      <span class="math-hi3">sin(A+B)</span> = sinA cosB + cosA sinB<br>\n      <span class="math-hi3">sin(A-B)</span> = sinA cosB - cosA sinB\n    </div>\n  </div>\n  <div class="fml-group">\n    <div class="fml-label">cos</div>\n    <div class="math-block">\n      <span class="math-hi3">cos(A+B)</span> = cosA cosB - sinA sinB<br>\n      <span class="math-hi3">cos(A-B)</span> = cosA cosB + sinA sinB\n    </div>\n  </div>\n  <div class="fml-group">\n    <div class="fml-label">tan</div>\n    <div class="math-block">\n      <span class="math-hi3">tan(A±B)</span> = (tanA ± tanB) / (1 ∓ tanA·tanB)\n    </div>\n  </div>\n</div>\n\n<div class="sec-title"><span class="num" style="background:#9b8fff;">公式</span><h2 style="color:#9b8fff;">倍角公式</h2></div>\n<div class="card hl" style="border-color:#6a58e0;">\n  <div class="math-block">\n    <span class="math-hi2">sin(2θ)</span> = 2 sinθ cosθ<br><br>\n    <span class="math-hi2">cos(2θ)</span> = cos²θ - sin²θ<br>\n    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 2cos²θ - 1<br>\n    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= 1 - 2sin²θ<br><br>\n    <span class="math-hi2">tan(2θ)</span> = 2tanθ / (1 - tan²θ)\n  </div>\n</div>\n\n<div class="sec-title"><span class="num" style="background:#9b8fff;">公式</span><h2 style="color:#9b8fff;">半角公式（進階）</h2></div>\n<div class="card hl" style="border-color:#6a58e0;">\n  <div class="math-block">\n    <span class="math-hi4">sin(θ/2)</span> = ±√((1-cosθ)/2)<br>\n    <span class="math-hi4">cos(θ/2)</span> = ±√((1+cosθ)/2)<br>\n    <span class="math-hi4">tan(θ/2)</span> = sinθ/(1+cosθ) = (1-cosθ)/sinθ\n  </div>\n</div>\n\n<div class="sec-title"><span class="num" style="background:#9b8fff;">公式</span><h2 style="color:#9b8fff;">x軸/y軸轉化公式</h2></div>\n<div class="card hl" style="border-color:#6a58e0;">\n  <div class="fml-group">\n    <div class="fml-label">x軸轉化（180°, 360°）→ 函數名稱不變</div>\n    <div class="math-block">\n      sin(180°-θ) = <span class="math-hi">sinθ</span> &nbsp;&nbsp; sin(180°+θ) = <span class="math-hi2">-sinθ</span><br>\n      cos(180°-θ) = <span class="math-hi2">-cosθ</span> &nbsp; cos(180°+θ) = <span class="math-hi2">-cosθ</span><br>\n      sin(360°-θ) = <span class="math-hi2">-sinθ</span> &nbsp; sin(360°+θ) = <span class="math-hi">sinθ</span><br>\n      cos(360°-θ) = <span class="math-hi">cosθ</span> &nbsp;&nbsp; cos(360°+θ) = <span class="math-hi">cosθ</span>\n    </div>\n  </div>\n  <div class="fml-group">\n    <div class="fml-label">y軸轉化（90°, 270°）→ 正餘互換</div>\n    <div class="math-block">\n      sin(90°-θ) = <span class="math-hi3">cosθ</span> &nbsp;&nbsp; sin(90°+θ) = <span class="math-hi3">cosθ</span><br>\n      cos(90°-θ) = <span class="math-hi3">sinθ</span> &nbsp;&nbsp; cos(90°+θ) = <span class="math-hi2">-sinθ</span><br>\n      sin(270°-θ) = <span class="math-hi2">-cosθ</span> &nbsp; sin(270°+θ) = <span class="math-hi2">-cosθ</span><br>\n      cos(270°-θ) = <span class="math-hi2">-sinθ</span> &nbsp; cos(270°+θ) = <span class="math-hi3">sinθ</span>\n    </div>\n  </div>\n  <div class="fml-group">\n    <div class="fml-label">負角公式</div>\n    <div class="math-block">\n      sin(-θ) = <span class="math-hi2">-sinθ</span>（傳遞負號）<br>\n      cos(-θ) = <span class="math-hi">cosθ</span>（吸收負號）<br>\n      tan(-θ) = <span class="math-hi2">-tanθ</span>（傳遞負號）\n    </div>\n  </div>\n</div>\n\n<div class="sec-title"><span class="num" style="background:#9b8fff;">定理</span><h2 style="color:#9b8fff;">正弦定理</h2></div>\n<div class="card hl" style="border-color:#6a58e0;">\n  <div class="math-block">a/sinA = b/sinB = c/sinC = <span class="math-hi">2R</span>（R 為外接圓半徑）</div>\n  <div class="pts" style="margin-top:8px;">\n    <div class="pt"><div class="dot" style="background:var(--cyan);"></div><div>a : b : c = sinA : sinB : sinC</div></div>\n    <div class="pt"><div class="dot" style="background:#9b8fff;"></div><div>使用時機：已知一組對邊角 → 求另一組；和外接圓半徑有關</div></div>\n  </div>\n</div>\n\n<div class="sec-title"><span class="num" style="background:#9b8fff;">定理</span><h2 style="color:#9b8fff;">餘弦定理</h2></div>\n<div class="card hl" style="border-color:#6a58e0;">\n  <div class="math-block">\n    a² = b² + c² - 2bc cosA<br>\n    b² = c² + a² - 2ca cosB<br>\n    c² = a² + b² - 2ab cosC\n  </div>\n  <div class="math-block" style="border-left-color:var(--cyan);">\n    反過來求角：<span class="math-hi3">cosA = (b²+c²-a²) / 2bc</span>\n  </div>\n  <div class="pts" style="margin-top:8px;">\n    <div class="pt"><div class="dot" style="background:#9b8fff;"></div><div>使用時機：已知二邊夾一角 → 求第三邊；已知三邊 → 求角度</div></div>\n  </div>\n</div>\n\n<div class="sec-title"><span class="num" style="background:#9b8fff;">公式</span><h2 style="color:#9b8fff;">三角形面積</h2></div>\n<div class="card hl" style="border-color:#6a58e0;">\n  <div class="math-block"><span class="math-hi">S = (1/2)ab sinC = (1/2)bc sinA = (1/2)ca sinB</span></div>\n</div>\n\n<hr>\n\n<div class="sec-title"><span class="num" style="background:#9b8fff;">速查</span><h2 style="color:#9b8fff;">特殊角速查表</h2></div>\n<div class="card hl" style="border-color:#6a58e0;">\n  <table>\n    <tr><th>角</th><th>sin</th><th>cos</th><th>tan</th></tr>\n    <tr><td class="g">0°</td><td>0</td><td>1</td><td>0</td></tr>\n    <tr><td class="g">30°</td><td>1/2</td><td>√3/2</td><td>1/√3</td></tr>\n    <tr><td class="g">45°</td><td>√2/2</td><td>√2/2</td><td>1</td></tr>\n    <tr><td class="g">60°</td><td>√3/2</td><td>1/2</td><td>√3</td></tr>\n    <tr><td class="g">90°</td><td>1</td><td>0</td><td>—</td></tr>\n    <tr><td>120°</td><td>√3/2</td><td>-1/2</td><td>-√3</td></tr>\n    <tr><td>135°</td><td>√2/2</td><td>-√2/2</td><td>-1</td></tr>\n    <tr><td>150°</td><td>1/2</td><td>-√3/2</td><td>-1/√3</td></tr>\n    <tr><td>180°</td><td>0</td><td>-1</td><td>0</td></tr>\n    <tr><td>270°</td><td>-1</td><td>0</td><td>—</td></tr>\n    <tr><td>360°</td><td>0</td><td>1</td><td>0</td></tr>\n    <tr><td class="r">15°</td><td class="r">(√6-√2)/4</td><td class="r">(√6+√2)/4</td><td class="r">2-√3</td></tr>\n    <tr><td class="r">75°</td><td class="r">(√6+√2)/4</td><td class="r">(√6-√2)/4</td><td class="r">2+√3</td></tr>\n  </table>\n</div>\n',
+
+/* ════════ 地科 5-2 波浪 ════════ */
+'es-5-2': '\n<div class="note-header-block">\n  <div class="nh-tag">EARTH SCIENCE ／ 段考範圍</div>\n  <h1>CH.5-2\u3000波浪</h1>\n  <div class="nh-sub">5-2.1 波浪現象與成因・5-2.2 風浪與湧浪・5-2.3 近岸變化・海嘯</div>\n</div>\n\n<div class="sec-title"><span class="num">5-2.1</span><h2>波浪的現象和成因</h2></div>\n<div class="card hl">\n  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">\n    <div style="background:#0f0f18;border:1px solid var(--border);border-radius:6px;padding:10px 12px;">\n      <div style="font-family:\'Share Tech Mono\',monospace;font-size:9px;color:var(--gold2);margin-bottom:3px;">波峰</div>\n      <div style="font-size:13px;">波形最高點</div>\n    </div>\n    <div style="background:#0f0f18;border:1px solid var(--border);border-radius:6px;padding:10px 12px;">\n      <div style="font-family:\'Share Tech Mono\',monospace;font-size:9px;color:var(--gold2);margin-bottom:3px;">波谷</div>\n      <div style="font-size:13px;">波形最低點</div>\n    </div>\n    <div style="background:#0f0f18;border:1px solid var(--border);border-radius:6px;padding:10px 12px;">\n      <div style="font-family:\'Share Tech Mono\',monospace;font-size:9px;color:var(--gold2);margin-bottom:3px;">波長</div>\n      <div style="font-size:13px;">相鄰兩波峰（或波谷）的距離</div>\n    </div>\n    <div style="background:#0f0f18;border:1px solid var(--border);border-radius:6px;padding:10px 12px;">\n      <div style="font-family:\'Share Tech Mono\',monospace;font-size:9px;color:var(--gold2);margin-bottom:3px;">波高</div>\n      <div style="font-size:13px;">波峰與波谷的高度差</div>\n    </div>\n    <div style="background:#0f0f18;border:1px solid var(--border);border-radius:6px;padding:10px 12px;">\n      <div style="font-family:\'Share Tech Mono\',monospace;font-size:9px;color:var(--gold2);margin-bottom:3px;">週期</div>\n      <div style="font-size:13px;">同一點上下振盪一次的時間</div>\n    </div>\n    <div style="background:#0f0f18;border:1px solid var(--border);border-radius:6px;padding:10px 12px;">\n      <div style="font-family:\'Share Tech Mono\',monospace;font-size:9px;color:var(--gold2);margin-bottom:3px;">波速</div>\n      <div style="font-size:13px;"><em>波長 ÷ 週期</em></div>\n    </div>\n  </div>\n  <div class="tip">⚠️ 水分子在<em>原地作圓形振盪</em>，不隨波前進；振盪最大深度 = <em>波長的一半</em></div>\n</div>\n<div class="card">\n  <div class="pts">\n    <div class="pt"><div class="dot"></div><div>最常見是<em>風浪</em>，週期通常在 <em>30 秒以內</em></div></div>\n    <div class="pt"><div class="dot c"></div><div>海底火山、地震產生的波浪週期<b>較久</b>、波長<b>較長</b>（→ 海嘯）</div></div>\n  </div>\n</div>\n\n<div class="sec-title"><span class="num">5-2.2</span><h2>風浪與湧浪</h2></div>\n<div class="card hl">\n  <table>\n    <tr><th></th><th>風浪</th><th>湧浪</th></tr>\n    <tr><td class="g">定義</td><td>風域內產生的波浪</td><td>離開風域後繼續傳播的波浪</td></tr>\n    <tr><td class="g">波長/週期</td><td>不一，大小都有</td><td>波長<em>較長</em>、週期<em>較長</em></td></tr>\n    <tr><td class="g">衰減</td><td>快（短波先衰減）</td><td>慢，可傳很遠</td></tr>\n  </table>\n  <div class="tip">⚠️ 近海出現<em>週期 &gt; 8 秒</em>的波浪 → 代表遠方（外海）可能有<em>颱風</em></div>\n</div>\n<div class="card">\n  <div class="pts">\n    <div class="pt"><div class="dot"></div><div>風力越強、吹拂面積越廣、時間越久 → 波高越高、波長越長</div></div>\n    <div class="pt"><div class="dot c"></div><div>風域（fetch）= 海面上陣風吹拂起浪的區域</div></div>\n  </div>\n</div>\n\n<div class="sec-title"><span class="num">5-2.3</span><h2>波浪近岸的變化</h2></div>\n<div class="card hl">\n  <div class="pts">\n    <div class="pt"><div class="dot"></div><div>靠近岸邊：週期<em>不變</em>，但波長<em>縮短</em>、波速<em>減慢</em>、波高<em>增大</em></div></div>\n    <div class="pt"><div class="dot"></div><div>原因：水深變淺 → 振盪觸及海底 → 摩擦 → 下層慢、上層堆疊 → 最後<em>崩潰成碎浪</em></div></div>\n  </div>\n</div>\n<div class="card">\n  <div style="font-size:13px;color:var(--cyan);font-weight:700;margin-bottom:8px;border-left:3px solid var(--cyan);padding-left:8px;">海岬 vs 海灣</div>\n  <table>\n    <tr><th></th><th>海岬（突出）</th><th>海灣（凹入）</th></tr>\n    <tr><td class="g">波浪行為</td><td>能量<em>匯聚</em>，波高增大</td><td>能量<em>分散</em>，波高降低</td></tr>\n    <tr><td class="g">地形作用</td><td class="r">侵蝕 &gt; 堆積</td><td class="c">堆積 &gt; 侵蝕（形成沙灘）</td></tr>\n    <tr><td class="g">長期結果</td><td colspan="2">海岸線趨於<em>平直</em></td></tr>\n  </table>\n</div>\n<div class="card">\n  <div style="font-size:13px;color:var(--cyan);font-weight:700;margin-bottom:8px;border-left:3px solid var(--cyan);padding-left:8px;">沿岸流與突堤效應</div>\n  <div class="pts">\n    <div class="pt"><div class="dot"></div><div>波浪斜交海岸 → 平行分量形成<em>沿岸流</em> → 搬運泥沙、改變地形</div></div>\n    <div class="pt"><div class="dot r"></div><div>沿岸流遇防波堤 → 一側<em>堆積</em>擴大、另一側<em>侵蝕</em>縮小 → <em>突堤效應</em></div></div>\n    <div class="pt"><div class="dot c"></div><div>實例：<b>高美濕地</b>是台中港北側截斷南向沿岸流後堆積泥沙形成的</div></div>\n  </div>\n</div>\n\n<div class="sec-title"><span class="num">海嘯</span><h2>海嘯</h2></div>\n<div class="card hl">\n  <div class="pts">\n    <div class="pt"><div class="dot r"></div><div>成因：<em>海底斷層錯動（地震）</em> → 海床垂直位移 → 整層海水上升 → 形成海嘯<br><span style="font-size:12px;color:var(--muted);">另：能量夠大的海底火山、海底山崩也可能造成</span></div></div>\n    <div class="pt"><div class="dot"></div><div>深海傳遞：波速可達 <em>720 km/h</em>，但波高不到 1 公尺（難察覺）</div></div>\n    <div class="pt"><div class="dot"></div><div>靠近岸邊：水深變淺 → 波速減慢 → 波高<em>急劇增大</em>成巨浪</div></div>\n    <div class="pt"><div class="dot c"></div><div>一般風浪振盪<b>不觸及海底</b>；海嘯振盪範圍從<b>海面達到海床</b>（波長達數百公里）</div></div>\n  </div>\n  <div class="tip">⚠️ 台灣若遭海嘯侵襲，<em>東部（太平洋側）</em>受災較嚴重，因為環太平洋地震帶在東側</div>\n</div>\n\n<hr>\n\n<div class="sec-title"><span class="num">考點</span><h2>段考必背清單</h2></div>\n<div class="card hl">\n  <div class="pts">\n    <div class="pt"><div class="dot r"></div><div>波速 = <em>波長 ÷ 週期</em></div></div>\n    <div class="pt"><div class="dot r"></div><div>水分子圓形振盪，最大深度 = <em>波長的一半</em></div></div>\n    <div class="pt"><div class="dot r"></div><div>近岸：週期不變，波長短、波速慢、波高大 → 碎浪</div></div>\n    <div class="pt"><div class="dot r"></div><div>海岬侵蝕、海灣堆積 → 長期海岸線<em>趨於平直</em></div></div>\n    <div class="pt"><div class="dot r"></div><div>近海週期 &gt; 8 秒 → 遠方可能有<em>颱風/風暴</em></div></div>\n    <div class="pt"><div class="dot r"></div><div>海嘯主因：<em>海底地震（斷層垂直錯動）</em></div></div>\n    <div class="pt"><div class="dot r"></div><div>突堤效應：堤防迎流側堆積、背流側侵蝕</div></div>\n  </div>\n</div>\n',
+
+/* ════════ 地科 5-1 ════════ */
+'es-5-1': '\n<div class="note-header-block">\n  <div class="nh-tag">EARTH SCIENCE ／ 段考範圍</div>\n  <h1>CH.5-1\u3000海水的組成與結構</h1>\n  <div class="nh-sub">5-1.1 組成・5-1.2 鹽度・5-1.3 水溫・5-1.4 垂直分層</div>\n</div>\n\n<div class="sec-title"><span class="num">5-1.1</span><h2>海水的組成</h2></div>\n<div class="card hl">\n  <div class="pts">\n    <div class="pt"><div class="dot"></div><div>每 1000g 海水：水 <em>965g</em>、海鹽 <em>35g</em>（鹽度平均 35‰）</div></div>\n    <div class="pt"><div class="dot"></div><div>含量最多的三個離子：<em>Cl⁻ &gt; Na⁺ &gt; SO₄²⁻</em></div></div>\n    <div class="pt"><div class="dot c"></div><div><b>陰離子</b>（Cl⁻、SO₄²⁻）→ 火山噴發 ＋ 大氣溶解</div></div>\n    <div class="pt"><div class="dot c"></div><div><b>陽離子</b>（Na⁺、Mg²⁺、Ca²⁺、K⁺）→ 岩石風化</div></div>\n  </div>\n</div>\n\n<div class="sec-title"><span class="num">5-1.2</span><h2>表層海水的鹽度分布</h2></div>\n<div class="card hl">\n  <table>\n    <tr><th>位置</th><th>鹽度</th><th>原因</th></tr>\n    <tr><td class="r">紅海、地中海</td><td class="r">最高</td><td>半封閉＋蒸發強＋降水少</td></tr>\n    <tr><td class="g">副熱帶高壓帶</td><td class="g">高</td><td>蒸發量 &gt; 降水量</td></tr>\n    <tr><td>赤道</td><td>次高</td><td>降水多，稀釋鹽分</td></tr>\n    <tr><td class="c">波羅的海</td><td class="c">最低</td><td>大量河流淡水注入</td></tr>\n    <tr><td class="c">極區</td><td class="c">低</td><td>冰川融化＋蒸發量小</td></tr>\n  </table>\n  <div class="tip">⚠️ 核心邏輯：<em>蒸發↑ / 結冰 → 鹽度↑</em>\u3000|\u3000<em>降水↑ / 河流 / 融冰 → 鹽度↓</em></div>\n</div>\n\n<div class="sec-title"><span class="num">5-1.3</span><h2>表層海水的溫度分布</h2></div>\n<div class="card hl">\n  <div class="pts">\n    <div class="pt"><div class="dot"></div><div>表層水溫範圍：<em>−2 ～ 30°C</em>，由赤道往兩極遞減</div></div>\n    <div class="pt"><div class="dot"></div><div>最高溫：<em>北太平洋西側</em>＋<em>北印度洋</em>｜最低溫：<em>兩極</em></div></div>\n  </div>\n  <table style="margin-top:10px;">\n    <tr><th>緯度</th><th>東西差異</th></tr>\n    <tr><td>熱帶（低緯度）</td><td class="r">西側 &gt; 東側</td></tr>\n    <tr><td>溫帶北部（45°～60°N）</td><td class="c">東側 &gt; 西側</td></tr>\n  </table>\n  <div class="tip">⚠️ 影響因素：<em>日照差異</em>（主）＋ <em>洋流</em></div>\n</div>\n\n<div class="sec-title"><span class="num">5-1.4</span><h2>海水溫度的垂直分布</h2></div>\n<div class="card hl">\n  <div class="layers">\n    <div class="layer layer-mix">\n      <div>\n        <div class="lname">① 混合層</div>\n        <div style="font-size:11.5px;color:#9ee;margin-top:2px;">溫變最慢・風浪攪拌均勻</div>\n      </div>\n      <div class="ldetail">~200m 以內</div>\n    </div>\n    <div class="layer layer-thermo">\n      <div>\n        <div class="lname">② 斜溫層（溫躍層）</div>\n        <div style="font-size:11.5px;color:#c8a020;margin-top:2px;">溫變最快</div>\n      </div>\n      <div class="ldetail">過渡層</div>\n    </div>\n    <div class="layer layer-deep">\n      <div>\n        <div class="lname">③ 深水層</div>\n        <div style="font-size:11.5px;color:#6080ee88;margin-top:2px;">最穩定</div>\n      </div>\n      <div class="ldetail"><em>1～3°C</em></div>\n    </div>\n  </div>\n  <div class="pts" style="margin-top:12px;">\n    <div class="pt"><div class="dot"></div><div>斜溫層：<em>赤道明顯</em>、中緯度夏明冬弱、<em>極區不明顯</em></div></div>\n    <div class="pt"><div class="dot c"></div><div>混合層：<b>中緯度最厚</b>（風力強）；熱帶較薄</div></div>\n  </div>\n</div>\n\n<hr>\n\n<div class="sec-title"><span class="num">考點</span><h2>段考必背清單</h2></div>\n<div class="card hl">\n  <div class="pts">\n    <div class="pt"><div class="dot r"></div><div>離子含量：<em>Cl⁻ &gt; Na⁺ &gt; SO₄²⁻</em></div></div>\n    <div class="pt"><div class="dot r"></div><div>鹽度最高：<em>紅海/地中海</em>｜最低：<em>波羅的海</em></div></div>\n    <div class="pt"><div class="dot r"></div><div>副熱帶鹽度 &gt; 赤道（<em>蒸發 &gt; 降水</em>）</div></div>\n    <div class="pt"><div class="dot r"></div><div>熱帶水溫<em>西 &gt; 東</em>；溫帶北部<em>東 &gt; 西</em></div></div>\n    <div class="pt"><div class="dot r"></div><div>三層：混合層→斜溫層→深水層（<em>1~3°C</em>）</div></div>\n    <div class="pt"><div class="dot r"></div><div>暖化→冰川融→北大西洋鹽度↓→<em>溫鹽環流減弱</em></div></div>\n  </div>\n</div>\n',
+
+};
+
+/* ═══════════════════════════════════════════════
+   CIVICS TAB (公民章節內分頁)
+═══════════════════════════════════════════════ */
+function htTab(idx, el) {
+  const body = document.getElementById('note-body');
+  body.querySelectorAll('#ht0,#ht1').forEach((s,i) => s.classList.toggle('active', i===idx));
+  body.querySelectorAll('.cv-tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+}
+function cvTab(idx, el) {
+  // 只操作當前顯示的 note-body 內的元素
+  const body = document.getElementById('note-body');
+  body.querySelectorAll('.cv-tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+  body.querySelectorAll('.cv-sec').forEach((s,i) => s.classList.toggle('active', i===idx));
+}
+
+/* ═══════════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════════ */
+let currentSubject = null;
+
+/* ═══════════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════════ */
+function init() {
+  const list = document.getElementById('subj-list');
+  SUBJECTS.forEach(s => {
+    const total = s.units.reduce((n,u) => n + u.chapters.length, 0);
+    const card = document.createElement('div');
+    card.className = 'subj-card';
+    card.style.setProperty('--c', s.color);
+    card.innerHTML = `
+      <div class="subj-dot"></div>
+      <div class="subj-info">
+        <div class="subj-name">${s.name}</div>
+        <div class="subj-pub">${s.pub}</div>
+      </div>
+      <div class="subj-count">${total} 章節</div>
+      <svg class="chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"/>
+      </svg>`;
+    card.onclick = () => openSubject(s);
+    list.appendChild(card);
+  });
+}
+
+/* ═══════════════════════════════════════════════
+   NAVIGATION
+═══════════════════════════════════════════════ */
+function pushPage(from, to) {
+  document.getElementById(from).className = 'page state-hidden-left';
+  document.getElementById(to).className   = 'page state-active';
+  // scroll to top
+  const toEl = document.getElementById(to);
+  toEl.scrollTo?.(0, 0);
+}
+
+function goBack(to, from) {
+  document.getElementById(from).className = 'page state-hidden-right';
+  document.getElementById(to).className   = 'page state-active';
+}
+
+function openSubject(s) {
+  currentSubject = s;
+
+  // topbar
+  const topbar = document.getElementById('subj-topbar');
+  topbar.style.setProperty('--accent', s.color);
+  document.getElementById('subj-topbar-title').textContent = s.name;
+
+  // chapters
+  const scroll = document.getElementById('chapter-scroll');
+  scroll.innerHTML = '';
+  scroll.style.setProperty('--accent', s.color);
+
+  s.units.forEach(u => {
+    const sec = document.createElement('div');
+    sec.className = 'unit-section';
+
+    const hdr = document.createElement('div');
+    hdr.className = 'unit-header';
+    hdr.textContent = u.label;
+    sec.appendChild(hdr);
+
+    const chList = document.createElement('div');
+    chList.className = 'ch-list';
+
+    u.chapters.forEach(ch => {
+      const item = document.createElement('div');
+      item.className = 'ch-item';
+      item.innerHTML = `
+        <div class="ch-status ${ch.ready ? 'ready' : 'wip'}"></div>
+        <div class="ch-name">${ch.name}</div>
+        <span class="ch-badge ${ch.ready ? 'ready' : 'wip'}">${ch.ready ? 'READY' : '施工中'}</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
+          stroke="#66667a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>`;
+      item.onclick = () => openNote(s, ch);
+      chList.appendChild(item);
+    });
+
+    sec.appendChild(chList);
+    scroll.appendChild(sec);
+  });
+
+  pushPage('page-home', 'page-subject');
+}
+
+function openNote(s, ch) {
+  // topbar
+  const topbar = document.getElementById('note-topbar');
+  topbar.style.setProperty('--accent', s.color);
+  document.getElementById('note-back-label').textContent = s.name;
+  document.getElementById('note-topbar-title').textContent = ch.name;
+
+  // content
+  const body = document.getElementById('note-body');
+  body.style.setProperty('--accent', s.color);
+
+  if (NOTES[ch.id]) {
+    body.innerHTML = NOTES[ch.id];
+  } else {
+    body.innerHTML = `
+      <div class="wip-screen">
+        <div class="wt">${s.name} ／ ${ch.name}</div>
+        <div class="wn" style="color:${s.color}">建置中<span class="blink">_</span></div>
+        <div class="ws">這個章節的筆記還沒完成<br>資料進來之後會更新</div>
+      </div>`;
+  }
+
+  pushPage('page-subject', 'page-note');
+}
+
+init();
+</script>
+</body>
+</html>
