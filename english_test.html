@@ -220,7 +220,7 @@
 </style>
 </head>
 <body>
-<a class="back-to-notes" href="notes_mobile.html">← NOTE.SYS</a>
+<a class="back-to-notes" href="index.html">← NOTE.SYS</a>
 <div class="app">
   <div class="screen on" id="s-home">
     <div class="top">
@@ -1035,27 +1035,55 @@ function renderChoice(w){
   const pool=allWords().filter(x=>x.zh!==w.zh).map(x=>x.zh);
   const opts=shuffle([w.zh, ...shuffle(pool).slice(0,3)]);
   stage.innerHTML=`<div class="qword"><div class="w">${w.en}</div>
-    <button class="spk" id="spk" style="margin-top:12px">🔊</button></div><div class="opts" id="opts"></div>`;
+    <button class="spk" id="spk" style="margin-top:12px">🔊</button></div>
+    <div class="opts" id="opts"></div>
+    <button class="btn" id="nextBtn" style="margin-top:12px;display:none;">下一題 →</button>`;
   document.getElementById('spk').onclick=()=>speak(w.en); speak(w.en);
   const box=document.getElementById('opts');
-  opts.forEach(o=>{ const b=document.createElement('button'); b.className="opt"; b.textContent=o;
-    b.onclick=()=>{ const ok=o===w.zh;
+  opts.forEach(o=>{
+    const b=document.createElement('button'); b.className="opt"; b.textContent=o;
+    b.onclick=()=>{
+      const ok=o===w.zh;
       box.querySelectorAll('.opt').forEach(x=>{ x.disabled=true; if(x.textContent===w.zh)x.classList.add('correct'); });
-      if(!ok) b.classList.add('wrong'); setTimeout(()=>answer(ok), ok?450:1100); };
-    box.appendChild(b); });
+      if(!ok){ b.classList.add('wrong'); speak(w.en); }
+      if(ok){
+        setTimeout(()=>answer(ok), 450);
+      } else {
+        const nextBtn=document.getElementById('nextBtn');
+        nextBtn.style.display='block';
+        nextBtn.onclick=()=>answer(ok);
+      }
+    };
+    box.appendChild(b);
+  });
 }
 function renderSpell(w,listen){
   stage.innerHTML=`<div class="qword">${ listen
     ? `<button class="spk" id="spk" style="margin:0 auto 6px">🔊</button><div class="whint">聽發音，拼出單字</div>`
     : `<div class="w" style="font-size:26px;font-family:var(--sans);line-height:1.5">${w.zh}</div>` }</div>
     <input class="inp" id="inp" placeholder="輸入英文…" autocomplete="off" autocapitalize="off" spellcheck="false">
-    <div class="ans" id="ans">　</div><button class="btn" id="check" style="margin-top:12px">確認</button>`;
+    <div class="ans" id="ans">　</div>
+    <button class="btn" id="check" style="margin-top:12px">確認</button>
+    <button class="btn" id="nextBtn" style="margin-top:9px;display:none;">下一題 →</button>`;
   if(listen){ document.getElementById('spk').onclick=()=>speak(w.en); speak(w.en); }
   const inp=document.getElementById('inp'); inp.focus();
-  const submit=()=>{ const val=inp.value.trim().toLowerCase(); if(!val)return;
-    const ok=val===w.en.toLowerCase(); inp.disabled=true; document.getElementById('check').disabled=true;
-    inp.classList.add(ok?"ok":"err"); document.getElementById('ans').innerHTML=ok?"答對 ✓":`正解：<b>${w.en}</b>`;
-    speak(w.en); setTimeout(()=>answer(ok), ok?650:1400); };
+  const submit=()=>{
+    const val=inp.value.trim().toLowerCase(); if(!val)return;
+    const ok=val===w.en.toLowerCase();
+    inp.disabled=true;
+    document.getElementById('check').style.display='none';
+    inp.classList.add(ok?"ok":"err");
+    document.getElementById('ans').innerHTML=ok?"答對 ✓":`正解：<b>${w.en}</b>`;
+    speak(w.en);
+    if(ok){
+      setTimeout(()=>answer(ok), 650);
+    } else {
+      // 答錯：顯示下一題按鈕，讓使用者自己決定何時繼續
+      const nextBtn=document.getElementById('nextBtn');
+      nextBtn.style.display='block';
+      nextBtn.onclick=()=>answer(ok);
+    }
+  };
   document.getElementById('check').onclick=submit;
   inp.onkeydown=e=>{ if(e.key==="Enter") submit(); };
 }
