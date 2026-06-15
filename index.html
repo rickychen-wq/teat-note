@@ -509,6 +509,63 @@ td.g { color:var(--gold); font-weight:600; }
 td.c { color:var(--cyan); font-weight:600; }
 td.r { color:#ff8099; font-weight:600; }
 
+
+/* ── 出師表 (chushibiao) ── */
+.trans-wrap { overflow-x:auto; margin-bottom:12px; -webkit-overflow-scrolling:touch; }
+.trans-wrap table { display:block; overflow-x:auto; }
+.trans-wrap.attach { border-radius:0 0 6px 6px; border:1px solid var(--gold2); border-top:none; }
+.trans-wrap.attach.c { border-color:rgba(61,214,200,.35); }
+.para-header { display:flex; align-items:center; gap:12px; background:var(--bg3,#1a1a26); border-left:3px solid var(--gold); padding:10px 16px; border-radius:4px 4px 0 0; margin-top:8px; }
+.para-header.c { border-left-color:var(--cyan); }
+.para-num { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--gold2); }
+.para-title { font-size:14px; font-weight:700; color:var(--gold); }
+.para-header.c .para-num { color:rgba(61,214,200,.7); }
+.para-header.c .para-title { color:var(--cyan); }
+.orig { font-size:13.5px; color:#c8c0a0; width:42%; vertical-align:top; line-height:1.75; }
+.tran { font-size:13px; vertical-align:top; line-height:1.75; }
+.tran .key { color:var(--gold); font-weight:700; font-size:11.5px; }
+.key-sent { background:var(--bg3,#1a1a26); border-left:3px solid var(--gold); padding:10px 16px; margin-bottom:8px; border-radius:0 4px 4px 0; }
+.key-sent .ks-orig { font-size:14.5px; color:var(--gold); font-weight:700; margin-bottom:5px; line-height:1.6; }
+.key-sent .ks-tran { font-size:12.5px; color:var(--text); }
+.key-sent .ks-note { font-size:11.5px; color:var(--muted); margin-top:4px; }
+.exam-box { background:linear-gradient(135deg,rgba(240,192,64,.05),rgba(255,74,110,.04)); border:1px solid rgba(240,192,64,.35); border-radius:6px; padding:16px 18px; margin-bottom:12px; }
+.exam-box .e-title { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--red); letter-spacing:2px; margin-bottom:10px; }
+.chips { display:flex; flex-wrap:wrap; gap:7px; margin-top:12px; }
+.chip { font-size:11.5px; padding:2px 9px; border-radius:20px; background:rgba(240,192,64,.1); border:1px solid var(--gold2); color:var(--gold); }
+.chip.c { background:rgba(61,214,200,.08); border-color:var(--cyan); color:var(--cyan); }
+.chip.r { background:rgba(255,74,110,.08); border-color:var(--red); color:var(--red); }
+.card.hlc { border-color:rgba(61,214,200,.4); }
+.sec-title.c h2 { color:var(--cyan); }
+.tip.y { background:rgba(240,192,64,.06); border:1px solid rgba(240,192,64,.22); color:#f0e0a0; }
+.tip.r { background:rgba(255,74,110,.07); border:1px solid rgba(255,74,110,.28); color:#ffccd5; }
+.tip.c { background:rgba(61,214,200,.06); border:1px solid rgba(61,214,200,.25); color:#b0f0ea; }
+/* 地科 5-5 三欄對照表 */
+.compare { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; border-radius:6px; overflow:hidden; margin-top:8px; border:1px solid var(--border); }
+.col-head { padding:10px 10px; font-size:11.5px; font-weight:700; text-align:center; }
+.col-head.n  { background:rgba(100,150,255,.15); color:#8ab4ff; }
+.col-head.el { background:rgba(255,74,110,.15); color:#ff8099; }
+.col-head.la { background:rgba(61,214,200,.12); color:var(--cyan); }
+.col-cell { padding:8px 10px; font-size:12px; border-top:1px solid var(--border); text-align:center; line-height:1.5; }
+/* 地科 5-4 潮汐 */
+.terms { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:4px; }
+.term { background:#0d0d16; border:1px solid var(--border); border-radius:5px; padding:10px 12px; }
+.term .tname { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--gold2); margin-bottom:3px; }
+.term .tdef { font-size:12.5px; }
+.tide-row { display:flex; gap:8px; margin-top:8px; }
+.tide-box { flex:1; border-radius:6px; padding:12px 14px; text-align:center; }
+.tide-big   { background:rgba(255,74,110,.1); border:1px solid rgba(255,74,110,.35); }
+.tide-small { background:rgba(61,214,200,.08); border:1px solid rgba(61,214,200,.3); }
+.tide-box .tb-label { font-size:17px; font-weight:900; margin-bottom:4px; }
+.tide-big   .tb-label { color:#ff8099; }
+.tide-small .tb-label { color:var(--cyan); }
+.tide-box .tb-when { font-size:12px; color:var(--muted); }
+.tide-box .tb-moon  { font-size:12.5px; margin-top:4px; }
+/* 地科 5-3 雙欄 */
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:6px; }
+.mini-card { background:#0d0d16; border:1px solid var(--border); border-radius:5px; padding:12px 14px; }
+.mini-card .mc-title { font-size:11px; color:var(--gold2); font-family:'Share Tech Mono',monospace; letter-spacing:1px; margin-bottom:6px; }
+.mini-card .mc-body  { font-size:13px; color:var(--text); line-height:1.6; }
+
 </style>
 </head>
 <body>
@@ -577,7 +634,7 @@ const SUBJECTS = [
         { id:'c-shi', name:'誓志其二', ready:true },
       ]},
       { label:'出師表', chapters:[
-        { id:'c-szb', name:'出師表' },
+        { id:'c-szb', name:'出師表', ready:true },
       ]},
       { label:'孟子選', chapters:[
         { id:'c-mc1', name:'孟子選（一）' },
@@ -604,6 +661,9 @@ const SUBJECTS = [
         { id:'e-v82', name:'Units 8-2', ready:true },
         { id:'e-v83', name:'Units 8-3', ready:true },
       ]},
+      { label:'練習工具', chapters:[
+        { id:'e-drill', name:'🎯 單字練習 App', ready:true, ext:'english_test.html' },
+      ]},
     ]
   },
   {
@@ -626,7 +686,7 @@ const SUBJECTS = [
     units:[
       { label:'Units 5–6', chapters:[
         { id:'h-u5', name:'Unit 5', ready:true },
-        { id:'h-u6', name:'Unit 6' },
+        { id:'h-u6', name:'Unit 6', ready:true },
       ]},
     ]
   },
@@ -636,7 +696,7 @@ const SUBJECTS = [
     units:[
       { label:'Units 5–6', chapters:[
         { id:'cv-u5', name:'Unit 5', ready:true },
-        { id:'cv-u6', name:'Unit 6' },
+        { id:'cv-u6', name:'Unit 6', ready:true },
       ]},
     ]
   },
@@ -647,7 +707,9 @@ const SUBJECTS = [
       { label:'U5 變動的海洋', chapters:[
         { id:'es-5-1', name:'5-1 海水的組成與結構', ready:true },
         { id:'es-5-2', name:'5-2 波浪', ready:true },
-        { id:'es-5-3', name:'5-3 海浪與潮汐' },
+        { id:'es-5-3', name:'5-3 海流', ready:true },
+        { id:'es-5-4', name:'5-4 潮汐', ready:true },
+        { id:'es-5-5', name:'5-5 大氣與海洋的交互作用', ready:true },
       ]},
       { label:'U6 颱風', chapters:[
         { id:'es-6-1', name:'6-1 颱風（考試範圍）' },
@@ -683,6 +745,1120 @@ const SUBJECTS = [
 
 
 const NOTES = {
+
+/* ════════ 公民 Unit 6 ════════ */
+'cv-u6': `<div class="top-header">
+  <div class="tag">CIVICS ／ 第六章 ／ 段考完整版 ／ 翰林版</div>
+  <h1>公平正義與多元文化</h1>
+  <div class="sub">6-1 公平正義的追求　・　6-2 社會安全制度　・　6-3 多元文化</div>
+</div>
+
+<div class="tab-bar">
+  <div class="tab active" onclick="cv6Tab(0)">6-1 公平正義</div>
+  <div class="tab" onclick="cv6Tab(1)">6-2 社會安全</div>
+  <div class="tab" onclick="cv6Tab(2)">6-3 多元文化</div>
+  <div class="tab" onclick="switchTab(3)">⚡ 考點總覽</div>
+</div>
+
+
+<!-- ══════════════ 6-1 公平正義的追求 ══════════════ -->
+<div class="section active" id="s0">
+
+  <div class="sec-title"><span class="num">一</span><h2>無差別對待是追求公平正義的基礎</h2></div>
+  <div class="card hl">
+    <div class="two-col">
+      <div class="col-card gold">
+        <div class="col-title">形式平等（無差別對待）</div>
+        <div class="col-body">
+          意義：國家必須給予每個人<em>無差別對待</em>，保障人民都能有基本權利<br><br>
+          舉例：男廁與女廁設備數量上應相同
+        </div>
+      </div>
+      <div class="col-card cyan">
+        <div class="col-title">實質平等（合理的差別對待）</div>
+        <div class="col-body">
+          意義：若只要求一律平等，<em>反而會產生新的不公平</em>；應視實際情況給予不同對待<br><br>
+          舉例：考量女性生理差異，有人主張女廁設備數量應大於男廁
+        </div>
+      </div>
+    </div>
+    <div class="tip">⚠️ 真正的公平正義 = 先確保<em>形式平等</em>，再針對特殊情形給予<em>合理的積極性平權措施</em></div>
+  </div>
+
+  <div class="sec-title"><span class="num">二</span><h2>差別對待是追求群體權利的重要手段</h2></div>
+  <div class="card hl">
+    <div class="pts">
+      <div class="pt"><div class="dot"></div><div>對象：社會處境中較<em>不利之群體</em></div></div>
+      <div class="pt"><div class="dot"></div><div>手段：形式平等對待、公平正義的思想、正視群體之間的差異</div></div>
+      <div class="pt"><div class="dot"></div><div>目的：追求並保障群體權利，避免對社會中處境不利之群體產生不平等</div></div>
+    </div>
+    <div class="sub-title">積極性平權措施（Affirmative Action，又稱肯定性行動）</div>
+    <div class="pts">
+      <div class="pt"><div class="dot c"></div><div>原因：美國為弭補早期種族歧視與隔離政策對少數族裔造成的<em>歷史性傷害</em></div></div>
+      <div class="pt"><div class="dot c"></div><div>作法：為少數族裔提供特定保障錄取名額；在升學評估中對某些少數族群予以特殊考量</div></div>
+    </div>
+  </div>
+
+  <div class="sec-title"><span class="num">三</span><h2>羅爾斯的正義論</h2></div>
+  <div class="card hl">
+    <div class="sub-title">思想前提：無知之幕（Veil of Ignorance）</div>
+    <div class="pts">
+      <div class="pt"><div class="dot"></div><div>步驟一：想像個人被布幕覆蓋，不知道本身所具有的條件（血緣、性別、社會地位、健康狀況等）</div></div>
+      <div class="pt"><div class="dot"></div><div>步驟二：個人必須思考社會中各項制度的運作方式，待布幕揭開後社會就按照個人設定的條件分配</div></div>
+      <div class="pt"><div class="dot"></div><div>步驟三：在無知之幕中進行的社會分配，才<em>最符合公平正義</em></div></div>
+    </div>
+    <div class="sub-title">導出結論：正義二原則</div>
+    <div class="pts">
+      <div class="pt"><div class="dot r"></div><div><em>第一原則（平等自由原則）</em>：每個人都應享有平等的基本自由權利，包括人身自由、言論自由、思想自由等，並受到憲法及法律的保障</div></div>
+      <div class="pt"><div class="dot r"></div><div><em>第二原則（差異與機會均等原則）</em>包含兩項：<br>
+        ・<em>差異原則</em>：社會資源分配，使社會處境最不利的人，能得到較大利益<br>
+        ・<em>機會均等原則</em>：在公平的平等機會之下，職位與工作向所有人開放</div></div>
+    </div>
+    <div class="tip">⚠️ 適用順序：第一原則（平等自由）<em>必須優先</em>於第二原則（差異與機會均等）<br>先達到基本自由與平等後，再針對特殊情形給予合理的積極性平權措施</div>
+  </div>
+
+  <div class="sec-title"><span class="num">四</span><h2>公平正義的實踐（三種正義）</h2></div>
+  <div class="card hl">
+    <div class="three-col">
+      <div class="col-card gold">
+        <div class="col-title">① 分配正義<br>distributive justice</div>
+        <div class="col-body">
+          <em>資源如何分配才公平？</em><br><br>
+          意義：個人在社會中所處環境、條件、需求與擔負責任不盡相同，掌握資源分配權者應考量個人差異合理進行分配<br><br>
+          目的：公平分配「負擔」或「利益」<br><br>
+          舉例：政府興建社會住宅，以優惠價格租給社會處境不利者，但也規定不可轉移
+        </div>
+      </div>
+      <div class="col-card cyan">
+        <div class="col-title">② 矯正正義<br>corrective justice</div>
+        <div class="col-body">
+          <em>做錯了要怎麼補救？</em><br><br>
+          意義：當政府的錯誤政策或個人作為所產生的傷害，必須將錯誤改正、糾正不公平，並對已造成的損害進行彌補<br><br>
+          目的：匡正（讓傷害者知道錯誤）、彌補（做出公平正義回應）、預防（防止再發生）<br><br>
+          舉例：228事件道歉、頒發回復名譽證書、立法處理賠償
+        </div>
+      </div>
+      <div class="col-card red">
+        <div class="col-title">③ 程序正義<br>procedural justice</div>
+        <div class="col-body">
+          <em>過程公不公平？</em><br><br>
+          意義：指程序上的保障，做出決策之前，要透過公平合理的程序，從蒐集資訊到做出決定都必須充分考量當事人的權利和利益<br><br>
+          目的：確保決定的過程合乎法理，才能達成實質正義<br><br>
+          舉例：司法判決必須走完偵查→起訴→審理→判決
+        </div>
+      </div>
+    </div>
+    <div class="tip">⚠️ 補充：<em>轉型正義（transitional justice）</em>= 國家社會於殖民時期或非民主時期，以國家或族群力量所為之政治迫害或不義舉止，所進行的彌補行為，具矯正正義的精神</div>
+  </div>
+
+  <div class="sec-title"><span class="num">五</span><h2>為何不同社會群體會因追求公平正義產生衝突？</h2></div>
+  <div class="card hl">
+    <table>
+      <tr><th>面向</th><th>內容</th></tr>
+      <tr><td class="r">原因</td><td>不同群體間由於做法與追求的目標不盡相同，資源分配的方式也會不同，使得對「公平正義」的理解因而不同</td></tr>
+      <tr><td class="r">難題</td><td>在自由民主的社會中，眾多的團體會提出多元且數量龐大的訴求，但在資源有限的情況下，政府無法回應且滿足每一個訴求</td></tr>
+      <tr><td class="g">解決</td><td>政府可以<em>羅爾斯的正義二原則</em>為大方向，做為最後「公平正義」分配的原則</td></tr>
+    </table>
+  </div>
+
+  <div class="sec-title"><span class="num">補充</span><h2>程序正義 vs 實質正義</h2></div>
+  <div class="card hl">
+    <table>
+      <tr><th>類型</th><th>程序正義</th><th>實質正義</th></tr>
+      <tr><td class="g">意義</td><td>指決策的過程要公平合理，以確保做出的決定合理且經得起考驗，達到實質正義</td><td>指決定的內容或行為的結果合乎法理或正義，合乎與否主要以法理為主要判斷依據</td></tr>
+      <tr><td class="g">舉例</td><td>警察機關在進行調查犯罪時，必須符合法律相關程序</td><td>警察進行犯罪調查的目的，是在維護社會安寧秩序</td></tr>
+    </table>
+  </div>
+
+  <div class="sec-title"><span class="num">補充</span><h2>國際轉型正義案例</h2></div>
+  <div class="card hl">
+    <table>
+      <tr><th>國家</th><th>事件</th><th>作法</th></tr>
+      <tr><td class="r">德國</td><td>納粹時期人權侵害</td><td>政府投入資源調查、還原史實並糾正；聯邦訂定教育課綱，規定學校清楚闡述納粹迫害政策；目的：「克服過去、清理過去」</td></tr>
+      <tr><td class="c">南非</td><td>1948～1994年種族隔離政策</td><td>成立<em>真相和解委員會（TRC）</em>，進行調查與真相還原；目的：「用特赦換真相，用真相換和解」</td></tr>
+      <tr><td class="g">我國</td><td>228事件</td><td>1996年李登輝道歉；頒發回復名譽證書；1995年通過《228事件處理及補償條例》、2018年修正；目的：處理賠償事宜，重視歷史教育</td></tr>
+    </table>
+  </div>
+
+</div><!-- end 6-1 -->
+
+
+<!-- ══════════════ 6-2 社會安全制度 ══════════════ -->
+<div class="section" id="s1">
+
+  <div class="sec-title"><span class="num">一</span><h2>社會安全制度的定義與內涵</h2></div>
+  <div class="card hl">
+    <div class="pts">
+      <div class="pt"><div class="dot"></div><div>定義：指<em>國家</em>透過系統性的長期政策，將公共資源（金錢、服務等）分配給生活遭逢轉變而陷入困境或生活貧苦困難的人民</div></div>
+      <div class="pt"><div class="dot"></div><div>目的：保障人民並維持<em>最低生活水準、具人性尊嚴</em>的基本生活</div></div>
+    </div>
+    <div class="sub-title">內涵</div>
+    <div class="pts">
+      <div class="pt"><div class="dot c"></div><div>每個人的基本生活得到滿足 → 擁有均等的機會 → 追求理想的生活</div></div>
+      <div class="pt"><div class="dot c"></div><div>國家落實社會安全制度具有實踐<em>公平正義</em>的實質意義</div></div>
+    </div>
+  </div>
+
+  <div class="sec-title"><span class="num">二</span><h2>社會安全制度的演變</h2></div>
+  <div class="card hl">
+    <div class="sub-title">西方社會（國際）</div>
+    <table>
+      <tr><th>年份</th><th>國家</th><th>名稱</th><th>重點</th></tr>
+      <tr><td class="g">1601年</td><td>英國</td><td><em>濟貧法</em></td><td>世界上最早的社會救助法，解決貧困問題是政府應盡的責任</td></tr>
+      <tr><td class="g">1883年</td><td>德國</td><td><em>勞工疾病保險</em></td><td>實施以基層勞工為主的健康保險制度，開啟保障勞工權益的序幕</td></tr>
+      <tr><td class="g">1935年</td><td>美國</td><td><em>社會安全法案</em></td><td>當時經濟大恐慌使失業人口激增，政府立法解決工業化社會帶來的各種風險</td></tr>
+      <tr><td class="g">1942年</td><td>英國</td><td><em>貝佛里奇報告書</em></td><td>「從搖籃到墳墓」的社會福利制度，為英國公民提供醫療、就業、養老和其它福利保障</td></tr>
+    </table>
+    <div class="sub-title">台灣</div>
+    <table>
+      <tr><th>年份</th><th>法律/政策</th><th>說明</th></tr>
+      <tr><td class="g">1953年</td><td>陸海空軍軍人保險條例</td><td>現為軍人保險條例</td></tr>
+      <tr><td class="g">1958年</td><td>勞工保險條例、公務人員保險條例</td><td>現為公教人員保險法</td></tr>
+      <tr><td>1973年</td><td>兒童福利法</td><td>現為兒童及少年福利與權益保障法</td></tr>
+      <tr><td>1980年</td><td>老人福利法、殘障福利法</td><td>現為身心障礙者權益保障法</td></tr>
+      <tr><td class="r">1995年</td><td><em>全民健康保險法</em> ⭐</td><td>全民強制納保的社會保險</td></tr>
+      <tr><td>2007年</td><td>國民年金法</td><td></td></tr>
+      <tr><td>2012年</td><td>建國一百年社會福利政策綱領</td><td>6大方向：社會救助與津貼、社會保險、福利服務、健康與醫療照護、就業安全、居住正義與社區營造</td></tr>
+      <tr><td class="r">2015年</td><td><em>長期照顧服務法</em>（2017年實施）⭐</td><td>因應少子化與高齡化危機</td></tr>
+    </table>
+  </div>
+
+  <div class="sec-title"><span class="num">三</span><h2>社會安全制度在現代社會的重要性</h2></div>
+  <div class="card hl">
+    <div class="sub-title">（一）對處於不利處境的勞工</div>
+    <table>
+      <tr><th>問題</th><th>說明</th></tr>
+      <tr><td class="r">薪資與勞動條件不利</td><td>勞工不具生產工具，與資本家討價還價的能力被削弱，僅能維持基本生活</td></tr>
+      <tr><td class="r">失業與健康傷害</td><td>勞工有可能被解僱失業，也可能因勞動環境不佳身體健康遭受傷害。社會安全制度尤顯重要</td></tr>
+    </table>
+    <div class="sub-title">（二）風險社會帶來的不確定性</div>
+    <table>
+      <tr><th>風險類型</th><th>說明</th></tr>
+      <tr><td class="g">日常事故風險</td><td>風險來自於交通意外、疾病、死亡與職業傷害等一般日常事故</td></tr>
+      <tr><td class="g">經濟環境風險</td><td>風險來自於出生的家庭環境與適應社會生活的能力等。隨著經濟發展與環境變遷，風險日漸提升</td></tr>
+    </table>
+    <div class="sub-title">（三）家庭支持功能的下滑</div>
+    <table>
+      <tr><th></th><th>說明</th></tr>
+      <tr><td class="g">傳統社會</td><td>傳統大家庭通常有較多的家庭成員，以彼此互助的形式，扮演提供經濟援助或協助支持的角色</td></tr>
+      <tr><td class="c">現代社會</td><td>由於少子化與工作型態等結構性因素的改變，家庭形式以小家庭居多，當家庭遭遇變故時，常面臨家庭支持功能不彰的困境</td></tr>
+    </table>
+  </div>
+
+  <div class="sec-title"><span class="num">四</span><h2>三種社會安全制度類型</h2></div>
+  <div class="card hl">
+    <div class="three-col">
+      <div class="col-card gold">
+        <div class="col-title">社會保險<br>分攤風險</div>
+        <div class="col-body">
+          意義：國家透過立法<em>強制</em>人民參加保險，遭遇疾病、傷殘、失業、生育或死亡等事故，即能獲得所給予的金錢、實物或服務<br><br>
+          核心精神：<em>風險分攤</em>與「社會互助」；政府將符合資格者「強制納保」，擴大分攤母數以降低每人平均負擔<br><br>
+          財源：政府、雇主與納保人<br><br>
+          例：全民健保、勞工保險、軍公教人員保險、國民年金
+        </div>
+      </div>
+      <div class="col-card cyan">
+        <div class="col-title">社會福利服務<br>全面提升福祉</div>
+        <div class="col-body">
+          意義：指國家照顧人民之經濟、社會、教育與健康等需求的經濟補助或服務<br><br>
+          核心精神：保障人民的基本生活外，同時也<em>全面提升</em>人民的生活福祉<br><br>
+          特性：針對不同群體的需求給予部分社會成員福利服務<br><br>
+          財源：政府編列預算（稅收為主）<br><br>
+          例：公共托育、社會住宅、育兒津貼、設置身心障礙者日間照顧中心、提供老農津貼
+        </div>
+      </div>
+      <div class="col-card red">
+        <div class="col-title">社會救助<br>確保基本生存</div>
+        <div class="col-body">
+          意義：指政府照顧低收入戶、救助遭受急難或災害者，透過生活扶助、醫療補助、急難救助或災害救助等方式，維持基本的生活水準<br><br>
+          核心精神：因社會保險不足而面臨經濟困境者，<em>確保基本生存保障</em><br><br>
+          財源：政府編列預算（稅收為主）<br><br>
+          服務方式：透過《社會救助法》以金錢援助、以工代賑等<br><br>
+          例：低收入戶生活扶助、急難救助金、就學生活補助
+        </div>
+      </div>
+    </div>
+    <div class="tip">⚠️ 政府應建構以<em>社會保險</em>為主，社會福利服務為輔，<em>社會救助</em>為最後一道防線的社會安全體系</div>
+  </div>
+
+  <div class="sec-title"><span class="num">五</span><h2>以全民健保探討社會安全制度的難題</h2></div>
+  <div class="card hl">
+    <div class="pts">
+      <div class="pt"><div class="dot"></div><div>1994年實施全民健保，屬於全民強制納保的<em>社會保險</em></div></div>
+      <div class="pt"><div class="dot"></div><div>財源：主要來自民眾、雇主與政府共同繳納的保費；補充：公益彩券與菸捐等</div></div>
+    </div>
+    <table style="margin-top:10px;">
+      <tr><th>難題面向</th><th>問題</th><th>解決方式</th></tr>
+      <tr><td class="g">（一）公平性</td><td>偏鄉與離島的醫療人力資源較少，居民常須到市區或台灣本島就醫。繳納相同保費，卻沒有相同醫療資源</td><td>政府透過公費醫師制度、鼓勵西醫基層及醫院醫師到醫療資源不足地區提供服務</td></tr>
+      <tr><td class="c">（二）效率性</td><td>社會資源有限，各種社會安全給付與服務都應設有一定的資格條件，以免社會資源遭到浪費。但條件過嚴或過寬都有問題</td><td>依據健保2013年針對醫療資源浪費情形進行認知調查，持續改善健保資源濫用問題</td></tr>
+      <tr><td class="r">（三）責任性</td><td>全民健保因醫療分級未落實、醫療浪費與健保收入減少而支付增加等因素，逐漸浮現財政困難的問題</td><td>政府：調整健保費率或部分負擔費用；國民：平時留意自身健康，避免過度使用健保資源；落實分級醫療制度</td></tr>
+    </table>
+  </div>
+
+</div><!-- end 6-2 -->
+
+
+<!-- ══════════════ 6-3 多元文化 ══════════════ -->
+<div class="section" id="s2">
+
+  <div class="sec-title"><span class="num">概念</span><h2>多元文化主義（Multiculturalism）</h2></div>
+  <div class="card hl">
+    <div class="pts">
+      <div class="pt"><div class="dot"></div><div><em>文化差異</em>：不同文化的差異常來自背後不同的社會規範、價值觀，許多行為與表現沒有好壞、對錯之分</div></div>
+      <div class="pt"><div class="dot"></div><div><em>文化衝突</em>：不同文化間可能因認知差異、各執己見，而發生文化摩擦，甚至可能激化出更為嚴重的文化衝突</div></div>
+      <div class="pt"><div class="dot c"></div><div><em>多元文化主義</em>：指尊重不同社會身分、文化認同間的差異，讓不同族群的聲音、看法、價值觀皆受到同等的對待；提倡人們應該試著理解不同文化的內涵，不同的文化群體也應該相互溝通、共存共榮</div></div>
+    </div>
+  </div>
+
+  <div class="sec-title"><span class="num">一</span><h2>多元文化的衝突及原因</h2></div>
+  <div class="card hl">
+    <div class="sub-title">（一）我族中心主義</div>
+    <table>
+      <tr><th>面向</th><th>內容</th></tr>
+      <tr><td class="g">意義</td><td>1.指以自己的文化標準去衡量其他族群的文化，並認為自身文化最優秀，進而貶低其他族群<br>2.人類傾向認同自己的世界觀及習慣的生活方式，其他都是「怪異的」、「不可取的」，常有貶抑甚至排斥其他文化的情形</td></tr>
+      <tr><td class="g">舉例</td><td>1.古希臘人將使用不同語言的民族，稱為野蠻人<br>2.中國將周遭少數民族、藩屬國稱為蠻夷之邦<br>3.古人所云的「非我族類，其心必異」即是典型的代表</td></tr>
+      <tr><td class="r">造成問題</td><td>現代的多元文化的社會中，我族中心主義恐怕成為多元文化和諧共存的絆腳石</td></tr>
+      <tr><td class="c">解決方式</td><td>當個人面對不同文化時，不要先從自己的文化立場去判斷其他文化的表現，而是要理解對方為何要這樣做，才能共創認識、接納欣賞異己的能力</td></tr>
+    </table>
+
+    <div class="sub-title">（二）文化位階與壓迫</div>
+    <table>
+      <tr><th>面向</th><th>內容</th></tr>
+      <tr><td class="g">意義</td><td>指社會將不同的文化群體之間，進行過度簡化及二分的分類與排序，給予優／劣、進步／落後、優雅／粗俗等評價</td></tr>
+      <tr><td class="g">舉例</td><td>1948年政府推行「說國語運動」政策，禁止民眾於特定場所（如：學校）使用閩南語、客語等各族群之方言，導致語言層面上的文化位階，形成摩擦或衝突，更造成各族群語言產生傳承與使用的困境</td></tr>
+      <tr><td class="r">造成問題</td><td>文化位階隱含著對特定群體的偏見與歧視，若放任其發展，占優勢的文化恐將成為該社會的<em>文化霸權</em>（一個文化相對於其他文化，具有在社會或其他體制上的優勢與主宰地位）</td></tr>
+      <tr><td class="c">解決方式</td><td>在政策與法律施行時都會考慮其影響，避免文化歧視的產生</td></tr>
+    </table>
+    <div class="eg"><span class="eg-label">補充</span>種族歧視 = 認為自己的族群文化最優秀，進而去貶抑或排斥其他族群及文化，並採取實際行動，以不公平的方式、規定對待其他種族成員（例：美國1960年代前種族隔離政策）<br><br>種族清洗 = 相較於種族主義、種族歧視的極端展現，泛指基於「族群同質化」目的，以各種非人道手段，將某一族群團體從某一領土上驅離、甚至「清除」、「滅絕」（例：緬甸若開邦丁村羅興亞村民遭屠殺）</div>
+  </div>
+
+  <div class="sec-title"><span class="num">二</span><h2>我國透過政策保障多元文化</h2></div>
+  <div class="card hl">
+    <div class="sub-title">（一）原住民族狩獵權的討論</div>
+    <div class="pts">
+      <div class="pt"><div class="dot"></div><div>2013年布農族獵人Talum Suqluman（王光祿）被警方以持有非自製獵槍及獵殺保育類動物逮捕，臺東地檢署依違反《槍砲彈藥刀械管制條例》及《野生動物保育法》起訴，最終被判處3年6個月徒刑定讞</div></div>
+      <div class="pt"><div class="dot c"></div><div><em>釋字第803號</em>：法規要求原住民族於非定期狩獵須提前申請，且申報打獵數量的程序欠缺彈性；且自製獵槍規範不足，無法使原住民族安全從事合法狩獵活動，應修正法規以保障原住民族從事狩獵之文化權利</div></div>
+    </div>
+    <div class="sub-title">（二）我國政策對原住民族狩獵的管理與保障</div>
+    <div class="pts">
+      <div class="pt"><div class="dot"></div><div>2017年起，農委會林務局透過生態專業團隊與部落合作，進行原住民狩獵自主管理輔導計畫</div></div>
+    </div>
+    <div class="sub-title">法律保障</div>
+    <div class="pts">
+      <div class="pt"><div class="dot c"></div><div>《憲法增修條文》第10條第11項：國家肯定多元文化，並積極維護發展原住民族語言及文化</div></div>
+      <div class="pt"><div class="dot c"></div><div>《原住民族基本法》第10條：政府應保存與維護原住民族文化，並輔導文化產業及培育專業人才</div></div>
+      <div class="pt"><div class="dot c"></div><div>《原住民族基本法》第19條：原住民得在原住民族地區，非營利獵捕野生動物、採集野生植物、菌類、礦物、土石及利用水資源</div></div>
+    </div>
+  </div>
+
+</div><!-- end 6-3 -->
+
+
+<!-- ══════════════ 考點總覽 ══════════════ -->
+<div class="section" id="s3">
+
+  <div class="sec-title"><span class="num">6-1</span><h2>必背清單</h2></div>
+  <div class="checklist-card">
+    <div class="pts">
+      <div class="pt"><div class="dot r"></div><div><em>形式平等</em>（無差別對待）vs <em>實質平等</em>（合理的差別對待）→ 廁所題最常考</div></div>
+      <div class="pt"><div class="dot r"></div><div><em>積極性平權措施（Affirmative Action）</em>= 為弭補歷史性傷害給予弱勢群體保障名額</div></div>
+      <div class="pt"><div class="dot r"></div><div><em>無知之幕</em>= 羅爾斯的思想實驗，不知道自己是誰的情況下訂出的規則最公平</div></div>
+      <div class="pt"><div class="dot r"></div><div>正義二原則：第一（<em>平等自由原則</em>）必須優先於第二（差異與機會均等原則）</div></div>
+      <div class="pt"><div class="dot r"></div><div>差異原則 = 對<em>最弱勢的人</em>最有利；機會均等原則 = 職位向<em>所有人</em>開放</div></div>
+      <div class="pt"><div class="dot r"></div><div>三種正義：<em>分配（資源怎麼分）、矯正（錯誤怎麼補救）、程序（過程公不公平）</em></div></div>
+      <div class="pt"><div class="dot r"></div><div><em>轉型正義</em> = 非民主時期的政治迫害進行彌補行為，具矯正正義精神</div></div>
+      <div class="pt"><div class="dot r"></div><div>國際轉型正義：德國（納粹）、南非（TRC「用特赦換真相」）、台灣（228）</div></div>
+      <div class="pt"><div class="dot r"></div><div>群體間衝突解決 → 以<em>羅爾斯正義二原則</em>為大方向</div></div>
+    </div>
+  </div>
+
+  <div class="sec-title"><span class="num">6-2</span><h2>必背清單</h2></div>
+  <div class="checklist-card">
+    <div class="pts">
+      <div class="pt"><div class="dot r"></div><div>社會安全制度目的：保障人民維持<em>最低生活水準、具人性尊嚴</em>的基本生活</div></div>
+      <div class="pt"><div class="dot r"></div><div>國際年份：1601英（濟貧法）→ 1883德（勞工疾病保險）→ 1935美（社會安全法案）→ 1942英（貝佛里奇「從搖籃到墳墓」）</div></div>
+      <div class="pt"><div class="dot r"></div><div>台灣重要年份：1953/1958早期保險 → 1973/1980兒老殘 → <em>1995全民健保</em> → 2007國民年金 → <em>2015長照服務法</em></div></div>
+      <div class="pt"><div class="dot r"></div><div>三種制度：<em>社會保險（強制納保、分攤風險）、社會福利服務（全面提升福祉）、社會救助（最後一道防線）</em></div></div>
+      <div class="pt"><div class="dot r"></div><div>社會保險財源：政府＋雇主＋納保人；社會福利/救助財源：政府編列預算（稅收）</div></div>
+      <div class="pt"><div class="dot r"></div><div>全民健保三難題：<em>公平性（偏鄉資源不均）、效率性（資源浪費/條件設定）、責任性（財政困難）</em></div></div>
+      <div class="pt"><div class="dot r"></div><div>全民健保收費原則：<em>依照收入高低</em>繳納保費，但享受的醫療服務應相同</div></div>
+      <div class="pt"><div class="dot r"></div><div>政府應建構：<em>社會保險為主 → 社會福利服務為輔 → 社會救助為最後防線</em></div></div>
+    </div>
+  </div>
+
+  <div class="sec-title"><span class="num">6-3</span><h2>必背清單</h2></div>
+  <div class="checklist-card">
+    <div class="pts">
+      <div class="pt"><div class="dot r"></div><div><em>多元文化主義</em> = 尊重不同文化認同的差異，讓所有族群聲音受到同等對待</div></div>
+      <div class="pt"><div class="dot r"></div><div><em>我族中心主義</em> = 以自己文化標準衡量他人，認為自身文化最優秀 → 多元文化共存的絆腳石</div></div>
+      <div class="pt"><div class="dot r"></div><div><em>文化位階與壓迫</em> = 對不同文化進行二分排序，給予優劣評價</div></div>
+      <div class="pt"><div class="dot r"></div><div><em>文化霸權</em> = 一個文化相對於其他文化，具有在社會或其他體制上的優勢與主宰地位</div></div>
+      <div class="pt"><div class="dot r"></div><div>說國語運動（1948）= 文化位階壓迫的典型例子</div></div>
+      <div class="pt"><div class="dot r"></div><div>種族歧視 vs 種族清洗：種族清洗是以「族群同質化」為目的，以非人道手段驅離或滅絕</div></div>
+      <div class="pt"><div class="dot r"></div><div>王光祿案 → <em>釋字第803號</em> → 應修正法規保障原住民族狩獵文化權利</div></div>
+      <div class="pt"><div class="dot r"></div><div>《原住民族基本法》第19條：原住民得在原住民族地區<em>非營利</em>獵捕野生動物</div></div>
+    </div>
+  </div>
+
+  <hr>
+  <div class="sec-title"><span class="num">超考</span><h2>最容易混淆題型</h2></div>
+  <div class="card hl">
+    <table>
+      <tr><th>情境</th><th>答案</th><th>理由</th></tr>
+      <tr><td>男廁與女廁設備數量應相同</td><td class="g">形式平等</td><td>無差別對待，一律相同</td></tr>
+      <tr><td>有人主張女廁設備數量應大於男廁</td><td class="c">實質平等</td><td>考量生理差異，合理的差別對待</td></tr>
+      <tr><td>設置身心障礙者廁所並加強設備便利性</td><td class="r">積極性平權措施</td><td>對社會最不利者給予更多，也包括對過去不平等的補償</td></tr>
+      <tr><td>228道歉、頒發回復名譽證書</td><td class="g">矯正正義 / 轉型正義</td><td>匡正錯誤、彌補傷害</td></tr>
+      <tr><td>司法判決走完偵查→起訴→審理→判決</td><td class="c">程序正義</td><td>決策過程公平合理</td></tr>
+      <tr><td>全民健保偏鄉資源不均</td><td class="r">公平性難題</td><td>繳相同保費卻得不到相同醫療資源</td></tr>
+      <tr><td>社會保險 vs 社會救助差異</td><td class="g">保險=強制納保分攤風險；救助=最後防線照顧無力者</td><td>前者全民強制，後者針對低收入或急難者</td></tr>
+      <tr><td>說國語運動（1948）</td><td class="c">文化位階與壓迫</td><td>對特定語言文化進行排序，貶低方言</td></tr>
+    </table>
+  </div>
+
+</div><!-- end 考點 -->
+
+<div class="footer">CH.6 完整版 ／ CIVICS NOTES ／ 翰林版 ／ 段考衝刺</div>`,
+
+/* ════════ 歷史 Unit 6 ════════ */
+'h-u6': `<div class="top-header">
+  <div class="tag">HISTORY ／ 第六章 ／ 段考完整版 ／ 三民版</div>
+  <h1>戰爭與和平</h1>
+  <div class="sub">第1節 東亞與第二次世界大戰　・　第2節 共產主義在東亞的擴張</div>
+</div>
+
+<div class="tab-bar">
+  <div class="tab active" onclick="h6Tab(0)">第1節 東亞與二戰</div>
+  <div class="tab" onclick="h6Tab(1)">第2節 共產主義擴張</div>
+</div>
+
+
+<!-- ══════════════════ 第1節 ══════════════════ -->
+<div class="section active" id="s0">
+
+  <div class="sec-title"><span class="num">一</span><h2>中日戰爭</h2></div>
+  <div class="card hl">
+    <div class="sub-title">（一）九一八事件與滿洲國（1931）</div>
+    <div class="pts">
+      <div class="pt"><div class="dot r"></div><div>導火線：1931年9月18日，日本關東軍<em>誆稱</em>中國軍隊炸毀瀋陽北郊鐵路，藉此進攻附近駐軍，三個多月便占領東北全境</div></div>
+      <div class="pt"><div class="dot r"></div><div>1932年，日本扶植傀儡政權<em>滿洲國</em>成立，受日本關東軍控制</div></div>
+      <div class="pt"><div class="dot c"></div><div>影響：國民政府呼籲國際社會主持公道；<em>國際聯盟</em>派調查團至東北，譴責日本為侵略者，日本退出國聯</div></div>
+    </div>
+    <div class="sub-title">（二）一二八事件與華北衝突（1932–1933）</div>
+    <div class="pts">
+      <div class="pt"><div class="dot r"></div><div>1932年1月28日，上海日軍以<em>保護僑民</em>為藉口攻擊中國駐軍，國民政府抵抗持續三個多月；歐美各國出面逼迫日軍停火，日軍退回原駐地</div></div>
+      <div class="pt"><div class="dot r"></div><div>入侵熱河、河北後，蔣中正堅持「<em>先安內後攘外</em>」以剿共優先</div></div>
+      <div class="pt"><div class="dot c"></div><div>1933年5月簽訂《<em>塘沽協定</em>》，劃定北平、天津以北至長城為非軍事區，中國不得駐軍</div></div>
+    </div>
+    <div class="sub-title">（三）八年抗戰（1937–1945）</div>
+    <div class="pts">
+      <div class="pt"><div class="dot r"></div><div>導火線：1937年7月7日<em>盧溝橋事變</em>（七七事變），日軍在河北盧溝橋演習，藉口士兵失蹤要求進城搜查，遭拒後引發軍事衝突</div></div>
+      <div class="pt"><div class="dot r"></div><div>8月13日<em>淞滬會戰</em>：日本相信中國將迅速投降，大量增兵，於上海發動攻擊</div></div>
+      <div class="pt"><div class="dot r"></div><div>死守上海三個月後撤退，11月國民政府宣布<em>遷都重慶</em>；12月日軍占領南京</div></div>
+      <div class="pt"><div class="dot r"></div><div>結果：日軍控制中國東部沿海從天津到廣州的重要城市</div></div>
+    </div>
+    <div class="eg"><span class="eg-label">以華制華</span>日本扶植溥儀控制滿洲國（當地多為滿洲人和懷念清朝統治者）；扶植汪精衛在南京成立「中華民國國民政府」，分化國民政府內部勢力</div>
+  </div>
+
+  <div class="sec-title"><span class="num">二</span><h2>太平洋戰爭</h2></div>
+  <div class="card hl">
+    <div class="sub-title">（一）日軍偷襲珍珠港（1941.12.7）</div>
+    <div class="pts">
+      <div class="pt"><div class="dot"></div><div>背景：1939年歐戰爆發；1940年日、德、義組成<em>軸心國</em>；日本積極南進，使美、英感受強大威脅</div></div>
+      <div class="pt"><div class="dot r"></div><div>導火線：美國停止向日本出口石油作為報復 → 日本主戰派計畫對美、英開戰，並占領荷屬印度群島以獲取<em>東南亞石油資源</em></div></div>
+      <div class="pt"><div class="dot r"></div><div>過程：1941年12月7日凌晨，日本偷襲珍珠港，多艘美軍戰艦被炸沉，美軍陣亡超過兩千人</div></div>
+      <div class="pt"><div class="dot c"></div><div>結果：美國向日、德、義宣戰；國民政府12月9日同樣對三國宣戰</div></div>
+    </div>
+    <div class="sub-title">（二）日本入侵東南亞與太平洋</div>
+    <div class="pts">
+      <div class="pt"><div class="dot r"></div><div>進攻美、英、荷殖民地，包括香港、馬尼拉、新加坡等；占領緬甸仰光，切斷中國戰時重要對外通道（<em>滇緬公路</em>）；攻入大洋洲部分島嶼，兵臨澳洲</div></div>
+      <div class="pt"><div class="dot r"></div><div>影響：日本幾乎控制<em>整個西太平洋</em>，疆域與勢力擴張到前所未有的程度</div></div>
+    </div>
+    <div class="sub-title">（三）大東亞共榮圈</div>
+    <div class="pts">
+      <div class="pt"><div class="dot"></div><div>目的：合理化在東亞與太平洋地區的軍事侵略行動；聲稱解放亞洲民族，驅逐西方帝國主義勢力，防止共產主義蔓延</div></div>
+      <div class="pt"><div class="dot r"></div><div>作法：扶植汪精衛南京國民政府（1940）；緬甸、菲律賓建立傀儡政權；新加坡成立印度臨時政府；泰國納入保護國；越南保大帝；馬來半島、蘇門答臘、婆羅洲納入領土榨取礦產資源</div></div>
+    </div>
+    <div class="sub-title">（四）日本投降</div>
+    <table>
+      <tr><th>時間</th><th>事件</th></tr>
+      <tr><td class="g">1943.11</td><td>美、英、中蔣中正、羅斯福、邱吉爾於<em>開羅</em>舉行會談，商討對日反攻及戰後東亞領土安排</td></tr>
+      <tr><td class="g">1945.2</td><td>羅斯福、邱吉爾、史達林簽訂《<em>雅爾達協定</em>》，約定蘇聯對日宣戰，以蒙古與中國東北特殊利益作為回報</td></tr>
+      <tr><td class="r">1945.8.6</td><td>美國於廣島投下<em>第一顆原子彈</em></td></tr>
+      <tr><td class="r">1945.8.8</td><td>蘇聯對日宣戰，攻入滿洲國和朝鮮半島</td></tr>
+      <tr><td class="r">1945.8.9</td><td>美國於長崎投下<em>第二顆原子彈</em></td></tr>
+      <tr><td class="r">1945.8.15</td><td>日本<em>無條件投降</em></td></tr>
+    </table>
+  </div>
+
+  <div class="sec-title"><span class="num">三</span><h2>戰爭的殘酷與省思</h2></div>
+  <div class="card hl">
+    <div class="sub-title">（一）平民生命財產的損失</div>
+    <div class="pts">
+      <div class="pt"><div class="dot r"></div><div>全球：二戰至少造成<em>五千五百多萬人</em>喪生</div></div>
+      <div class="pt"><div class="dot r"></div><div>日本：戰爭末期受美軍轟炸，長崎與廣島因原子彈轟炸共十餘萬人死亡，核子輻射感染死亡人數眾多</div></div>
+      <div class="pt"><div class="dot r"></div><div>中國：八年抗戰期間軍隊陣亡一百三十多萬人，平民死於戰火者難以估算，總數可能超過千萬</div></div>
+    </div>
+    <div class="sub-title">（二）總體戰爭</div>
+    <div class="pts">
+      <div class="pt"><div class="dot r"></div><div><em>平民成為軍事攻擊目標</em>，歐洲與亞洲皆出現無差別轟炸</div></div>
+      <div class="pt"><div class="dot r"></div><div>戰爭手段越趨瘋狂：日軍<em>神風特攻隊</em>自殺攻擊、美國原子彈報復</div></div>
+    </div>
+    <div class="sub-title">（三）無辜犧牲者</div>
+    <table>
+      <tr><th>事件</th><th>內容</th></tr>
+      <tr><td class="r">南京大屠殺</td><td>1937年12月，日軍攻陷南京，兩個月內屠殺戰俘和平民百姓達<em>三十萬人</em></td></tr>
+      <tr><td class="r">慰安婦</td><td>日本強徵國內及殖民地女性，包括日本、朝鮮、臺灣、中國及東南亞，前往戰場充當慰安婦，戰後受到強烈譴責，受害者展開長年的求償訴訟</td></tr>
+      <tr><td class="r">臺籍軍伕及日本兵</td><td>鼓勵臺灣人加入軍隊充當軍伕，甚至上戰場作戰，總計超過<em>二十萬人</em>被動員</td></tr>
+    </table>
+    <div class="sub-title">（四）追究戰爭責任</div>
+    <div class="pts">
+      <div class="pt"><div class="dot c"></div><div>東京的<em>遠東國際軍事法庭</em>：審判發動戰爭的日本軍人與政客</div></div>
+      <div class="pt"><div class="dot c"></div><div>南京的戰犯軍事法庭：審判策動中日戰爭的日本軍人</div></div>
+      <div class="pt"><div class="dot c"></div><div>在戰爭期間犯下虐待戰俘等罪名的臺灣人被送至中、美、澳等國的軍事法庭</div></div>
+    </div>
+  </div>
+
+</div><!-- end 第1節 -->
+
+
+<!-- ══════════════════ 第2節 ══════════════════ -->
+<div class="section" id="s1">
+
+  <div class="sec-title"><span class="num">一</span><h2>中華人民共和國的建立</h2></div>
+  <div class="card hl">
+    <div class="sub-title">（一）中共勢力擴張</div>
+    <div class="pts">
+      <div class="pt"><div class="dot"></div><div>背景：1917年俄國共產黨主導共產國際，推動全球共產主義運動</div></div>
+      <div class="pt"><div class="dot c"></div><div>1921年<em>中國共產黨成立</em>；1927年起以<em>農村包圍城市</em>革命路線，在偏僻農村建立武裝游擊隊</div></div>
+      <div class="pt"><div class="dot r"></div><div>1930年國軍大規模追剿；1934年<em>長征</em>：國軍圍剿江西及湖北共軍，中共長途跋涉至陝西延安</div></div>
+      <div class="pt"><div class="dot c"></div><div>1936年12月<em>西安事變</em>：張學良發動兵諫，軟禁蔣中正，要求停止剿共、共同抗日 → 蔣中正停止剿共，第二次國共合作</div></div>
+      <div class="pt"><div class="dot c"></div><div>對日作戰期間，中共勢力迅速擴大，至戰爭末期控制區人口已達一億人（約中國五分之一人口）</div></div>
+    </div>
+    <div class="sub-title">（二）蘇聯占領中國東北</div>
+    <div class="pts">
+      <div class="pt"><div class="dot r"></div><div>1945年蘇聯依照《雅爾達協定》對日開戰，占領滿洲國及朝鮮半島</div></div>
+      <div class="pt"><div class="dot r"></div><div>美、蘇兩國以北緯38度線為界分占；蘇聯占有<em>東北亞大片土地</em>，共產勢力在亞洲迅速擴張</div></div>
+    </div>
+    <div class="sub-title">（三）國共戰爭</div>
+    <div class="pts">
+      <div class="pt"><div class="dot r"></div><div>蘇聯占領東北地區，阻止國民政府接收，讓中共軍隊進入東北，中共獲得日軍遺留的武器</div></div>
+      <div class="pt"><div class="dot r"></div><div>1946年3月，國共在東北與華北等地爆發內戰；美國派<em>馬歇爾</em>來調停，但失敗</div></div>
+      <div class="pt"><div class="dot r"></div><div>1948年底至1949年1月，超過一百萬名國軍部隊在國共戰爭中潰敗，共軍占領長江以北地區</div></div>
+      <div class="pt"><div class="dot r"></div><div>1949年10月1日，中國共產黨宣布建立<em>中華人民共和國</em>，將北平改為北京；國民政府遷臺</div></div>
+    </div>
+    <div class="sub-title">（四）毛澤東時代——階級鬥爭與社會主義改造</div>
+    <table>
+      <tr><th>政策</th><th>內容</th><th>結果</th></tr>
+      <tr><td class="g">土地改革</td><td>1950年起於農村推動，以鬥爭地主方式將土地均分給農民</td><td>造成一百萬名以上地主死亡</td></tr>
+      <tr><td class="g">鎮壓反革命</td><td>掃蕩國民政府遺留的游擊隊、回鄉軍人、黑社會、地方宗教等</td><td>被害人數超過<em>二百萬人</em>以上</td></tr>
+      <tr><td class="g">消滅私營經濟</td><td>三反、五反運動打擊工商業資本家；1955–1956年私營企業全部由政府接管</td><td>中國正式邁入社會主義</td></tr>
+      <tr><td class="r">反右派鬥爭</td><td>1957年毛澤東號召知識界「大鳴大放」批評共黨，隨即秋後算帳</td><td>大批曾公開批評者被指為「右派知識分子」，遭調查、批判、降職、迫害甚至關押</td></tr>
+      <tr><td class="r">大躍進</td><td>1957年提出「超英趕美」，要求鋼鐵與糧食產量隔年翻倍；動員全民大煉鋼、成立<em>人民公社</em></td><td>各公社自誇農業產量大幅增長，政府徵收糧食出口換外匯，轄區內糧食不足卻禁止災民外逃，造成1959–1961年<em>二至三千萬人死亡</em></td></tr>
+      <tr><td class="r">文化大革命</td><td>大躍進失敗後毛澤東失去權力；1966年鼓動紅衛兵推翻劉少奇與鄧小平；破四舊（舊思想、舊文化、舊風俗、舊習慣）；知識分子下放勞改，教育倒退</td><td>黨政領導官員在政治運動中被認定為「反革命」，許多中共元老被鬥爭致死，也包括劉少奇</td></tr>
+    </table>
+    <div class="sub-title">（五）鄧小平時代——改革開放來臨</div>
+    <div class="pts">
+      <div class="pt"><div class="dot c"></div><div>背景：1976年毛澤東病逝，四人幫被捕，文革結束，鄧小平重回政壇掌權</div></div>
+      <div class="pt"><div class="dot c"></div><div>政治、經濟改革：向國外資本主義取經，釋為「<em>具有中國特色的社會主義</em>」；廢除人民公社制度；建立<em>經濟特區</em>吸引外資；改革國營企業體制</div></div>
+      <div class="pt"><div class="dot c"></div><div>保守政治：堅持共產黨領導、抗拒政治改革、元老干政</div></div>
+    </div>
+    <div class="eg"><span class="eg-label">六四天安門事件（1989）</span>原因：1980年代改革開放造成物價飛漲、官員貪污，引起民怨 → 1989年爆發以政治民主化為訴求的全國性學生運動 → 鄧小平強硬鎮壓，6月4日在北京天安門廣場<em>血腥鎮壓</em> → 結果：江澤民被指定為新任總書記；西方國家對中共進行聯合經濟制裁 → 1992年鄧小平再強調經濟發展重要性，江澤民持續改革開放，推行大國外交</div>
+  </div>
+
+  <div class="sec-title"><span class="num">二</span><h2>冷戰下的熱戰</h2></div>
+  <div class="card hl">
+    <div class="sub-title">（一）韓戰</div>
+    <div class="pts">
+      <div class="pt"><div class="dot"></div><div>二戰後，美、蘇以<em>北緯38度線</em>為界分占朝鮮半島；北韓（蘇聯扶植，金日成）建立朝鮮民主主義人民共和國；南韓（美國占領，李承晚）建立大韓民國</div></div>
+      <div class="pt"><div class="dot r"></div><div>爆發：北韓率先出兵進攻南韓，聯合國派<em>麥克阿瑟</em>增援反攻</div></div>
+      <div class="pt"><div class="dot r"></div><div>中國抗美援朝：聯合國軍隊逼近中國邊境 → 中國人民志願軍出兵</div></div>
+      <div class="pt"><div class="dot c"></div><div>1953年<em>板門店停戰協議</em>，韓戰結束，仍以北緯38度線劃分南北韓</div></div>
+      <div class="pt"><div class="dot r"></div><div>傷亡人數：近<em>三百萬人</em>喪生，一千萬個家庭離散</div></div>
+    </div>
+    <div class="sub-title">防堵共產勢力</div>
+    <div class="pts">
+      <div class="pt"><div class="dot c"></div><div>韓戰時期：美國與菲律賓、日本簽署<em>軍事共同防禦條約</em></div></div>
+      <div class="pt"><div class="dot c"></div><div>韓戰後：美國與南韓、中華民國簽署共同防禦條約，形成<em>第一島鏈</em></div></div>
+    </div>
+    <div class="sub-title">（二）越戰</div>
+    <div class="pts">
+      <div class="pt"><div class="dot"></div><div>法越戰爭：莫邊府戰役，法軍大敗 → 《日內瓦協定》：越盟建立<em>越南民主共和國</em>（北越）；法國扶植保大帝建立越南國（南越）</div></div>
+      <div class="pt"><div class="dot r"></div><div>美國介入：支援南越，但國內抗議聲浪下，1973年撤兵</div></div>
+      <div class="pt"><div class="dot r"></div><div>1976年<em>越南社會主義共和國</em>成立（南北越統一）</div></div>
+      <div class="pt"><div class="dot r"></div><div>影響：打破東亞圍堵計畫、平民傷害大</div></div>
+    </div>
+    <div class="compare-row">
+      <div class="cmp-card gold">
+        <span class="cmp-tag">韓戰</span>
+        <div class="cmp-title">結果</div>
+        <div class="cmp-body">南、北韓仍以<em>北緯38度線</em>為界，至今仍分裂</div>
+      </div>
+      <div class="cmp-card cyan">
+        <span class="cmp-tag">越戰</span>
+        <div class="cmp-title">結果</div>
+        <div class="cmp-body">北越統一越南，成立<em>越南社會主義共和國</em>（1976）</div>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+  <div class="sec-title"><span class="num">⚡</span><h2>必背重點 &amp; 易混淆</h2></div>
+  <div class="checklist-card">
+    <div class="pts">
+      <div class="pt"><div class="dot r"></div><div>九一八事件（1931）：關東軍<em>誆稱</em>中國炸鐵路 → 占東北 → 滿洲國成立（1932）→ 日本退出國聯</div></div>
+      <div class="pt"><div class="dot r"></div><div>一二八事件（1932）：上海，歐美介入調停；《塘沽協定》（1933）：劃非軍事區</div></div>
+      <div class="pt"><div class="dot r"></div><div>蔣中正「先安內後攘外」= 剿共優先，不是說不打日本</div></div>
+      <div class="pt"><div class="dot r"></div><div>盧溝橋事變（1937.7.7）→ 八年抗戰開始 → 淞滬會戰 → 遷都重慶 → 南京大屠殺</div></div>
+      <div class="pt"><div class="dot r"></div><div>珍珠港（1941.12.7）= 美國停止出口石油 → 日本偷襲 → 美國宣戰</div></div>
+      <div class="pt"><div class="dot r"></div><div>開羅會議（1943）= 美英中；《雅爾達協定》（1945.2）= 美英蘇，蘇聯換取東北利益對日宣戰</div></div>
+      <div class="pt"><div class="dot r"></div><div>廣島（8/6）→ 長崎（8/9）→ 日本投降（8/15）</div></div>
+      <div class="pt"><div class="dot r"></div><div>南京大屠殺：1937年12月，屠殺三十萬人；臺籍軍伕：超過二十萬人被動員</div></div>
+      <div class="pt"><div class="dot r"></div><div>遠東國際軍事法庭（東京）= 審判發動戰爭的日本軍人與政客</div></div>
+      <div class="pt"><div class="dot r"></div><div>長征（1934）：國軍圍剿 → 中共跋涉至陝西延安；西安事變（1936）：張學良軟禁蔣，第二次國共合作</div></div>
+      <div class="pt"><div class="dot r"></div><div>中華人民共和國（1949.10.1）成立；國民政府遷臺</div></div>
+      <div class="pt"><div class="dot r"></div><div>大躍進（1957提出）→ 人民公社 → 1959–1961年<em>二至三千萬人</em>死亡</div></div>
+      <div class="pt"><div class="dot r"></div><div>文化大革命（1966）：紅衛兵、破四舊；六四天安門（1989）：血腥鎮壓學生運動</div></div>
+      <div class="pt"><div class="dot r"></div><div>韓戰（1950）：北緯38度線，板門店停戰協議（1953），至今仍分裂</div></div>
+      <div class="pt"><div class="dot r"></div><div>越戰：美國1973年撤兵；1976年越南統一成立越南社會主義共和國</div></div>
+      <div class="pt"><div class="dot r"></div><div>韓戰 vs 越戰：韓戰→分裂至今；越戰→北越統一全國</div></div>
+    </div>
+  </div>
+
+</div><!-- end 第2節 -->
+
+<div class="footer">CH.6 完整版 ／ HISTORY NOTES ／ 三民版 ／ 段考衝刺</div>`,
+
+
+/* ════════ 地科 5-3 海流 ════════ */
+'es-5-3': `
+<div class="note-header-block" style="border-left-color:#55bbff;">
+  <div class="nh-tag" style="color:#2288cc;">EARTH SCIENCE ／ 段考範圍</div>
+  <h1 style="color:#55bbff;">CH.5-3　海流</h1>
+  <div class="nh-sub">5-3.1 表面海流成因・行星風系・5-3.2 台灣附近海流・黑潮</div>
+</div>
+
+<div class="sec-title"><span class="num">5-3.1</span><h2>表面海流的成因</h2></div>
+<div class="card hl">
+  <div class="pts">
+    <div class="pt"><div class="dot"></div><div>海流成因很多：風、壓差、溫鹽差、海面高低起伏，但<em>以行星風系驅動的表面海流最重要</em></div></div>
+    <div class="pt"><div class="dot"></div><div>表面海流方向除了風力，還有<em>科氏力</em>影響 → 北半球向右偏</div></div>
+  </div>
+</div>
+<div class="card">
+  <div style="font-size:13px;color:var(--gold);font-weight:700;margin-bottom:8px;">全球環流方向（行星風系決定）</div>
+  <table>
+    <tr><th>半球</th><th>中低緯度環流方向</th></tr>
+    <tr><td class="g">北半球</td><td><em>順時針</em>循環</td></tr>
+    <tr><td class="c">南半球</td><td><em>逆時針</em>循環</td></tr>
+  </table>
+  <div class="tip">⚠️ 記憶：北順南逆。信風帶（→西）＋西風帶（→東）配合科氏力形成封閉渦旋</div>
+</div>
+<div class="card">
+  <div style="font-size:13px;color:var(--gold);font-weight:700;margin-bottom:8px;">行星風系簡表</div>
+  <table>
+    <tr><th>緯度帶</th><th>風帶名稱</th><th>吹風方向</th></tr>
+    <tr><td>0° 附近</td><td>間熱帶輻合帶</td><td>無風（輻合上升）</td></tr>
+    <tr><td>0°～30°</td><td class="g">信風帶</td><td>往赤道（→西）</td></tr>
+    <tr><td>30° 附近</td><td>馬緯度無風帶</td><td>無風（輻散下沉）</td></tr>
+    <tr><td>30°～60°</td><td class="c">西風帶</td><td>往極區（→東）</td></tr>
+    <tr><td>60° 附近</td><td>極鋒輻合帶</td><td>輻合</td></tr>
+    <tr><td>60°～90°</td><td>極地東風帶</td><td>往低緯（→西）</td></tr>
+  </table>
+</div>
+
+<div class="sec-title"><span class="num">5-3.2</span><h2>台灣附近的表面海流</h2></div>
+<div class="card hl">
+  <div class="two-col">
+    <div class="mini-card">
+      <div class="mc-title">黑潮主流（台灣東部）</div>
+      <div class="mc-body">全年由<em>南向北</em>，不分季節<br>→ 由北太平洋<em>熱帶東風帶</em>穩定驅動</div>
+    </div>
+    <div class="mini-card">
+      <div class="mc-title">台灣海峽</div>
+      <div class="mc-body">有明顯<em>季節性差異</em><br>夏：由南向北<br>冬：由北向南（東北季風驅動）</div>
+    </div>
+  </div>
+  <div class="tip">⚠️ 冬季台灣海峽：黑潮支流大部分在澎湖附近折向南海，僅少部分繼續往北</div>
+</div>
+
+<div class="sec-title"><span class="num">黑潮</span><h2>黑潮</h2></div>
+<div class="card hl">
+  <div class="pts">
+    <div class="pt"><div class="dot r"></div><div>北太平洋中<em>流速最快</em>的表面海流，流速可達每秒 <em>1～2 公尺</em></div></div>
+    <div class="pt"><div class="dot"></div><div>特性：高溫、高鹽度、懸浮物少 → 反射率低、<em>吸光率高 → 顏色深黑</em>，因此得名</div></div>
+    <div class="pt"><div class="dot"></div><div>源自<em>北赤道洋流</em>，在北太平洋西緣轉向北方</div></div>
+  </div>
+</div>
+<div class="card">
+  <div style="font-size:13px;color:var(--gold);font-weight:700;margin-bottom:8px;">黑潮的影響</div>
+  <div class="pts">
+    <div class="pt"><div class="dot c"></div><div>每年 <em>4～6 月</em>：黑鮪魚隨黑潮洄游至台灣附近，為產卵期，肉質肥美</div></div>
+    <div class="pt"><div class="dot c"></div><div>黑潮與日本<em>親潮（寒流）</em>交會 → 魚種多 → 世界五大漁場之一</div></div>
+    <div class="pt"><div class="dot c"></div><div>順流行船可節省時間和能源</div></div>
+    <div class="pt"><div class="dot c"></div><div>研究將黑潮動能轉換成<em>電能發電</em>（新能源潛力）</div></div>
+  </div>
+</div>
+
+<hr>
+<div class="sec-title"><span class="num">考點</span><h2>段考必背清單</h2></div>
+<div class="card hl">
+  <div class="pts">
+    <div class="pt"><div class="dot r"></div><div>表面海流最主要驅動力 → <em>行星風系</em></div></div>
+    <div class="pt"><div class="dot r"></div><div>北半球<em>順時針</em>、南半球<em>逆時針</em></div></div>
+    <div class="pt"><div class="dot r"></div><div>科氏力：北半球向<em>右</em>偏</div></div>
+    <div class="pt"><div class="dot r"></div><div>台灣東部黑潮主流：全年<em>南→北</em>，不分季節</div></div>
+    <div class="pt"><div class="dot r"></div><div>台灣海峽：夏<em>南→北</em>（南季風）、冬<em>北→南</em>（東北季風）</div></div>
+    <div class="pt"><div class="dot r"></div><div>黑潮 = 北太平洋流速最快 + 高溫高鹽 + 顏色深黑</div></div>
+    <div class="pt"><div class="dot r"></div><div>黑鮪魚洄游：<em>4～6 月</em></div></div>
+  </div>
+</div>
+`,
+
+/* ════════ 地科 5-4 潮汐 ════════ */
+'es-5-4': `
+<div class="note-header-block" style="border-left-color:#55bbff;">
+  <div class="nh-tag" style="color:#2288cc;">EARTH SCIENCE ／ 段考範圍</div>
+  <h1 style="color:#55bbff;">CH.5-4　潮汐</h1>
+  <div class="nh-sub">5-4.1 引潮力・5-4.2 大小潮・5-4.3 台灣潮流・5-4.4 影響因素・5-4.5 潮汐與生活</div>
+</div>
+
+<div class="sec-title"><span class="num">基礎</span><h2>名詞定義</h2></div>
+<div class="card hl">
+  <div class="terms">
+    <div class="term"><div class="tname">漲潮</div><div class="tdef">潮位<em>上漲</em>的過程</div></div>
+    <div class="term"><div class="tname">退潮</div><div class="tdef">潮位<em>下降</em>的過程</div></div>
+    <div class="term"><div class="tname">滿潮（高潮）</div><div class="tdef">潮位達到<em>相對最高</em>時</div></div>
+    <div class="term"><div class="tname">乾潮（低潮）</div><div class="tdef">潮位退到<em>相對最低</em>時</div></div>
+    <div class="term"><div class="tname">潮差</div><div class="tdef">滿潮與乾潮的<em>水位高度差</em></div></div>
+    <div class="term"><div class="tname">潮間帶</div><div class="tdef">海岸在滿潮與乾潮高度之間的部分</div></div>
+  </div>
+</div>
+
+<div class="sec-title"><span class="num">5-4.1</span><h2>潮汐日變化與引潮力</h2></div>
+<div class="card hl">
+  <div class="pts">
+    <div class="pt"><div class="dot"></div><div>潮汐的最主要成因：<em>月球的引潮力</em>，太陽次之</div></div>
+    <div class="pt"><div class="dot"></div><div>引潮力 ∝ 質量（一次方）；∝ 距離（<em>三次方成反比</em>）→ 月球雖小，引潮力約是太陽的 <em>2 倍</em></div></div>
+    <div class="pt"><div class="dot c"></div><div>月球公轉每天走約 12°，地球自轉追上需額外 <em>~50 分鐘</em> → 每天潮汐比前一天<em>延遲約 50 分鐘</em></div></div>
+    <div class="pt"><div class="dot c"></div><div>一天有<em>兩次漲退潮</em>，潮汐週期約 <em>12 小時 25 分鐘</em></div></div>
+  </div>
+  <div class="tip">⚠️ 引潮力原理：月球連心線上，近月側被拉向月球，遠月側被「甩開」→ 地球兩側各有一個高水位（滿潮）</div>
+</div>
+
+<div class="sec-title"><span class="num">5-4.2</span><h2>大潮 vs 小潮</h2></div>
+<div class="card hl">
+  <div class="tide-row">
+    <div class="tide-box tide-big">
+      <div class="tb-label">大潮</div>
+      <div class="tb-moon">🌑 新月（農曆初一）<br>🌕 滿月（農曆十五）</div>
+      <div class="tb-when" style="margin-top:6px;">日月地<em>共線</em><br>引潮力疊加 → 潮差最大</div>
+    </div>
+    <div class="tide-box tide-small">
+      <div class="tb-label">小潮</div>
+      <div class="tb-moon">🌓 上弦月（農曆初八）<br>🌗 下弦月（農曆二十二）</div>
+      <div class="tb-when" style="margin-top:6px;">日月地<em>垂直</em><br>引潮力相消 → 潮差最小</div>
+    </div>
+  </div>
+  <div class="tip">⚠️ 大小潮循環 2 次 = 1 次月相週期（約 29.5 天）</div>
+</div>
+
+<div class="sec-title"><span class="num">5-4.3</span><h2>台灣周圍的潮流</h2></div>
+<div class="card hl">
+  <div class="pts">
+    <div class="pt"><div class="dot"></div><div>漲潮時：台灣海峽潮流從<em>南北兩端</em>流入海峽中央</div></div>
+    <div class="pt"><div class="dot"></div><div>退潮時：潮流從中央向<em>南北兩端</em>流出</div></div>
+    <div class="pt"><div class="dot c"></div><div>台灣西海岸滿潮時刻：<b>中部較晚、南北端較早</b></div></div>
+  </div>
+</div>
+
+<div class="sec-title"><span class="num">5-4.4</span><h2>影響潮汐的其他因素</h2></div>
+<div class="card">
+  <div class="pts">
+    <div class="pt"><div class="dot"></div><div>潮流匯合的水域或<em>半封閉水域</em> → 潮差較大，最多可達 <em>15 公尺</em></div></div>
+    <div class="pt"><div class="dot"></div><div>開放水域（外海）→ 潮差較小，一般 <em>&lt; 1 公尺</em></div></div>
+    <div class="pt"><div class="dot c"></div><div>世界潮差最大：<b>加拿大芬地灣</b>（狹長型半封閉海灣）</div></div>
+  </div>
+</div>
+
+<div class="sec-title"><span class="num">5-4.5</span><h2>潮汐與生活</h2></div>
+<div class="card">
+  <div class="pts">
+    <div class="pt"><div class="dot c"></div><div>漁業：布網位置、深度、方向需考量<b>潮流方向和時間</b></div></div>
+    <div class="pt"><div class="dot c"></div><div>港口：潮差過大的地方<b>不適合建港</b>（退潮時船隻擱淺）</div></div>
+    <div class="pt"><div class="dot c"></div><div>能源：潮差大的地區可利用水位能和動能<b>潮汐發電</b></div></div>
+    <div class="pt"><div class="dot c"></div><div>生態：潮間帶環境變化快，提供多樣生物棲息機會</div></div>
+  </div>
+</div>
+
+<hr>
+<div class="sec-title"><span class="num">考點</span><h2>段考必背清單</h2></div>
+<div class="card hl">
+  <div class="pts">
+    <div class="pt"><div class="dot r"></div><div>潮汐主因：<em>月球引潮力</em>（約太陽的 2 倍）</div></div>
+    <div class="pt"><div class="dot r"></div><div>每天潮汐延遲：<em>約 50 分鐘</em>（月球公轉造成）</div></div>
+    <div class="pt"><div class="dot r"></div><div>一天兩次漲退潮，週期約 <em>12hr 25min</em></div></div>
+    <div class="pt"><div class="dot r"></div><div>大潮：<em>新月＋滿月</em>（初一、十五）→ 日月地共線</div></div>
+    <div class="pt"><div class="dot r"></div><div>小潮：<em>上弦月＋下弦月</em>（初八、二十二）→ 日月地垂直</div></div>
+    <div class="pt"><div class="dot r"></div><div>台灣海峽漲潮：從<em>南北兩端流入中央</em></div></div>
+    <div class="pt"><div class="dot r"></div><div>世界潮差最大：<em>加拿大芬地灣</em></div></div>
+  </div>
+</div>
+`,
+
+/* ════════ 地科 5-5 海氣交互作用 ════════ */
+'es-5-5': `
+<div class="note-header-block" style="border-left-color:#55bbff;">
+  <div class="nh-tag" style="color:#2288cc;">EARTH SCIENCE ／ 段考範圍</div>
+  <h1 style="color:#55bbff;">CH.5-5　大氣與海洋的交互作用</h1>
+  <div class="nh-sub">5-5.1 海氣能量傳輸・5-5.2 聖嬰現象（ENSO）</div>
+</div>
+
+<div class="sec-title"><span class="num">5-5.1</span><h2>海氣能量傳輸</h2></div>
+<div class="card hl">
+  <div class="pts">
+    <div class="pt"><div class="dot"></div><div>低緯度吸收能量 &gt; 放出能量 → 能量<em>過剩</em>、較熱</div></div>
+    <div class="pt"><div class="dot"></div><div>高緯度吸收能量 &lt; 放出能量 → 能量<em>虧損</em>、較冷</div></div>
+    <div class="pt"><div class="dot c"></div><div>靠<b>大氣環流</b>（水氣蒸發→凝結放熱）＋<b>表面洋流</b>（暖水往高緯、冷水往低緯）來平衡能量</div></div>
+    <div class="pt"><div class="dot c"></div><div>結果：低緯不會一直升溫、高緯不會一直降溫 → 達到<b>全球能量平衡</b></div></div>
+  </div>
+</div>
+
+<div class="sec-title"><span class="num">5-5.2</span><h2>聖嬰現象（ENSO）</h2></div>
+<div class="card">
+  <div class="pts">
+    <div class="pt"><div class="dot"></div><div>聖嬰（El Niño）= 南美洲西岸海水<em>異常增溫</em>；反聖嬰（La Niña）= 異常<em>降溫</em></div></div>
+    <div class="pt"><div class="dot"></div><div>聖嬰 ＋ 南方振盪（氣壓蹺蹺板）合稱 <em>ENSO</em></div></div>
+    <div class="pt"><div class="dot c"></div><div>聖嬰年定義：赤道東太平洋海溫連續 <em>5 個月以上</em>高出正常 <em>0.5°C</em> 以上</div></div>
+  </div>
+</div>
+
+<div class="card hl">
+  <div style="font-size:13px;color:var(--gold);font-weight:700;margin-bottom:10px;">三種狀態對照表</div>
+  <div class="compare">
+    <div class="col-head n">正常狀態</div>
+    <div class="col-head el">聖嬰年 🔴</div>
+    <div class="col-head la">反聖嬰年 🔵</div>
+    <div class="col-cell">赤道東風<em>正常</em></div>
+    <div class="col-cell" style="color:#ff8099;">赤道東風<em>減弱</em></div>
+    <div class="col-cell" style="color:var(--cyan);">赤道東風<em>增強</em></div>
+    <div class="col-cell">東太平洋（秘魯）<br>冷水湧升，乾燥</div>
+    <div class="col-cell" style="color:#ff8099;">東太平洋<em>增溫</em><br>湧升消失，多雨</div>
+    <div class="col-cell" style="color:var(--cyan);">東太平洋<em>更冷</em><br>湧升更強，更乾</div>
+    <div class="col-cell">西太平洋（印尼/澳洲）<br>暖水堆積，多雨</div>
+    <div class="col-cell" style="color:#ff8099;">西太平洋<em>暖水減少</em><br>氣壓升高，乾旱</div>
+    <div class="col-cell" style="color:var(--cyan);">西太平洋<em>更多雨</em><br>氣壓更低</div>
+    <div class="col-cell">沃克環流正常</div>
+    <div class="col-cell" style="color:#ff8099;">沃克環流<em>減弱</em><br>對流雨區東移</div>
+    <div class="col-cell" style="color:var(--cyan);">沃克環流<em>增強</em></div>
+    <div class="col-cell">秘魯漁場豐富</div>
+    <div class="col-cell" style="color:#ff8099;">冷水消失→<em>漁獲銳減</em></div>
+    <div class="col-cell" style="color:var(--cyan);">湧升更強→<em>漁獲增加</em></div>
+  </div>
+</div>
+
+<div class="card">
+  <div style="font-size:13px;color:var(--gold);font-weight:700;margin-bottom:8px;">對台灣的影響（聖嬰年）</div>
+  <div class="pts">
+    <div class="pt"><div class="dot r"></div><div>容易出現<em>暖冬</em></div></div>
+    <div class="pt"><div class="dot r"></div><div>隔年<em>春雨偏多</em></div></div>
+    <div class="pt"><div class="dot r"></div><div>下一年颱風生成位置<em>距台灣較遠</em></div></div>
+    <div class="pt"><div class="dot"></div><div>每次聖嬰事件差異大，不一定完全相同</div></div>
+  </div>
+</div>
+
+<div class="card">
+  <div style="font-size:13px;color:var(--gold);font-weight:700;margin-bottom:8px;">名詞補充</div>
+  <table>
+    <tr><th>名詞</th><th>說明</th></tr>
+    <tr><td class="g">沃克環流</td><td>正常狀態下赤道太平洋的大氣垂直環流：西側上升→高空往東→東側下沉→低空往西</td></tr>
+    <tr><td class="g">南方振盪</td><td>赤道太平洋東西兩側氣壓像蹺蹺板一樣來回振盪的現象</td></tr>
+    <tr><td class="g">ENSO</td><td>El Niño + Southern Oscillation，聖嬰南方振盪，海洋與大氣的一體兩面</td></tr>
+  </table>
+</div>
+<div class="tip">⚠️ 正常狀態：東太平洋（秘魯）冷乾 ↔ 西太平洋（印尼/澳洲）暖濕<br>聖嬰年：<em>整個反過來</em>，東暖濕、西冷乾</div>
+
+<hr>
+<div class="sec-title"><span class="num">考點</span><h2>段考必背清單</h2></div>
+<div class="card hl">
+  <div class="pts">
+    <div class="pt"><div class="dot r"></div><div>大氣+洋流共同平衡低緯與高緯的<em>能量差異</em></div></div>
+    <div class="pt"><div class="dot r"></div><div>聖嬰 = 赤道東太平洋<em>異常增溫</em>；反聖嬰 = 異常<em>降溫</em></div></div>
+    <div class="pt"><div class="dot r"></div><div>聖嬰年：赤道<em>東風減弱</em> → 東太平洋暖、西太平洋乾</div></div>
+    <div class="pt"><div class="dot r"></div><div>聖嬰年：秘魯冷水湧升消失 → <em>漁獲銳減</em></div></div>
+    <div class="pt"><div class="dot r"></div><div>反聖嬰年：與正常狀態<em>方向相同但更強</em></div></div>
+    <div class="pt"><div class="dot r"></div><div>台灣聖嬰年：<em>暖冬、隔年春雨多、颱風遠</em></div></div>
+    <div class="pt"><div class="dot r"></div><div>ENSO = 聖嬰 + 南方振盪，是<em>海氣交互作用</em>的代表例子</div></div>
+  </div>
+</div>
+`,
+
+
+/* ════════ 國文 出師表 ════════ */
+'c-szb': `<div class="header">
+  <div class="tag">CHINESE LIT ／ 段考範圍 ／ 第十課</div>
+  <h1>出師表</h1>
+  <div class="sub">作者：諸葛亮｜翰林版高中國文（二）｜翻譯＋重點句＋考點全整理</div>
+</div>
+
+<!-- 作者 -->
+<div class="sec-title">
+  <span class="num">作者</span>
+  <h2>諸葛亮</h2>
+</div>
+<div class="card hl">
+  <div class="pts">
+    <div class="pt"><div class="dot"></div><div>字<em>孔明</em>，號<em>臥龍</em>，琅琊陽都（今山東）人，三國時代蜀漢丞相</div></div>
+    <div class="pt"><div class="dot"></div><div>躬耕於<em>南陽</em>（隆中），劉備<em>三顧茅廬</em>，出山輔佐，提出《隆中對》戰略</div></div>
+    <div class="pt"><div class="dot c"></div><div>劉備死後，輔佐後主<b>劉禪</b>，北伐中原，積勞成疾，病逝五丈原，享年 54 歲</div></div>
+    <div class="pt"><div class="dot c"></div><div>著作：<b>出師表</b>（前、後）、誡子書等；以忠貞著稱，後世稱「<em>鞠躬盡瘁，死而後已</em>」</div></div>
+  </div>
+</div>
+
+<!-- 題解 -->
+<div class="sec-title">
+  <span class="num">題解</span>
+  <h2>本文重點</h2>
+</div>
+<div class="card hl">
+  <div class="pts">
+    <div class="pt"><div class="dot"></div><div>文體：<em>表文</em>（奏章的一種），臣子向皇帝陳述意見的文書</div></div>
+    <div class="pt"><div class="dot"></div><div>背景：蜀漢建興五年（227年），諸葛亮率軍<em>北伐魏國</em>前，上書給後主劉禪</div></div>
+    <div class="pt"><div class="dot r"></div><div>主旨：勸諫後主<em>親賢臣、遠小人</em>，並表達自己的忠貞報國之志</div></div>
+    <div class="pt"><div class="dot c"></div><div>三大建議：① 廣開言路　② 嚴明賞罰　③ 親賢遠佞</div></div>
+    <div class="pt"><div class="dot c"></div><div>本課選段：為<b>前出師表</b>，節錄後半段</div></div>
+  </div>
+  <div class="tip y">💡 「出師」＝ 出兵。「表」＝ 文體名，臣子向皇帝陳述事情。</div>
+</div>
+
+<hr>
+
+<!-- 段一 -->
+<div class="para-header">
+  <div class="para-num">段一</div>
+  <div class="para-title">宮中府中，俱為一體——嚴明賞罰</div>
+</div>
+<div class="trans-wrap attach">
+  <table>
+    <tr><th class="orig">原文</th><th class="tran">白話翻譯</th></tr>
+    <tr>
+      <td class="orig">宮中府中，俱為一體，陟罰臧否，不宜異同。</td>
+      <td class="tran">皇宮內和丞相府，都應視為一體，對官員的升遷、懲罰、褒貶，不應有不同的標準。<br><span class="key">陟ㄓˋ升｜臧ㄗㄤ善｜否ㄆㄧˇ惡</span></td>
+    </tr>
+    <tr>
+      <td class="orig">若有作姦犯科，及為忠善者，宜付有司論其刑賞，以昭陛下平明之理，不宜偏私，使內外異法也。</td>
+      <td class="tran">若有做壞事犯法的，以及盡忠行善的人，都應交給主管官員論定刑罰或獎賞，以彰顯陛下公正開明的治理，不應偏袒徇私，使宮內和府中有不同的法制。<br><span class="key">有司ㄙ：主管官吏｜昭ㄓㄠ：彰顯｜作姦犯科：姦ㄐ｜ㄢ</span></td>
+    </tr>
+  </table>
+</div>
+<div class="tip r" style="margin-bottom:16px;">⚠️ <em>陟ㄓˋ罰臧ㄗㄤ否ㄆㄧˇ</em>三個注音｜<em>有司ㄙ</em>｜<em>昭ㄓㄠ</em> 彰顯</div>
+
+<!-- 段二 -->
+<div class="para-header c" style="margin-top:8px;">
+  <div class="para-num">段二</div>
+  <div class="para-title">侍中、侍郎——推薦賢臣（宮中）</div>
+</div>
+<div class="trans-wrap attach c">
+  <table>
+    <tr><th class="orig">原文</th><th class="tran c">白話翻譯</th></tr>
+    <tr>
+      <td class="orig">侍中、侍郎郭攸之、費禕、董允等，此皆良實，志慮忠純，是以先帝簡拔以遺陛下。</td>
+      <td class="tran">侍中、侍郎郭攸之、費禕、董允等人，都是善良誠實、心志忠誠純正的人，所以先帝挑選出來留給陛下。<br><span class="key">郭攸之ㄧㄡ｜費禕ㄧ｜董允ㄩㄣˇ｜簡拔ㄐ｜ㄢˇ：挑選拔擢</span></td>
+    </tr>
+    <tr>
+      <td class="orig">愚以為宮中之事，事無大小，悉以咨之，然後施行，必能裨補闕漏，有所廣益。</td>
+      <td class="tran">我認為宮中的事情，無論大小，都應向他們請教，然後再執行，必能補救缺失疏漏，獲得更多幫助。<br><span class="key">裨補ㄅ｜ˋ：補助｜闕漏ㄑㄩㄝ：缺失疏漏</span></td>
+    </tr>
+  </table>
+</div>
+<div class="tip c" style="margin-bottom:16px;">💡 三人注音必考：<em>郭攸之（ㄧㄡ）、費禕（ㄧ）、董允（ㄩㄣˇ）</em></div>
+
+<!-- 段三（原課本段三，將軍向寵） -->
+<div class="para-header" style="margin-top:8px;">
+  <div class="para-num">段三</div>
+  <div class="para-title">將軍向寵——推薦賢臣（府中）</div>
+</div>
+<div class="trans-wrap attach">
+  <table>
+    <tr><th class="orig">原文</th><th class="tran">白話翻譯</th></tr>
+    <tr>
+      <td class="orig">將軍向寵，性行淑均，曉暢軍事，試用於昔日，先帝稱之曰能，是以眾議舉寵為督。</td>
+      <td class="tran">將軍向寵，性情品行善良公正，精通軍事，曾在以前試用過，先帝稱他有才能，所以大家推舉向寵擔任中部督。<br><span class="key">性行ㄒ｜ㄥˊ：品行｜曉暢ㄒ｜ㄠˇㄔㄤˋ：精通</span></td>
+    </tr>
+    <tr>
+      <td class="orig">愚以為營中之事，悉以咨之，必能使行陣和睦，優劣得所。</td>
+      <td class="tran">我認為軍營中的事情，都應向他請教，一定能使軍隊和諧融洽，好壞各得其所。<br><span class="key">行陣ㄏㄤˊ ㄓㄣˋ：軍伍隊列</span></td>
+    </tr>
+  </table>
+</div>
+<div class="tip y" style="margin-bottom:16px;">⚠️ <em>性行</em>「行ㄒ｜ㄥˊ」品行｜<em>曉暢ㄒ｜ㄠˇ</em> 精通｜<em>行陣</em>「行ㄏㄤˊ」</div>
+
+<!-- 第四段（親賢臣） -->
+<div class="para-header c" style="margin-top:8px;">
+  <div class="para-num">段四</div>
+  <div class="para-title">親賢臣，遠小人——歷史教訓</div>
+</div>
+<div class="trans-wrap attach c">
+  <table>
+    <tr><th class="orig">原文</th><th class="tran">白話翻譯</th></tr>
+    <tr>
+      <td class="orig">親賢臣，遠小人，此先漢所以興隆也；親小人，遠賢臣，此後漢所以傾頹也。</td>
+      <td class="tran">親近賢臣，遠離小人，這是前漢所以興盛的原因；親近小人，遠離賢臣，這是後漢所以衰敗的原因。<br><span class="key">先漢＝西漢（興）｜後漢＝東漢（衰）｜傾頹：衰敗</span></td>
+    </tr>
+    <tr>
+      <td class="orig">先帝在時，每與臣論此事，未嘗不歎息痛恨於桓、靈也。</td>
+      <td class="tran">先帝在世時，每次和我談到這件事，沒有一次不為桓帝、靈帝而歎息痛心的。<br><span class="key">桓帝、靈帝＝東漢末昏君｜痛恨古義：痛心遺憾（非現代「恨」）</span></td>
+    </tr>
+    <tr>
+      <td class="orig">侍中、尚書、長史、參軍，此悉貞良死節之臣，願陛下親之信之，則漢室之隆，可計日而待也。</td>
+      <td class="tran">侍中、尚書、長史、參軍，這些都是堅貞忠良、能為節義而死的臣子，希望陛下親近信任他們，那麼漢室的復興，就指日可待了。<br><span class="key">貞良死節：堅守節義不惜一死｜計日而待：指日可待</span></td>
+    </tr>
+  </table>
+</div>
+<div class="tip r" style="margin-bottom:16px;">⚠️ 最常考！<em>親賢臣遠小人</em> vs <em>先漢興／後漢衰</em> 對比｜<em>痛恨</em>古義≠現代義</div>
+
+<!-- 第五段（臣本布衣） -->
+<div class="para-header" style="margin-top:8px;">
+  <div class="para-num">段五</div>
+  <div class="para-title">臣本布衣——自述身世與忠心</div>
+</div>
+<div class="trans-wrap attach">
+  <table>
+    <tr><th class="orig">原文</th><th class="tran">白話翻譯</th></tr>
+    <tr>
+      <td class="orig">臣本布衣，躬耕於南陽，苟全性命於亂世，不求聞達於諸侯。</td>
+      <td class="tran">我本是平民百姓，親自在南陽耕田，只求在亂世中苟且保全性命，不奢求在諸侯間出名顯達。<br><span class="key">布衣：平民｜躬耕ㄍㄨㄥ：親自耕種｜苟全ㄍㄡˇ：勉強保全</span></td>
+    </tr>
+    <tr>
+      <td class="orig">先帝不以臣卑鄙，猥自枉屈，三顧臣於草廬之中，諮臣以當世之事，由是感激，遂許先帝以驅馳。</td>
+      <td class="tran">先帝不嫌棄我身份低微、見識淺陋，委屈自己親自三次來到我的草廬拜訪，向我請教當世大事，因此我深受感動激勵，於是答應為先帝效命奔走。<br><span class="key">卑鄙古義：身份低＋見識淺（非壞人）｜猥ㄨㄟˇ：委屈自己｜草廬ㄌㄨˊ｜感激古義：感動激勵｜驅馳ㄔˊ：奔走效勞</span></td>
+    </tr>
+    <tr>
+      <td class="orig">後值傾覆，受任於敗軍之際，奉命於危難之間，爾來二十有一年矣。</td>
+      <td class="tran">後來遭遇（蜀漢）危亡覆滅，在戰敗的危急關頭接受重任，在危難之中奉命行事，從那時到現在已經二十一年了。<br><span class="key">傾覆：危亡｜爾來：從那時以來</span></td>
+    </tr>
+    <tr>
+      <td class="orig">先帝知臣謹慎，故臨崩寄臣以大事也。受命以來，夙夜憂歎，恐付託不效，以傷先帝之明；故五月渡瀘，深入不毛。</td>
+      <td class="tran">先帝知道我謹慎小心，所以在臨終前將大事託付給我。接受遺命以來，日夜憂慮歎息，怕託付的事不能成功，有損先帝的英明；所以五月渡過瀘水，深入不毛之地。<br><span class="key">夙夜ㄙㄨˋ：日夜｜不毛：草木不生之地（南蠻）</span></td>
+    </tr>
+    <tr>
+      <td class="orig">今南方已定，兵甲已足，當獎率三軍，北定中原，庶竭駑鈍，攘除奸凶，興復漢室，還於舊都。</td>
+      <td class="tran">如今南方已平定，兵力武器已充足，應當率領三軍，向北平定中原，我當竭盡我平庸的才能，剷除奸邪凶惡的敵人，振興漢室，回復到故都（洛陽）。<br><span class="key">庶ㄕㄨˋ：希望｜駑鈍ㄋㄨˊㄉㄨㄣˋ：才能平庸（謙稱）｜攘除ㄖㄤˊ：剷除</span></td>
+    </tr>
+    <tr>
+      <td class="orig">此臣所以報先帝而忠陛下之職分也。</td>
+      <td class="tran">這是我用來報答先帝、忠於陛下的職責和本分。<br><span class="key">職分：職責與本分</span></td>
+    </tr>
+  </table>
+</div>
+<div class="tip r" style="margin-bottom:16px;">⚠️ 古今異義超級常考：<em>卑鄙、感激、痛恨</em>三個都是！</div>
+
+<hr>
+
+<!-- 字義 -->
+<div class="sec-title c">
+  <span class="num c">字義</span>
+  <h2>古今異義＋重要字詞</h2>
+</div>
+<div class="card hlc">
+  <div class="trans-wrap">
+    <table>
+      <tr><th class="c">詞語</th><th class="c">古義（考試用）</th><th class="c">今義／注意</th></tr>
+      <tr><td><em>卑鄙</em></td><td>身份低微、見識淺陋</td><td>今義＝品行惡劣，超常考！</td></tr>
+      <tr><td><em>感激</em></td><td>感動激勵</td><td>今義＝謝謝</td></tr>
+      <tr><td><em>痛恨</em></td><td>痛心遺憾</td><td>今義＝仇恨</td></tr>
+      <tr><td><em>布衣</em></td><td>平民百姓</td><td>穿布衣→無官職者</td></tr>
+      <tr><td><em>陟罰臧否</em></td><td>升降褒貶</td><td>陟ㄓˋ升｜臧ㄗㄤ善｜否ㄆㄧˇ惡</td></tr>
+      <tr><td><em>猥</em></td><td>委屈自己（謙稱）</td><td>音ㄨㄟˇ</td></tr>
+      <tr><td><em>驅馳</em></td><td>奔走效勞</td><td>音ㄔˊ</td></tr>
+      <tr><td><em>駑鈍</em></td><td>才能平庸（自謙）</td><td>音ㄋㄨˊ ㄉㄨㄣˋ</td></tr>
+      <tr><td><em>攘除</em></td><td>剷除</td><td>音ㄖㄤˊ</td></tr>
+      <tr><td><em>夙夜</em></td><td>早晚、日夜不停</td><td>音ㄙㄨˋ</td></tr>
+      <tr><td><em>不毛</em></td><td>草木不生之地</td><td>指南蠻地區</td></tr>
+      <tr><td><em>裨補闕漏</em></td><td>補救缺失疏漏</td><td>裨ㄅ｜ˋ｜闕ㄑㄩㄝ</td></tr>
+    </table>
+  </div>
+</div>
+
+<hr>
+
+<!-- 必背句 -->
+<div class="sec-title">
+  <span class="num r">必背</span>
+  <h2>段考必背重點句</h2>
+</div>
+
+<div class="key-sent">
+  <div class="ks-orig">親賢臣，遠小人，此先漢所以興隆也；親小人，遠賢臣，此後漢所以傾頹也。</div>
+  <div class="ks-tran">親近賢臣遠離小人→前漢興盛；親近小人遠離賢臣→後漢衰敗。</div>
+  <div class="ks-note">⚡ 對比句型，全文核心主旨句</div>
+</div>
+<div class="key-sent">
+  <div class="ks-orig">先帝不以臣卑鄙，猥自枉屈，三顧臣於草廬之中。</div>
+  <div class="ks-tran">先帝不嫌棄我身份低微見識淺，三顧茅廬來拜訪我。</div>
+  <div class="ks-note">⚡ 卑鄙古義考點｜三顧草廬典故</div>
+</div>
+<div class="key-sent">
+  <div class="ks-orig">受任於敗軍之際，奉命於危難之間。</div>
+  <div class="ks-tran">在戰敗的危急關頭接受重任，在危難之中奉命行事。</div>
+  <div class="ks-note">⚡ 對偶句，強調忠誠不退縮</div>
+</div>
+<div class="key-sent">
+  <div class="ks-orig">陟罰臧否，不宜異同。</div>
+  <div class="ks-tran">升降褒貶，不應有不同的標準。</div>
+  <div class="ks-note">⚡ 陟ㄓˋ｜臧ㄗㄤ｜否ㄆㄧˇ 三個注音都考</div>
+</div>
+<div class="key-sent">
+  <div class="ks-orig">庶竭駑鈍，攘除奸凶，興復漢室，還於舊都。</div>
+  <div class="ks-tran">竭盡平庸之才，剷除奸邪，振興漢室，回復舊都。</div>
+  <div class="ks-note">⚡ 北伐目標四要素｜駑鈍ㄋㄨˊㄉㄨㄣˋ自謙</div>
+</div>
+<div class="key-sent">
+  <div class="ks-orig">此臣所以報先帝而忠陛下之職分也。</div>
+  <div class="ks-tran">這是我報答先帝、忠於陛下的職責和本分。</div>
+  <div class="ks-note">⚡ 全文結語，點出忠臣本分</div>
+</div>
+
+<hr>
+
+<!-- 考點 -->
+<div class="sec-title">
+  <span class="num r">考點</span>
+  <h2>段考必背清單</h2>
+</div>
+<div class="exam-box">
+  <div class="e-title">⚡ HIGH PRIORITY</div>
+  <div class="pts">
+    <div class="pt"><div class="dot r"></div><div><em>古今異義</em>三大考點：卑鄙（低微）、感激（感動）、痛恨（痛心）</div></div>
+    <div class="pt"><div class="dot r"></div><div><em>陟ㄓˋ罰臧ㄗㄤ否ㄆㄧˇ</em>三個字的注音＋意義</div></div>
+    <div class="pt"><div class="dot r"></div><div><em>郭攸之ㄧㄡ、費禕ㄧ、董允ㄩㄣˇ</em>三人注音</div></div>
+    <div class="pt"><div class="dot r"></div><div><em>作姦犯科</em>「姦ㄐ｜ㄢ」｜<em>有司ㄙ</em>：主管官吏</div></div>
+    <div class="pt"><div class="dot r"></div><div><em>性行</em> 讀ㄒ｜ㄥˊ（品行）｜<em>行陣</em> 行ㄏㄤˊ（軍伍）</div></div>
+    <div class="pt"><div class="dot r"></div><div><em>裨補ㄅ｜ˋ闕漏ㄑㄩㄝ</em>：補救缺失</div></div>
+    <div class="pt"><div class="dot r"></div><div>三大建議：①廣開言路 ②嚴明賞罰 ③<em>親賢遠佞</em>（最重要）</div></div>
+    <div class="pt"><div class="dot r"></div><div><em>先漢興、後漢衰</em>的對比原因：親賢/親佞</div></div>
+    <div class="pt"><div class="dot r"></div><div>文體：<em>表文</em>（奏章的一種），臣向君陳述意見</div></div>
+    <div class="pt"><div class="dot r"></div><div>諸葛亮自謙詞：<em>愚（我）、駑鈍（才能差）、布衣（平民）</em></div></div>
+  </div>
+</div>
+
+<div class="chips">
+  <span class="chip">諸葛亮</span>
+  <span class="chip">表文</span>
+  <span class="chip">三顧茅廬</span>
+  <span class="chip r">古今異義</span>
+  <span class="chip r">卑鄙</span>
+  <span class="chip r">感激</span>
+  <span class="chip r">痛恨</span>
+  <span class="chip c">親賢遠佞</span>
+  <span class="chip c">陟罰臧否</span>
+  <span class="chip c">裨補闕漏</span>
+  <span class="chip">先漢後漢</span>
+  <span class="chip">北定中原</span>
+</div>
+
+<div class="footer">出師表筆記 ／ CHINESE LIT ／ 段考衝刺版</div>`,
+
 
 /* ════════ 歷史 Unit 5 ════════ */
 'h-u5': `
@@ -1333,6 +2509,17 @@ function htTab(idx, el) {
   body.querySelectorAll('#ht0,#ht1').forEach((s,i) => s.classList.toggle('active', i===idx));
   body.querySelectorAll('.cv-tab').forEach((t,i) => t.classList.toggle('active', i===idx));
 }
+
+function cv6Tab(idx) {
+  const body = document.getElementById('note-body');
+  body.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+  body.querySelectorAll('.section').forEach((s,i) => s.classList.toggle('active', i===idx));
+}
+function h6Tab(idx) {
+  const body = document.getElementById('note-body');
+  body.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+  body.querySelectorAll('.section').forEach((s,i) => s.classList.toggle('active', i===idx));
+}
 function cvTab(idx, el) {
   // 只操作當前顯示的 note-body 內的元素
   const body = document.getElementById('note-body');
@@ -1435,6 +2622,7 @@ function openSubject(s) {
 }
 
 function openNote(s, ch) {
+  if (ch.ext) { window.location.href = ch.ext; return; }
   // topbar
   const topbar = document.getElementById('note-topbar');
   topbar.style.setProperty('--accent', s.color);
