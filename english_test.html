@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>單字機 VOCAB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0b0b0e; --s1:#131317; --s2:#1a1a20; --s3:#22222a;
+    --bd:rgba(255,255,255,.06); --bd2:rgba(255,255,255,.11);
+    --gold:#e8b44f; --gold2:#c4922e; --gold-dim:rgba(232,180,79,.14); --gold-bd:rgba(232,180,79,.4);
+    --text:#ecedf1; --muted:#62626e; --good:#3fd68f; --bad:#f06a6a;
+    --disp:"Space Grotesk","Noto Sans TC",system-ui,sans-serif;
+    --sans:"Noto Sans TC",system-ui,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  html{min-height:100%}
+  body{font-family:var(--sans);color:var(--text);min-height:100vh;display:flex;justify-content:center;
+    -webkit-font-smoothing:antialiased;background:var(--bg);
+    background-image:radial-gradient(ellipse 90vw 50vh at 50% -15%, rgba(232,180,79,.07), transparent);
+    overflow-x:hidden;overflow-y:auto;}
+  button{font-family:inherit;color:inherit}
+  .app{width:100%;max-width:520px;padding:18px 16px 120px;position:relative}
+  .screen{display:none;animation:rise .28s ease}
+  .screen.on{display:block}
+  @keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  /* back to notes */
+  .back-to-notes{position:fixed;top:14px;left:14px;z-index:200;background:rgba(19,19,23,.92);
+    border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px 13px;
+    font-family:"IBM Plex Mono",monospace;font-size:11px;color:#e8b44f;letter-spacing:1px;
+    text-decoration:none;backdrop-filter:blur(10px);display:flex;align-items:center;gap:6px;
+    transition:border-color .15s;}
+  .back-to-notes:hover{border-color:rgba(232,180,79,.4);}
+  /* top */
+  .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-top:10px}
+  .brand{display:flex;align-items:center;gap:11px}
+  .brand .mark{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;
+    background:linear-gradient(145deg,var(--gold),var(--gold2));
+    font-family:var(--disp);font-weight:700;font-size:17px;color:#1a1206;
+    box-shadow:0 3px 14px rgba(232,180,79,.3)}
+  .brand .bt{line-height:1.15}
+  .brand .bt b{font-family:var(--disp);font-weight:700;font-size:16px;letter-spacing:.3px;display:block}
+  .brand .bt span{font-family:var(--mono);font-size:9px;color:var(--muted);letter-spacing:2.5px}
+  .iconrow{display:flex;gap:7px}
+  .ibtn{width:38px;height:38px;border-radius:11px;border:1px solid var(--bd);background:var(--s1);
+    font-size:15px;cursor:pointer;transition:.15s;display:grid;place-items:center}
+  .ibtn:hover{border-color:var(--gold-bd);background:var(--s2)}
+  .ibtn.on{border-color:var(--gold-bd);background:var(--gold-dim)}
+  .lab{display:flex;align-items:baseline;justify-content:space-between;margin:22px 1px 9px}
+  .lab h3{font-family:var(--disp);font-size:13px;font-weight:600;letter-spacing:.4px;color:var(--text)}
+  .lab .act{font-family:var(--mono);font-size:10px;color:var(--muted);background:none;border:none;
+    cursor:pointer;letter-spacing:.5px;padding:2px 4px}
+  .lab .act:hover{color:var(--gold)}
+  .segs{display:flex;gap:4px;background:var(--s1);border:1px solid var(--bd);padding:4px;border-radius:13px}
+  .seg{flex:1;border:none;border-radius:9px;padding:10px 4px;background:transparent;cursor:pointer;
+    transition:.18s;text-align:center}
+  .seg b{font-family:var(--sans);font-weight:700;font-size:13.5px;color:var(--muted);display:block;transition:.18s}
+  .seg small{font-family:var(--mono);font-size:9px;color:var(--muted);opacity:.6}
+  .seg:hover b{color:var(--text)}
+  .seg.on{background:var(--s3);box-shadow:inset 0 0 0 1px var(--gold-bd)}
+  .seg.on b{color:var(--gold)}
+  .lessons{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:9px}
+  .chip{position:relative;border:1px solid var(--bd);border-radius:12px;padding:11px 11px 10px;
+    background:var(--s1);cursor:pointer;transition:.15s;text-align:left}
+  .chip:hover{border-color:var(--bd2);background:var(--s2)}
+  .chip:active{transform:scale(.97)}
+  .chip.sel{border-color:var(--gold-bd);background:linear-gradient(160deg,var(--gold-dim),var(--s1) 75%)}
+  .chip.empty{opacity:.3;cursor:not-allowed}
+  .chip .tk{position:absolute;top:8px;right:9px;width:15px;height:15px;border-radius:5px;
+    border:1.5px solid var(--bd2);transition:.15s;display:grid;place-items:center;
+    font-size:9px;color:transparent}
+  .chip.sel .tk{background:var(--gold);border-color:var(--gold);color:#1a1206;font-weight:900}
+  .chip .ttl{font-family:var(--disp);font-weight:600;font-size:13.5px}
+  .chip .ct{font-family:var(--mono);font-size:9.5px;color:var(--muted);margin-top:3px}
+  .chip .ct .due{color:var(--bad)}
+  .chip .bar{height:2.5px;border-radius:99px;background:rgba(255,255,255,.06);margin-top:8px;overflow:hidden}
+  .chip .bar i{display:block;height:100%;border-radius:99px;background:var(--gold);transition:width .3s}
+  .modes{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+  .mode{display:flex;align-items:center;gap:11px;border:1px solid var(--bd);border-radius:13px;
+    padding:13px 14px;background:var(--s1);cursor:pointer;transition:.15s;text-align:left}
+  .mode:hover{border-color:var(--bd2);background:var(--s2)}
+  .mode:active{transform:scale(.97)}
+  .mode.on{border-color:var(--gold-bd);background:linear-gradient(160deg,var(--gold-dim),var(--s1) 80%)}
+  .mode .mic{width:38px;height:38px;border-radius:10px;background:var(--s3);display:grid;place-items:center;
+    font-size:18px;flex-shrink:0;transition:.15s}
+  .mode.on .mic{background:var(--gold);box-shadow:0 2px 10px rgba(232,180,79,.35)}
+  .mode .mt b{font-family:var(--sans);font-weight:700;font-size:14px;display:block}
+  .mode .mt span{font-size:10.5px;color:var(--muted)}
+  .panel{margin-top:14px;border:1px solid var(--bd);border-radius:14px;background:var(--s1);
+    padding:14px 15px;display:none}
+  .panel.open{display:block;animation:rise .22s ease}
+  .panel h4{font-family:var(--disp);font-size:12px;font-weight:600;margin-bottom:10px;color:var(--gold);letter-spacing:.5px}
+  .prow{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .vsel{flex:1;min-width:130px;background:var(--s2);color:var(--text);border:1px solid var(--bd);
+    border-radius:9px;padding:9px 11px;font-family:var(--sans);font-size:12.5px;outline:none;cursor:pointer}
+  .vsel:focus{border-color:var(--gold-bd)}
+  .tbtn{background:var(--s3);color:var(--gold);border:1px solid var(--bd);border-radius:9px;
+    padding:9px 13px;font-size:12px;cursor:pointer;transition:.15s;font-family:var(--mono)}
+  .tbtn:hover{border-color:var(--gold-bd)}
+  .toggle{display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--muted);cursor:pointer;
+    width:100%;margin-top:9px}
+  .toggle input{accent-color:var(--gold);width:15px;height:15px}
+  .dock{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;
+    padding:12px 16px calc(14px + env(safe-area-inset-bottom));z-index:50;
+    background:linear-gradient(180deg,transparent, var(--bg) 35%)}
+  .dock-in{display:flex;align-items:center;gap:11px;background:var(--s2);border:1px solid var(--bd2);
+    border-radius:16px;padding:9px 9px 9px 17px;box-shadow:0 -4px 30px rgba(0,0,0,.5)}
+  .dock .ds{flex:1;line-height:1.3}
+  .dock .ds b{font-family:var(--mono);font-size:13px;color:var(--gold);display:block}
+  .dock .ds span{font-family:var(--mono);font-size:9.5px;color:var(--muted)}
+  .gobtn{border:none;border-radius:11px;padding:14px 26px;cursor:pointer;transition:.15s;
+    font-family:var(--disp);font-weight:700;font-size:15px;letter-spacing:.5px;
+    background:linear-gradient(145deg,var(--gold),var(--gold2));color:#1a1206;
+    box-shadow:0 4px 18px rgba(232,180,79,.35)}
+  .gobtn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+  .gobtn:active{transform:translateY(0)}
+  .gobtn:disabled{opacity:.3;cursor:not-allowed;box-shadow:none;filter:grayscale(.7);transform:none}
+  .btn{width:100%;border:none;border-radius:13px;padding:15px;font-family:var(--disp);font-weight:700;
+    font-size:15px;cursor:pointer;transition:.15s;margin-top:9px;
+    background:linear-gradient(145deg,var(--gold),var(--gold2));color:#1a1206;
+    box-shadow:0 4px 18px rgba(232,180,79,.3)}
+  .btn:hover{filter:brightness(1.07);transform:translateY(-1px)}
+  .btn.ghost{background:var(--s2);border:1px solid var(--bd);color:var(--text);box-shadow:none}
+  .btn.ghost:hover{border-color:var(--bd2);background:var(--s3);filter:none}
+  .sbar{display:flex;align-items:center;gap:11px;margin-bottom:14px}
+  .backbtn{width:36px;height:36px;border-radius:10px;border:1px solid var(--bd);background:var(--s1);
+    cursor:pointer;font-size:15px;color:var(--muted);transition:.15s;flex-shrink:0;display:grid;place-items:center}
+  .backbtn:hover{color:var(--text);border-color:var(--bd2)}
+  .sinfo{flex:1;min-width:0}
+  .sinfo .dk{font-family:var(--disp);font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sinfo .cnt{font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:1px}
+  .streak{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--gold);
+    background:var(--gold-dim);border:1px solid var(--gold-bd);padding:5px 11px;border-radius:99px;flex-shrink:0}
+  .prog{height:4px;background:rgba(255,255,255,.05);border-radius:99px;overflow:hidden;margin-bottom:20px}
+  .prog i{display:block;height:100%;width:0;transition:width .35s;border-radius:99px;
+    background:linear-gradient(90deg,var(--gold),#f5d589)}
+  .flip{perspective:1500px;margin:0 0 14px}
+  .flip-in{position:relative;width:100%;min-height:280px;
+    transition:transform .5s cubic-bezier(.3,.1,.15,1);transform-style:preserve-3d;cursor:pointer}
+  .flip.on .flip-in{transform:rotateY(180deg)}
+  .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+    border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:34px 26px;text-align:center;background:var(--s1);border:1px solid var(--bd2)}
+  .face::before{content:"";position:absolute;top:0;left:18px;right:18px;height:2px;border-radius:99px;
+    background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.7}
+  .face.back{transform:rotateY(180deg);background:linear-gradient(170deg,#1c1813,var(--s1) 55%)}
+  .word{font-family:var(--disp);font-size:36px;font-weight:700;letter-spacing:-.3px;line-height:1.18;overflow-wrap:anywhere}
+  .word.zh{font-family:var(--sans);font-size:25px;font-weight:700;line-height:1.5}
+  .whint{color:var(--muted);font-size:11px;margin-top:14px;font-family:var(--mono);letter-spacing:.5px}
+  .spk{margin-top:18px;background:var(--s2);border:1px solid var(--bd2);color:var(--gold);
+    width:46px;height:46px;border-radius:50%;font-size:17px;cursor:pointer;transition:.15s}
+  .spk:hover{border-color:var(--gold-bd);background:var(--s3)}
+  .fliphint{text-align:center;font-family:var(--mono);font-size:10.5px;color:var(--muted);margin-bottom:11px;min-height:15px}
+  .rate{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .rate button{border-radius:12px;padding:15px;font-family:var(--sans);font-weight:700;font-size:14.5px;
+    cursor:pointer;transition:.14s;border:1px solid}
+  .rate .no{background:rgba(240,106,106,.09);color:var(--bad);border-color:rgba(240,106,106,.25)}
+  .rate .yes{background:rgba(63,214,143,.09);color:var(--good);border-color:rgba(63,214,143,.25)}
+  .rate button:hover{transform:translateY(-1px);filter:brightness(1.12)}
+  .rate button:active{transform:translateY(0)}
+  .qword{text-align:center;margin:8px 0 20px}
+  .qword .w{font-family:var(--disp);font-size:34px;font-weight:700;overflow-wrap:anywhere}
+  .opts{display:grid;gap:8px}
+  .opt{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:14px 16px;
+    font-size:15px;cursor:pointer;text-align:left;transition:.12s;color:var(--text)}
+  .opt:hover{border-color:var(--bd2);background:var(--s2)}
+  .opt:active{transform:scale(.98)}
+  .opt.correct{border-color:var(--good);background:rgba(63,214,143,.1);color:var(--good)}
+  .opt.wrong{border-color:var(--bad);background:rgba(240,106,106,.1);color:var(--bad);animation:shake .3s}
+  @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+  .opt:disabled{cursor:default}
+  .inp{width:100%;background:var(--s1);border:1px solid var(--bd2);border-radius:13px;
+    padding:16px;font-size:19px;color:var(--text);font-family:var(--disp);text-align:center;
+    outline:none;letter-spacing:.5px;transition:.15s}
+  .inp:focus{border-color:var(--gold-bd);background:var(--s2)}
+  .inp.ok{border-color:var(--good);color:var(--good)}
+  .inp.err{border-color:var(--bad);color:var(--bad);animation:shake .3s}
+  .ans{text-align:center;color:var(--muted);margin-top:11px;font-size:13px;min-height:20px;font-family:var(--mono)}
+  .ans b{color:var(--good)}
+  .result{text-align:center;padding-top:24px}
+  .rpct{font-family:var(--disp);font-size:84px;font-weight:700;letter-spacing:-4px;line-height:1;
+    background:linear-gradient(150deg,#f5d589,var(--gold) 50%,var(--gold2));
+    -webkit-background-clip:text;background-clip:text;color:transparent}
+  .rmsg{font-size:16px;margin:10px 0 26px;color:var(--muted)}
+  .rstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px}
+  .rstat{background:var(--s1);border:1px solid var(--bd);border-radius:13px;padding:17px 6px}
+  .rstat .n{font-family:var(--mono);font-size:23px;font-weight:600;line-height:1}
+  .rstat .n.g{color:var(--good)}.rstat .n.b{color:var(--bad)}.rstat .n.a{color:var(--gold)}
+  .rstat .t{font-size:9px;color:var(--muted);margin-top:6px;letter-spacing:1px;font-family:var(--mono)}
+  .wrongbox{text-align:left;background:var(--s1);border:1px solid var(--bd);border-radius:14px;
+    padding:15px 16px;margin-bottom:6px}
+  .wrongbox h4{font-family:var(--disp);font-size:12px;color:var(--bad);letter-spacing:.5px;margin-bottom:10px}
+  .wrow{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:7px 0;
+    border-bottom:1px solid var(--bd);font-size:13.5px}
+  .wrow:last-child{border-bottom:none}
+  .wrow .we{font-family:var(--disp);font-weight:600;color:var(--text)}
+  .wrow .wz{color:var(--muted);font-size:12px;text-align:right}
+  .hstats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:14px 0}
+  .hs{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:14px 4px;text-align:center}
+  .hs .n{font-family:var(--mono);font-size:19px;font-weight:600;line-height:1}
+  .hs .n.g{color:var(--good)}.hs .n.a{color:var(--gold)}.hs .n.b{color:var(--bad)}
+  .hs .t{font-size:8.5px;color:var(--muted);margin-top:5px;letter-spacing:.5px;font-family:var(--mono)}
+  .hchart-wrap{background:var(--s1);border:1px solid var(--bd);border-radius:13px;margin-bottom:14px;padding:14px 14px 10px}
+  .hchart{display:flex;align-items:flex-end;gap:4px;height:76px}
+  .hbar{flex:1;min-width:4px;border-radius:3px 3px 0 0;
+    background:linear-gradient(180deg,var(--gold),rgba(232,180,79,.25));transition:height .35s}
+  .hcap{text-align:center;font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:9px}
+  .hlist{display:flex;flex-direction:column;gap:6px}
+  .hrow{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;
+    border:1px solid var(--bd);border-radius:12px;background:var(--s1)}
+  .hrow .hdeck{font-family:var(--disp);font-weight:600;font-size:13px}
+  .hrow .hmeta{font-family:var(--mono);font-size:9px;color:var(--muted);margin-top:2px}
+  .hrow .hr{text-align:right}
+  .hrow .hpct{font-family:var(--mono);font-size:16px;font-weight:600}
+  .hrow .hpct.g{color:var(--good)}.hrow .hpct.a{color:var(--gold)}.hrow .hpct.b{color:var(--bad)}
+  .hempty{text-align:center;color:var(--muted);font-size:12px;padding:34px 10px;font-family:var(--mono);line-height:1.9}
+</style>
+</head>
+<body>
+<a class="back-to-notes" href="notes_mobile.html">← NOTE.SYS</a>
+<div class="app">
+  <div class="screen on" id="s-home">
+    <div class="top">
+      <div class="brand">
+        <div class="mark">V</div>
+        <div class="bt"><b>單字機</b><span>VOCAB DRILL</span></div>
+      </div>
+      <div class="iconrow">
+        <button class="ibtn" id="histBtn" title="歷史數據">📊</button>
+        <button class="ibtn" id="setBtn" title="發音設定">⚙️</button>
+      </div>
+    </div>
+    <div class="lab"><h3>選擇冊別</h3></div>
+    <div class="segs" id="tabs"></div>
+    <div class="lab"><h3>選擇課程</h3><button class="act" id="allBtn">全選本冊</button></div>
+    <div class="lessons" id="lessons"></div>
+    <div class="lab"><h3>訓練模式</h3></div>
+    <div class="modes">
+      <button class="mode" data-mode="flip"><span class="mic">🃏</span><span class="mt"><b>翻卡</b><span>a–z 順序複習</span></span></button>
+      <button class="mode" data-mode="choice"><span class="mic">🎯</span><span class="mt"><b>選擇題</b><span>四選一</span></span></button>
+      <button class="mode" data-mode="spell"><span class="mic">⌨️</span><span class="mt"><b>拼字</b><span>看中文拼英文</span></span></button>
+      <button class="mode" data-mode="listen"><span class="mic">🎧</span><span class="mt"><b>聽寫</b><span>聽發音拼字</span></span></button>
+    </div>
+    <div class="panel" id="setPanel">
+      <h4>🔊 發音設定</h4>
+      <div class="prow">
+        <select class="vsel" id="voiceSel"><option>載入語音中…</option></select>
+        <button class="tbtn" id="testV">試聽</button>
+      </div>
+      <label class="toggle"><input type="checkbox" id="onlineV"> 高音質語音（需連網，最自然）</label>
+    </div>
+  </div>
+  <div class="screen" id="s-study">
+    <div class="sbar">
+      <button class="backbtn" id="quitBtn">←</button>
+      <div class="sinfo"><div class="dk" id="deckBadge">—</div><div class="cnt" id="counter">1 / 10</div></div>
+      <div class="streak" id="streak">🔥 0</div>
+    </div>
+    <div class="prog"><i id="progBar"></i></div>
+    <div id="stage"></div>
+  </div>
+  <div class="screen" id="s-result">
+    <div class="result">
+      <div class="rpct" id="rScore">0%</div>
+      <div class="rmsg" id="rMsg">訓練完成</div>
+      <div class="rstats">
+        <div class="rstat"><div class="n a" id="rTotal">0</div><div class="t">TOTAL</div></div>
+        <div class="rstat"><div class="n g" id="rRight">0</div><div class="t">CORRECT</div></div>
+        <div class="rstat"><div class="n b" id="rWrong">0</div><div class="t">MISSED</div></div>
+      </div>
+      <div id="wrongWrap"></div>
+      <button class="btn" id="againBtn">再來一輪</button>
+      <button class="btn ghost" id="homeBtn">回主畫面</button>
+      <button class="btn ghost" id="resHist">📊 歷史數據</button>
+    </div>
+  </div>
+  <div class="screen" id="s-history">
+    <div class="sbar">
+      <button class="backbtn" id="histBack">←</button>
+      <div class="sinfo"><div class="dk">歷史數據</div><div class="cnt">HISTORY</div></div>
+    </div>
+    <div id="histBody"></div>
+  </div>
+</div>
+<div class="dock" id="dock">
+  <div class="dock-in">
+    <div class="ds"><b id="dockSel">未選擇</b><span id="dockSub">選課程與模式後開始</span></div>
+    <button class="gobtn" id="startBtn" disabled>開始 ▶</button>
+  </div>
+</div>
+<script>
+/* ============================================================
+   單字資料庫
+   ============================================================ */
+const SCHEMA = {
+  "課本":   ["L7", "L8", "L9"],
+  "雜誌":   ["U1","U2","U3","U4","U5","U6","U7","U8","U9","U10","U11","U12"],
+  "單字本": ["7-5", "8-1", "8-2", "8-3"],
+};
+
+const SEED = {
+  "課本": {
+    "L7": [
+      {en:"as well as", zh:"和；除了…以外"},
+      {en:"at present", zh:"目前；現在"},
+      {en:"audience", zh:"觀眾；聽眾"},
+      {en:"broad", zh:"(adj.) 廣泛的；寬闊的"},
+      {en:"broaden", zh:"拓展"},
+      {en:"broaden one's horizons", zh:"拓展（某人的）視野"},
+      {en:"celebrity", zh:"名人"},
+      {en:"collect", zh:"收集；收取"},
+      {en:"collection", zh:"(n.) 一堆、一批…；收藏品"},
+      {en:"conference", zh:"會議；研討會"},
+      {en:"discuss", zh:"(vt.) 探討、闡述；討論"},
+      {en:"discussion", zh:"(n.) 討論"},
+      {en:"fascinate", zh:"使人著迷；吸引"},
+      {en:"fascination", zh:"(n.) 著迷；吸引力"},
+      {en:"fiction", zh:"小說"},
+      {en:"field", zh:"領域"},
+      {en:"for free", zh:"免費"},
+      {en:"found", zh:"(vt.) 創立；建設"},
+      {en:"foundation", zh:"(n.) 基金會；基礎"},
+      {en:"give...a try", zh:"嘗試…"},
+      {en:"increase", zh:"增加（動詞／名詞）"},
+      {en:"increasingly", zh:"愈來愈…"},
+      {en:"launch", zh:"(vt.) 發行；發起、開始從事"},
+      {en:"method", zh:"方式"},
+      {en:"numerous", zh:"許多的"},
+      {en:"organization", zh:"組織；機構"},
+      {en:"organize", zh:"組織；籌辦"},
+      {en:"organizer", zh:"組織者；籌辦者"},
+      {en:"philosophy", zh:"哲學"},
+      {en:"range", zh:"(n.) 種類；範圍　(vi.) 範圍包括…"},
+      {en:"seek", zh:"尋求；尋找"},
+      {en:"series", zh:"系列"},
+      {en:"technological", zh:"科技的"},
+      {en:"technology", zh:"科技"},
+      {en:"worth", zh:"(adj.) 值得…的　(n.) 價值；意義"},
+      {en:"worthy", zh:"值得…的"},
+    ],
+    "L8": [
+      {en:"arrange", zh:"(vt./vi.) 安排"},
+      {en:"arrangement", zh:"(n.) 安排"},
+      {en:"aspect", zh:"方面"},
+      {en:"assist", zh:"(vt./vi.) 幫助"},
+      {en:"assistance", zh:"幫助"},
+      {en:"assistant", zh:"助手；助理"},
+      {en:"come about", zh:"發生"},
+      {en:"contain", zh:"(vt.) 包含"},
+      {en:"container", zh:"(n.) 容器"},
+      {en:"cooperate", zh:"(vi.) 合作"},
+      {en:"cooperation", zh:"(n.) 合作"},
+      {en:"curiosity", zh:"好奇心"},
+      {en:"curious", zh:"好奇的"},
+      {en:"elder", zh:"(n.) 長輩　(adj.) 較年長的"},
+      {en:"elderly", zh:"(adj.) 年紀大的"},
+      {en:"event", zh:"事件"},
+      {en:"exchange", zh:"(n.) 交流；交換（計畫）　(vt.) 交換"},
+      {en:"expect", zh:"預期"},
+      {en:"expectation", zh:"期望；預期"},
+      {en:"fierce", zh:"(adj.) 強烈的；激烈的"},
+      {en:"hand out", zh:"發放"},
+      {en:"help (...) out", zh:"幫忙"},
+      {en:"neighborhood", zh:"鄰近地區"},
+      {en:"occupation", zh:"職業"},
+      {en:"occupy", zh:"(vt.) 占據（時間/空間）；占領"},
+      {en:"origin", zh:"(n.) 起源"},
+      {en:"original", zh:"(adj.) 原本的"},
+      {en:"originate", zh:"(vi.) 起源"},
+      {en:"relax", zh:"(vi.) 放鬆"},
+      {en:"shelter", zh:"(vt.) 遮蔽　(n.) 庇護處"},
+      {en:"spirit", zh:"(n.) 基本精神、本質；精神、心靈"},
+      {en:"spiritual", zh:"(adj.) 精神上的"},
+      {en:"stroll", zh:"散步（動詞／名詞）"},
+      {en:"take part in", zh:"參加"},
+      {en:"take place", zh:"舉行；發生"},
+      {en:"temporary", zh:"臨時的；暫時的"},
+      {en:"vehicle", zh:"車輛；交通工具"},
+    ],
+    "L9": [
+      {en:"alternative", zh:"(adj.) 另類的、非傳統的；替代的　(n.) 替代方案"},
+      {en:"brand", zh:"(n.) 品牌"},
+      {en:"chase", zh:"追逐（動詞／名詞）"},
+      {en:"combination", zh:"(n.) 結合"},
+      {en:"combine", zh:"(vt./vi.) 結合"},
+      {en:"constant", zh:"(adj.) 持續的；不斷的"},
+      {en:"constantly", zh:"(adv.) 持續地"},
+      {en:"derive", zh:"(vt.) 起源於；得到、獲得"},
+      {en:"digital", zh:"(adj.) 數位的"},
+      {en:"digitally", zh:"(adv.) 數位地"},
+      {en:"edit", zh:"(vt.) 編輯"},
+      {en:"edition", zh:"(n.) 版本"},
+      {en:"exist", zh:"(vi.) 存在"},
+      {en:"existence", zh:"(n.) 存在"},
+      {en:"existing", zh:"(adj.) 現有的；現存的"},
+      {en:"feature", zh:"(vt.) 以…為特色　(n.) 特色、特點"},
+      {en:"general", zh:"(adj.) 一般的、非專門的；普遍的"},
+      {en:"gossip", zh:"(n.) 流言、八卦　(vi.) 說八卦"},
+      {en:"image", zh:"(n.) 影像；形象"},
+      {en:"in the beginning", zh:"起初"},
+      {en:"later on", zh:"之後"},
+      {en:"modification", zh:"(n.) 修改"},
+      {en:"modify", zh:"(vt.) 修改"},
+      {en:"play a/an...role (in)", zh:"扮演…的角色"},
+      {en:"release", zh:"(vt.) 公開發行；釋放　(n.) 發行；釋放、排放"},
+      {en:"reveal", zh:"(vt.) 洩漏；透露"},
+      {en:"standard", zh:"(adj.) 標準的　(n.) 標準"},
+      {en:"take on", zh:"開始具有"},
+      {en:"think up", zh:"想出"},
+      {en:"too...to...", zh:"太…而無法…"},
+      {en:"usage", zh:"(n.) 用法"},
+      {en:"widespread", zh:"(adj.) 廣泛的"},
+    ],
+  },
+  "雜誌": {
+    "U1": [
+      {en:"along the way", zh:"在這期間；在這過程中"},
+      {en:"emotional", zh:"激起強烈情感的"},
+      {en:"inspiring", zh:"具啟發性的；激勵人心的"},
+      {en:"mood", zh:"氣圍"},
+      {en:"one by one", zh:"逐一地；一個接一個地"},
+      {en:"stadium", zh:"運動場；體育場"},
+      {en:"sticky", zh:"黏的"},
+      {en:"such as", zh:"比如"},
+      {en:"toss", zh:"拋；扔"},
+    ],
+    "U2": [
+      {en:"attitude", zh:"態度；看法；心態（attitude toward sth/sb）"},
+      {en:"briefly", zh:"簡短地；簡潔地"},
+      {en:"eager", zh:"熱切的；渴望的（eager to V 熱切/渴望（做）…）"},
+      {en:"have trouble V-ing", zh:"做某件事有困難"},
+      {en:"impressive", zh:"令人印象深刻的；令人欽佩的"},
+      {en:"industry", zh:"產業；行業"},
+      {en:"keep an eye on sth/sb", zh:"注意…；留意…"},
+      {en:"look forward to V-ing/N", zh:"期待…"},
+      {en:"make sure", zh:"確認；確保"},
+      {en:"mess up sth", zh:"把…搞砸；把…弄糟"},
+      {en:"on track", zh:"進展順利；進展如預期"},
+      {en:"risk", zh:"風險；危險"},
+      {en:"salary", zh:"薪水"},
+      {en:"scattered", zh:"分散的；零散的"},
+      {en:"set the trend", zh:"引領潮流"},
+      {en:"situation", zh:"狀況；情勢"},
+      {en:"task", zh:"工作；差事"},
+      {en:"weekly", zh:"每週的"},
+      {en:"within", zh:"在（某段時間）之內"},
+      {en:"work on sth", zh:"從事某事；致力於某事"},
+    ],
+    "U3": [
+      {en:"advantage", zh:"優勢；有利條件"},
+      {en:"around the clock", zh:"日夜不停；夜以繼日"},
+      {en:"at once", zh:"同時"},
+      {en:"be linked to sth/sb", zh:"與…相關"},
+      {en:"connection", zh:"（人們、群體之間的）關係；聯繫"},
+      {en:"creative", zh:"創作的；有創意的（creator n. 創作者）"},
+      {en:"deserve", zh:"值得；應得"},
+      {en:"detail", zh:"細節"},
+      {en:"efficient", zh:"有效率的；效率高的"},
+      {en:"hateful", zh:"充滿憎恨的"},
+      {en:"idol", zh:"偶像"},
+      {en:"meaningful", zh:"有意義的；重要的"},
+      {en:"open to debate", zh:"尚未定論的；仍有爭議的"},
+      {en:"over time", zh:"隨著時間過去"},
+      {en:"ownership", zh:"所有權"},
+      {en:"performer", zh:"表演者；演出者"},
+      {en:"release", zh:"發行；推出"},
+      {en:"result in sth", zh:"導致…；促成…"},
+      {en:"stand out", zh:"出眾"},
+    ],
+    "U4": [
+      {en:"chill", zh:"寒冷；寒意"},
+      {en:"cone", zh:"（錐形的）冰淇淋甜筒"},
+      {en:"contrast", zh:"對比；差異"},
+      {en:"cool off", zh:"（使…）降溫，涼快"},
+      {en:"either way", zh:"不管是哪種情況"},
+      {en:"flavor", zh:"風味；味道"},
+      {en:"in season", zh:"（水果或蔬菜）當令的，當季的"},
+      {en:"ingredient", zh:"（食品的）成分，原料"},
+      {en:"keep sth at bay", zh:"（令人不快、危險或嚴重的事物）無法靠近／發生"},
+      {en:"meanwhile", zh:"而（用於強調兩種同時發生的情況差異）"},
+      {en:"melt", zh:"融化"},
+      {en:"on the go", zh:"在旅途中"},
+      {en:"peanut", zh:"花生"},
+      {en:"pour", zh:"倒"},
+      {en:"prefer", zh:"偏好"},
+      {en:"range", zh:"範圍包括…（range from A to B）"},
+      {en:"smooth", zh:"滑順無顆粒的"},
+      {en:"warm up", zh:"（使…）變暖和，變溫暖"},
+    ],
+    "U5": [
+      {en:"above all", zh:"最重要的是"},
+      {en:"bang", zh:"猛擊；猛敲"},
+      {en:"be home to sth", zh:"是…的所在地"},
+      {en:"charge", zh:"猛衝"},
+      {en:"dash", zh:"猛衝；飛奔"},
+      {en:"encounter", zh:"偶遇；遇到"},
+      {en:"in the end", zh:"說到底；總而言之"},
+      {en:"outdoors", zh:"在戶外"},
+      {en:"play dead", zh:"裝死"},
+      {en:"spray", zh:"噴劑"},
+      {en:"within range", zh:"在有效距離內"},
+    ],
+    "U6": [
+      {en:"all eyes be on sth/sb", zh:"目光都聚集在…"},
+      {en:"along with sth", zh:"連同；一起"},
+      {en:"announcement", zh:"公告；宣告"},
+      {en:"(beV) known as sth", zh:"被稱作…"},
+      {en:"casual", zh:"偶爾的"},
+      {en:"competition", zh:"競賽；比賽（compete v. 競賽）"},
+      {en:"connected", zh:"有來往的；有關聯的"},
+      {en:"continent", zh:"洲；大陸"},
+      {en:"electric", zh:"令人興奮的；緊張刺激的"},
+      {en:"expand", zh:"（使）擴展/發展/增加（expanded adj. 擴展的）"},
+      {en:"global", zh:"全球的（globalized adj. 全球化的）"},
+      {en:"kick off", zh:"（足球比賽）開球，開始"},
+      {en:"mostly", zh:"主要地"},
+      {en:"move on to sth", zh:"繼續進行…"},
+      {en:"opportunity", zh:"機會（opportunity to V 做…的機會）"},
+      {en:"scale", zh:"規模"},
+      {en:"unite", zh:"（使）團結；（使）聯合"},
+    ],
+    "U7": [
+      {en:"advertisement", zh:"廣告（advertising n. 廣告（總稱））"},
+      {en:"as for sth/sb", zh:"至於…"},
+      {en:"automatically", zh:"自動地"},
+      {en:"by design", zh:"按照設計；有意地"},
+      {en:"cart", zh:"購物車；手推車"},
+      {en:"constant", zh:"持續不斷的；經常發生的"},
+      {en:"continuous", zh:"連續不斷的"},
+      {en:"digital", zh:"數位的"},
+      {en:"for instance", zh:"例如"},
+      {en:"harm", zh:"危害；損害"},
+      {en:"manage to V", zh:"（設法）做成…，辦到…"},
+      {en:"on the other hand", zh:"另一方面"},
+      {en:"permission", zh:"許可；允許"},
+      {en:"privacy", zh:"隱私（private adj. 私密的；個人的）"},
+      {en:"rather than", zh:"而不是"},
+      {en:"recognize", zh:"認出；辨識"},
+      {en:"specific", zh:"特定的"},
+      {en:"virus", zh:"電腦病毒"},
+    ],
+    "U8": [
+      {en:"as well as", zh:"以及"},
+      {en:"barrier", zh:"障礙物"},
+      {en:"bleeding", zh:"出血；流血"},
+      {en:"(beV) full of sth", zh:"充滿…"},
+      {en:"concert", zh:"演唱會；音樂會"},
+      {en:"escape", zh:"逃離；逃脫"},
+      {en:"feature", zh:"功能；特色"},
+      {en:"firm", zh:"有力的；堅定的"},
+      {en:"focus on sth", zh:"著重於…"},
+      {en:"freeze", zh:"僵住；呆住（freeze-froze-frozen）"},
+      {en:"get away", zh:"逃脫"},
+      {en:"in addition (to V-ing/sth)", zh:"除此（事物）之外"},
+      {en:"in place", zh:"已建立的；已安排"},
+      {en:"in real time", zh:"即時"},
+      {en:"injury", zh:"傷害；損傷"},
+      {en:"kit", zh:"成套工具；成套設備"},
+      {en:"out of sb's/sth's sight", zh:"在某人/某物的視野之外"},
+      {en:"padding", zh:"護墊；襯墊"},
+      {en:"priority", zh:"優先考慮的事（top/first/high priority 第一優先的事）"},
+      {en:"protective", zh:"防護的；保護性的（protect v. 保護）"},
+      {en:"resist", zh:"反抗；抵抗"},
+      {en:"solid", zh:"堅固的"},
+      {en:"suspicious", zh:"可疑的"},
+      {en:"victim", zh:"受害者"},
+      {en:"violent", zh:"暴力的"},
+      {en:"wrap", zh:"用…包/裹/圍"},
+    ],
+    "U9": [
+      {en:"bring about sth", zh:"促成…；引起…"},
+      {en:"classic", zh:"經典的"},
+      {en:"discovery", zh:"發現"},
+      {en:"exposure", zh:"接觸；體驗（exposure to sth）"},
+      {en:"garlic", zh:"蒜；大蒜"},
+      {en:"honor", zh:"表揚；向…表示敬意"},
+      {en:"lead to sth", zh:"促成…；導致…"},
+      {en:"look at sth", zh:"檢視…；審視…"},
+      {en:"turn out", zh:"結果是（尤指出乎意料的結果）"},
+      {en:"yearly", zh:"每年的；一年一次的"},
+    ],
+    "U10": [
+      {en:"artificial", zh:"人造的；人工的"},
+      {en:"beV made from", zh:"由…製成（經加工轉化，看不出原本形態）"},
+      {en:"calorie", zh:"卡路里（low-calorie adj. 低熱量的）"},
+      {en:"come with sth", zh:"伴隨著…；附有…"},
+      {en:"comparison", zh:"比較（by comparison 相較之下）"},
+      {en:"consume", zh:"吃；喝；攝取（正式用字）"},
+      {en:"impact", zh:"影響；衝擊（impact on sth 對…的影響/衝擊）"},
+      {en:"moist", zh:"濕潤的"},
+      {en:"occur", zh:"存在；被發現（occur in/among/etc. 存在於…裡/當中/等）"},
+      {en:"on top of sth", zh:"除了…之外（還有…）"},
+      {en:"process", zh:"（食品）處理，加工"},
+      {en:"rely on sth/sb", zh:"倚賴…；依靠…"},
+      {en:"sauce", zh:"醬汁；調味汁"},
+      {en:"standard", zh:"普通的；標準的"},
+      {en:"taste bud", zh:"味蕾"},
+      {en:"tender", zh:"（食物）軟的，嫩的"},
+    ],
+    "U11": [
+      {en:"around the corner", zh:"即將來臨；在附近"},
+      {en:"as though", zh:"好像；似乎"},
+      {en:"disaster", zh:"災害；災難"},
+      {en:"frequently", zh:"頻繁地；經常地"},
+      {en:"heal", zh:"（情感）康復，修復"},
+      {en:"mental", zh:"精神的；心理的"},
+      {en:"network", zh:"關係網；聯絡網"},
+      {en:"once more", zh:"重新"},
+      {en:"play a role (in sth)", zh:"（在某事）扮演某種角色/起某種作用"},
+      {en:"process", zh:"消化，處理，排解（難題、悲傷的事情）"},
+      {en:"reaction", zh:"反應（reaction to sth 對…的反應）"},
+      {en:"realistic", zh:"寫實的；真實的；栩栩如生的"},
+      {en:"scary", zh:"可怕的；嚇人的（scare n. 驚恐；驚嚇）"},
+      {en:"significantly", zh:"顯著地"},
+      {en:"shut (sth) down", zh:"關閉…；使…停止運轉"},
+      {en:"tend to V", zh:"傾向於…；往往會…"},
+      {en:"tough", zh:"困難的；艱難的"},
+      {en:"vivid", zh:"生動的；清晰的"},
+    ],
+    "U12": [
+      {en:"(beV) based on sth", zh:"根據…"},
+      {en:"accurate", zh:"準確的；正確無誤的"},
+      {en:"audio", zh:"（電子設備上錄製、播放的）聲音"},
+      {en:"confidence", zh:"自信心"},
+      {en:"dislike", zh:"不喜歡；厭惡"},
+      {en:"familiar", zh:"熟悉的（unfamiliar adj. 不熟悉的）"},
+      {en:"flexible", zh:"可變通的；靈活的"},
+      {en:"gap", zh:"差距（a gap between A and B）"},
+      {en:"go away", zh:"消失"},
+      {en:"grasp", zh:"理解；領會"},
+      {en:"inner", zh:"內部的（inner ear n. 內耳）"},
+      {en:"physical", zh:"生理的；身體的"},
+      {en:"structure", zh:"結構；構造"},
+      {en:"to begin with", zh:"首先"},
+      {en:"variety", zh:"種類；各式各樣（a variety of sth）"},
+      {en:"what's more", zh:"再者；而且"},
+    ],
+  },
+  "單字本": {
+    "7-5": [
+      {en:"relaxation", zh:"放鬆"},
+      {en:"religious", zh:"宗教的"},
+      {en:"remark", zh:"評論"},
+      {en:"republic", zh:"共和國"},
+      {en:"research", zh:"研究"},
+      {en:"revise", zh:"修訂"},
+      {en:"revision", zh:"修訂（版）"},
+      {en:"revolution", zh:"革命"},
+      {en:"revolutionary", zh:"革命性的"},
+      {en:"reward", zh:"報酬"},
+      {en:"rhyme", zh:"押韻"},
+      {en:"rhythm", zh:"韻律"},
+      {en:"riddle", zh:"謎語"},
+      {en:"romance", zh:"浪漫"},
+      {en:"rush", zh:"匆忙"},
+      {en:"sacrifice", zh:"犧牲"},
+      {en:"savings", zh:"儲蓄"},
+      {en:"scholarship", zh:"獎學金"},
+      {en:"sculpture", zh:"雕刻品"},
+      {en:"sightseeing", zh:"觀光"},
+      {en:"signature", zh:"簽名"},
+      {en:"sin", zh:"罪"},
+      {en:"singular", zh:"單數的"},
+      {en:"skate", zh:"溜冰"},
+      {en:"sketch", zh:"素描"},
+      {en:"ski", zh:"滑雪"},
+      {en:"slogan", zh:"口號"},
+      {en:"summarize", zh:"概述"},
+      {en:"summary", zh:"總結"},
+      {en:"survey", zh:"調查"},
+      {en:"syllable", zh:"音節"},
+      {en:"theme", zh:"主題"},
+      {en:"theory", zh:"理論"},
+      {en:"tourism", zh:"旅遊（業）"},
+      {en:"tragedy", zh:"悲劇"},
+      {en:"tragic", zh:"悲劇的"},
+      {en:"translate", zh:"翻譯"},
+      {en:"translation", zh:"翻譯"},
+      {en:"trend", zh:"趨勢"},
+      {en:"tribal", zh:"部落的"},
+      {en:"trumpet", zh:"小喇叭"},
+      {en:"tune", zh:"曲調"},
+      {en:"usage", zh:"用法"},
+      {en:"verse", zh:"韻文"},
+      {en:"virtue", zh:"美德"},
+      {en:"volleyball", zh:"排球"},
+      {en:"voyage", zh:"航行"},
+      {en:"wage", zh:"工資"},
+      {en:"welfare", zh:"福利"},
+      {en:"wisdom", zh:"智慧"},
+      {en:"workout", zh:"鍛鍊"},
+    ],
+    "8-1": [
+      {en:"atmosphere", zh:"氣氛"},
+      {en:"bacteria", zh:"細菌"},
+      {en:"bamboo", zh:"竹子"},
+      {en:"bay", zh:"海灣"},
+      {en:"beast", zh:"野獸"},
+      {en:"beetle", zh:"甲蟲"},
+      {en:"berry", zh:"莓果"},
+      {en:"bloom", zh:"開花"},
+      {en:"blossom", zh:"花"},
+      {en:"brass", zh:"黃銅"},
+      {en:"breed", zh:"品種"},
+      {en:"breeze", zh:"微風"},
+      {en:"bubble", zh:"泡沫"},
+      {en:"bud", zh:"花蕾"},
+      {en:"buffalo", zh:"水牛"},
+      {en:"bull", zh:"公牛"},
+      {en:"bush", zh:"灌木叢"},
+      {en:"canyon", zh:"峽谷"},
+      {en:"cattle", zh:"牛群"},
+      {en:"cave", zh:"山洞"},
+      {en:"cherry", zh:"櫻桃"},
+      {en:"claw", zh:"爪子"},
+      {en:"cliff", zh:"懸崖"},
+      {en:"cock", zh:"公雞"},
+      {en:"continent", zh:"大陸"},
+      {en:"crab", zh:"螃蟹"},
+      {en:"creation", zh:"創造"},
+      {en:"creature", zh:"生物"},
+      {en:"cricket", zh:"蟋蟀"},
+      {en:"crop", zh:"農作物"},
+      {en:"dawn", zh:"黎明"},
+      {en:"dew", zh:"露水"},
+      {en:"dinosaur", zh:"恐龍"},
+      {en:"dirt", zh:"泥土"},
+      {en:"divine", zh:"神聖的"},
+      {en:"dolphin", zh:"海豚"},
+      {en:"donkey", zh:"驢子"},
+      {en:"dragonfly", zh:"蜻蜓"},
+      {en:"dust", zh:"灰塵"},
+      {en:"echo", zh:"回音"},
+      {en:"feather", zh:"羽毛"},
+      {en:"flame", zh:"火焰"},
+    ],
+    "8-2": [
+      {en:"flea", zh:"跳蚤"},
+      {en:"flood", zh:"洪水"},
+      {en:"foggy", zh:"有霧的"},
+      {en:"frost", zh:"霜"},
+      {en:"fur", zh:"毛皮"},
+      {en:"geography", zh:"地理學"},
+      {en:"germ", zh:"細菌"},
+      {en:"ginger", zh:"薑"},
+      {en:"grasshopper", zh:"蚱蜢"},
+      {en:"grassy", zh:"長滿草的"},
+      {en:"gulf", zh:"海灣"},
+      {en:"hawk", zh:"鷹"},
+      {en:"hay", zh:"乾草"},
+      {en:"horizon", zh:"地平線"},
+      {en:"humid", zh:"潮濕的"},
+      {en:"hurricane", zh:"颱風"},
+      {en:"hydrogen", zh:"氫"},
+      {en:"ivory", zh:"象牙"},
+      {en:"jungle", zh:"叢林"},
+      {en:"kangaroo", zh:"袋鼠"},
+      {en:"koala", zh:"無尾熊"},
+      {en:"landscape", zh:"風景"},
+      {en:"lawn", zh:"草坪"},
+      {en:"leopard", zh:"豹"},
+      {en:"lightning", zh:"閃電"},
+      {en:"lily", zh:"百合花"},
+      {en:"lobster", zh:"龍蝦"},
+      {en:"log", zh:"木材"},
+      {en:"marble", zh:"大理石"},
+      {en:"meadow", zh:"草地"},
+      {en:"mineral", zh:"礦物"},
+      {en:"mist", zh:"霧"},
+      {en:"mosquito", zh:"蚊子"},
+      {en:"moth", zh:"蛾"},
+      {en:"mountainous", zh:"多山的"},
+      {en:"muddy", zh:"泥濘的"},
+      {en:"mule", zh:"騾子"},
+      {en:"murmur", zh:"低聲說話"},
+      {en:"nest", zh:"鳥巢"},
+      {en:"oak", zh:"橡木"},
+      {en:"orbit", zh:"軌道"},
+    ],
+    "8-3": [
+      {en:"owl", zh:"貓頭鷹"},
+      {en:"ox", zh:"牛"},
+      {en:"oxygen", zh:"氧氣"},
+      {en:"parrot", zh:"鸚鵡"},
+      {en:"paw", zh:"爪子"},
+      {en:"pea", zh:"碗豆"},
+      {en:"pearl", zh:"珍珠"},
+      {en:"penguin", zh:"企鵝"},
+      {en:"pest", zh:"害蟲"},
+      {en:"phenomenon", zh:"現象"},
+      {en:"pigeon", zh:"鴿子"},
+      {en:"pine", zh:"松樹"},
+      {en:"plum", zh:"李子"},
+      {en:"pour", zh:"倒；灌"},
+      {en:"reflect", zh:"反射"},
+      {en:"reflection", zh:"倒影"},
+      {en:"resource", zh:"資源"},
+      {en:"scenery", zh:"風景"},
+      {en:"seal", zh:"密封"},
+      {en:"shrimp", zh:"蝦子"},
+      {en:"slope", zh:"斜坡"},
+      {en:"solar", zh:"太陽的"},
+      {en:"spark", zh:"火花"},
+      {en:"species", zh:"物種"},
+      {en:"squirrel", zh:"松鼠"},
+      {en:"steam", zh:"蒸汽"},
+      {en:"stem", zh:"莖"},
+      {en:"stormy", zh:"有暴風雨的"},
+      {en:"summit", zh:"山頂"},
+      {en:"swan", zh:"天鵝"},
+      {en:"tide", zh:"潮汐"},
+      {en:"tortoise", zh:"烏龜"},
+      {en:"trunk", zh:"樹幹"},
+      {en:"twig", zh:"小樹枝"},
+      {en:"violet", zh:"紫羅蘭"},
+      {en:"waterfall", zh:"瀑布"},
+      {en:"weed", zh:"雜草"},
+      {en:"wheat", zh:"小麥"},
+    ],
+  },
+};
+
+const VOCAB = {};
+for(const cat in SCHEMA){
+  VOCAB[cat] = {};
+  SCHEMA[cat].forEach(l=>{ VOCAB[cat][l] = (SEED[cat] && SEED[cat][l]) || []; });
+}
+
+/* ============ 間隔重複（Leitner）+ 存檔 ============ */
+const STORE_KEY="vocabsys_v2";
+const INTERVALS=[0,1,2,4,8];
+let progress=loadProgress();
+function loadProgress(){ try{return JSON.parse(localStorage.getItem(STORE_KEY))||{};}catch(e){return {};} }
+function saveProgress(){ try{localStorage.setItem(STORE_KEY,JSON.stringify(progress));}catch(e){} }
+const keyOf=(c,l,w)=>c+"|"+l+"|"+w.en;
+function rec(c,l,w){ const k=keyOf(c,l,w); if(!progress[k]) progress[k]={box:0,due:0}; return progress[k]; }
+function isDue(c,l,w){ return rec(c,l,w).due<=Date.now(); }
+function grade(c,l,w,ok){ const r=rec(c,l,w); r.box=ok?Math.min(r.box+1,INTERVALS.length-1):0; r.due=Date.now()+INTERVALS[r.box]*86400000; saveProgress(); }
+function lessonStats(c,l){
+  const list=VOCAB[c][l]; let m=0,d=0;
+  list.forEach(w=>{ if(rec(c,l,w).box>=3)m++; if(isDue(c,l,w))d++; });
+  return {total:list.length, mastered:m, due:d, pct:list.length?Math.round(m/list.length*100):0};
+}
+
+/* ============ 歷史數據 ============ */
+const HIST_KEY="vocabsys_hist_v1";
+const MODE_NAMES={flip:"翻卡",choice:"選擇題",spell:"拼字",listen:"聽寫"};
+function loadHist(){ try{return JSON.parse(localStorage.getItem(HIST_KEY))||[];}catch(e){return [];} }
+function saveHist(h){ try{localStorage.setItem(HIST_KEY,JSON.stringify(h));}catch(e){} }
+function pushHist(r){ const h=loadHist(); h.push(r); if(h.length>500)h.shift(); saveHist(h); }
+
+/* ============ 狀態 ============ */
+let activeTab=Object.keys(SCHEMA)[0];
+let selected=new Set();
+let selMode=null;
+let queue=[], qi=0, sStats={right:0,wrong:0,total:0}, streak=0, wrongList=[];
+
+/* ============ 首頁渲染 ============ */
+const tabsEl=document.getElementById('tabs');
+const lessonsEl=document.getElementById('lessons');
+
+function renderTabs(){
+  tabsEl.innerHTML="";
+  Object.keys(SCHEMA).forEach(cat=>{
+    const t=document.createElement('button');
+    t.className="seg"+(activeTab===cat?" on":"");
+    t.innerHTML=`<b>${cat}</b><small>${SCHEMA[cat].length} 課</small>`;
+    t.onclick=()=>{ activeTab=cat; renderTabs(); renderLessons(); };
+    tabsEl.appendChild(t);
+  });
+}
+function renderLessons(){
+  lessonsEl.innerHTML="";
+  SCHEMA[activeTab].forEach(l=>{
+    const s=lessonStats(activeTab,l);
+    const k=activeTab+"|"+l;
+    const c=document.createElement('button');
+    c.className="chip"+(s.total===0?" empty":"")+(selected.has(k)?" sel":"");
+    c.innerHTML=`
+      <span class="tk">✓</span>
+      <div class="ttl">${l}</div>
+      <div class="ct">${ s.total===0 ? "待新增" : `${s.total} 字${s.due?` · <span class="due">複習 ${s.due}</span>`:""}` }</div>
+      <div class="bar"><i style="width:${s.pct}%"></i></div>`;
+    if(s.total>0){
+      c.onclick=()=>{ selected.has(k)?selected.delete(k):selected.add(k); renderLessons(); refreshDock(); };
+    }
+    lessonsEl.appendChild(c);
+  });
+}
+document.getElementById('allBtn').onclick=()=>{
+  const ls=SCHEMA[activeTab].filter(l=>VOCAB[activeTab][l].length>0).map(l=>activeTab+"|"+l);
+  const allOn=ls.every(k=>selected.has(k));
+  ls.forEach(k=> allOn?selected.delete(k):selected.add(k));
+  renderLessons(); refreshDock();
+};
+document.querySelectorAll('.mode').forEach(m=>{
+  m.onclick=()=>{ document.querySelectorAll('.mode').forEach(x=>x.classList.remove('on'));
+    m.classList.add('on'); selMode=m.dataset.mode; refreshDock(); };
+});
+document.getElementById('setBtn').onclick=function(){
+  const p=document.getElementById('setPanel');
+  const open=p.classList.toggle('open');
+  this.classList.toggle('on',open);
+};
+
+function selectedWords(){
+  const out=[];
+  selected.forEach(k=>{ const [c,l]=k.split("|"); VOCAB[c][l].forEach(w=>out.push({w,c,l})); });
+  return out;
+}
+function refreshDock(){
+  const n=selectedWords().length;
+  const ok=selected.size>0 && selMode && n>0;
+  document.getElementById('startBtn').disabled=!ok;
+  document.getElementById('dockSel').textContent = selected.size>0 ? `${selected.size} 課 · ${n} 字` : "未選擇";
+  document.getElementById('dockSub').textContent = ok ? `模式：${MODE_NAMES[selMode]}` : (selMode?"請選擇課程":"選課程與模式後開始");
+}
+document.getElementById('startBtn').onclick=startSession;
+
+/* ============ 工具 ============ */
+function shuffle(a){ for(let i=a.length-1;i>0;i--){const j=(Math.random()*(i+1))|0;[a[i],a[j]]=[a[j],a[i]];} return a; }
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+  document.getElementById('dock').style.display = (id==='s-home') ? "" : "none";
+  window.scrollTo(0,0);
+}
+
+/* ============ 開始訓練 ============ */
+function startSession(){
+  const pool=selectedWords();
+  let due=pool.filter(it=>isDue(it.c,it.l,it.w));
+  if(due.length===0) due=[...pool];
+  if(selMode==="flip"){
+    queue=[...pool].sort((a,b)=>a.w.en.toLowerCase().localeCompare(b.w.en.toLowerCase())).map(it=>({...it,retry:false}));
+  } else {
+    queue=shuffle([...due]).map(it=>({...it, retry:false}));
+  }
+  qi=0; sStats={right:0,wrong:0,total:0}; streak=0; wrongList=[];
+  document.getElementById('deckBadge').textContent =
+    selected.size===1 ? [...selected][0].replace("|"," · ") : `${selected.size} 個單元`;
+  show('s-study'); renderStage();
+}
+
+/* ============ 發音引擎 ============ */
+let voices=[], chosenVoice=null, useOnline=false, savedVoiceName=null;
+function loadVoicePrefs(){ try{ savedVoiceName=localStorage.getItem('vd_voice'); useOnline=localStorage.getItem('vd_online')==="1"; }catch(e){}
+  const ob=document.getElementById('onlineV'); if(ob) ob.checked=useOnline; }
+function voiceScore(v){ const n=(v.name||"").toLowerCase(); let s=0;
+  if(/natural|neural|premium|enhanced|siri/.test(n)) s+=100;
+  if(n.includes("google")) s+=80;
+  if(/samantha|aria|jenny|guy|sonia|ava|libby|ryan|emma|nova/.test(n)) s+=60;
+  if(v.lang){ if(v.lang.startsWith("en-US"))s+=20; else if(v.lang.startsWith("en-GB"))s+=15; else if(v.lang.startsWith("en"))s+=10; }
+  if(v.localService===false) s+=5; return s; }
+function populateVoices(){
+  let all=(window.speechSynthesis?speechSynthesis.getVoices():[])||[];
+  voices=all.filter(v=>v.lang&&v.lang.toLowerCase().startsWith("en")); if(voices.length===0) voices=all;
+  voices.sort((a,b)=>voiceScore(b)-voiceScore(a));
+  const sel=document.getElementById('voiceSel'); if(!sel) return;
+  if(voices.length===0){ sel.innerHTML="<option>此瀏覽器無內建語音</option>"; return; }
+  sel.innerHTML="";
+  voices.forEach(v=>{ const o=document.createElement('option');
+    const tag=v.lang.includes("GB")?"（英腔）":v.lang.includes("US")?"（美腔）":v.lang.includes("AU")?"（澳腔）":"";
+    o.value=v.name; o.textContent=v.name.replace(/Microsoft|Google/g,"").trim()+" "+tag; sel.appendChild(o); });
+  let pick = savedVoiceName ? voices.find(v=>v.name===savedVoiceName) : null;
+  if(!pick) pick=voices[0]; chosenVoice=pick; sel.value=pick.name;
+}
+function initVoices(){
+  loadVoicePrefs(); populateVoices();
+  if(window.speechSynthesis) speechSynthesis.onvoiceschanged=populateVoices;
+  const sel=document.getElementById('voiceSel');
+  if(sel) sel.onchange=e=>{ chosenVoice=voices.find(v=>v.name===e.target.value)||null;
+    try{localStorage.setItem('vd_voice',e.target.value);}catch(_){} speak("knowledge"); };
+  const tv=document.getElementById('testV'); if(tv) tv.onclick=()=>speak("knowledge");
+  const ov=document.getElementById('onlineV'); if(ov) ov.onchange=e=>{ useOnline=e.target.checked;
+    try{localStorage.setItem('vd_online',useOnline?"1":"0");}catch(_){} speak("knowledge"); };
+}
+function speak(text){
+  if(useOnline){
+    try{ const url="https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=en&q="+encodeURIComponent(text);
+      const a=new Audio(url); a.onerror=()=>sysSpeak(text); const p=a.play(); if(p&&p.catch)p.catch(()=>sysSpeak(text)); return;
+    }catch(e){} }
+  sysSpeak(text);
+}
+function sysSpeak(text){ try{ window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text); u.lang=(chosenVoice&&chosenVoice.lang)||"en-US";
+  if(chosenVoice) u.voice=chosenVoice; u.rate=.92; u.pitch=1; window.speechSynthesis.speak(u);
+}catch(e){} }
+
+/* ============ 題目渲染 ============ */
+const stage=document.getElementById('stage');
+function updHud(){
+  document.getElementById('counter').textContent=`${Math.min(qi+1,queue.length)} / ${queue.length}`;
+  document.getElementById('streak').textContent=`🔥 ${streak}`;
+  document.getElementById('progBar').style.width=(qi/queue.length*100)+"%";
+}
+function renderStage(){
+  if(qi>=queue.length) return finish();
+  updHud();
+  const w=queue[qi].w;
+  if(selMode==="flip") return renderFlip(w);
+  if(selMode==="choice") return renderChoice(w);
+  if(selMode==="spell") return renderSpell(w,false);
+  if(selMode==="listen") return renderSpell(w,true);
+}
+
+/* —— 翻卡（可來回翻）—— */
+function renderFlip(w){
+  stage.innerHTML=`
+    <div class="flip" id="flip"><div class="flip-in" id="flipIn">
+      <div class="face front"><div class="word">${w.en}</div>
+        <button class="spk" id="spk">🔊</button><div class="whint">TAP — 看意思</div></div>
+      <div class="face back"><div class="word zh">${w.zh}</div><div class="whint">${w.en}</div></div>
+    </div></div>
+    <div class="fliphint" id="fh">點卡片翻面</div>
+    <div class="rate" id="rate" style="visibility:hidden"><button class="no">還不熟</button><button class="yes">記得 ✓</button></div>`;
+  const flip=document.getElementById('flip');
+  let flipped=false;
+  document.getElementById('spk').onclick=e=>{e.stopPropagation();speak(w.en);};
+  document.getElementById('flipIn').onclick=()=>{
+    flipped=!flipped;
+    flip.classList.toggle('on', flipped);
+    document.getElementById('rate').style.visibility = flipped ? "visible" : "hidden";
+    document.getElementById('fh').textContent = flipped ? "想起來了嗎？（再點可翻回）" : "點卡片翻面";
+    if(flipped) speak(w.en);
+  };
+  document.querySelector('#rate .no').onclick=()=>answer(false);
+  document.querySelector('#rate .yes').onclick=()=>answer(true);
+}
+function allWords(){ const o=[]; for(const c in VOCAB)for(const l in VOCAB[c])VOCAB[c][l].forEach(w=>o.push(w)); return o; }
+function renderChoice(w){
+  const pool=allWords().filter(x=>x.zh!==w.zh).map(x=>x.zh);
+  const opts=shuffle([w.zh, ...shuffle(pool).slice(0,3)]);
+  stage.innerHTML=`<div class="qword"><div class="w">${w.en}</div>
+    <button class="spk" id="spk" style="margin-top:12px">🔊</button></div><div class="opts" id="opts"></div>`;
+  document.getElementById('spk').onclick=()=>speak(w.en); speak(w.en);
+  const box=document.getElementById('opts');
+  opts.forEach(o=>{ const b=document.createElement('button'); b.className="opt"; b.textContent=o;
+    b.onclick=()=>{ const ok=o===w.zh;
+      box.querySelectorAll('.opt').forEach(x=>{ x.disabled=true; if(x.textContent===w.zh)x.classList.add('correct'); });
+      if(!ok) b.classList.add('wrong'); setTimeout(()=>answer(ok), ok?450:1100); };
+    box.appendChild(b); });
+}
+function renderSpell(w,listen){
+  stage.innerHTML=`<div class="qword">${ listen
+    ? `<button class="spk" id="spk" style="margin:0 auto 6px">🔊</button><div class="whint">聽發音，拼出單字</div>`
+    : `<div class="w" style="font-size:26px;font-family:var(--sans);line-height:1.5">${w.zh}</div>` }</div>
+    <input class="inp" id="inp" placeholder="輸入英文…" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <div class="ans" id="ans">　</div><button class="btn" id="check" style="margin-top:12px">確認</button>`;
+  if(listen){ document.getElementById('spk').onclick=()=>speak(w.en); speak(w.en); }
+  const inp=document.getElementById('inp'); inp.focus();
+  const submit=()=>{ const val=inp.value.trim().toLowerCase(); if(!val)return;
+    const ok=val===w.en.toLowerCase(); inp.disabled=true; document.getElementById('check').disabled=true;
+    inp.classList.add(ok?"ok":"err"); document.getElementById('ans').innerHTML=ok?"答對 ✓":`正解：<b>${w.en}</b>`;
+    speak(w.en); setTimeout(()=>answer(ok), ok?650:1400); };
+  document.getElementById('check').onclick=submit;
+  inp.onkeydown=e=>{ if(e.key==="Enter") submit(); };
+}
+
+/* ============ 作答 ============ */
+function answer(ok){
+  const it=queue[qi]; grade(it.c,it.l,it.w,ok); sStats.total++;
+  if(ok){ sStats.right++; streak++; }
+  else{
+    sStats.wrong++; streak=0;
+    if(!wrongList.some(x=>x.en===it.w.en)) wrongList.push(it.w);
+    if(!it.retry) queue.push({...it,retry:true});
+  }
+  qi++; renderStage();
+}
+
+/* ============ 結算 ============ */
+function finish(){
+  document.getElementById('progBar').style.width="100%";
+  const pct=sStats.total?Math.round(sStats.right/sStats.total*100):0;
+  document.getElementById('rScore').textContent=pct+"%";
+  document.getElementById('rTotal').textContent=sStats.total;
+  document.getElementById('rRight').textContent=sStats.right;
+  document.getElementById('rWrong').textContent=sStats.wrong;
+  document.getElementById('rMsg').textContent =
+    pct>=90?"完美！幾乎全對 🎯":pct>=70?"表現穩定 💪":pct>=50?"再跑幾輪會更熟 📈":"重複就會記住 🔁";
+  // 錯字清單
+  const ww=document.getElementById('wrongWrap');
+  ww.innerHTML = wrongList.length ? `
+    <div class="wrongbox"><h4>本輪答錯（${wrongList.length}）</h4>
+      ${wrongList.map(w=>`<div class="wrow"><span class="we">${w.en}</span><span class="wz">${w.zh}</span></div>`).join("")}
+    </div>` : "";
+  if(sStats.total>0) pushHist({ ts:Date.now(), deck:document.getElementById('deckBadge').textContent,
+    mode:MODE_NAMES[selMode]||selMode, total:sStats.total, right:sStats.right, wrong:sStats.wrong, pct });
+  show('s-result'); renderLessons();
+}
+
+/* ============ 歷史數據渲染 ============ */
+function fmtDate(ts){ const d=new Date(ts), p=n=>String(n).padStart(2,"0");
+  return `${d.getMonth()+1}/${p(d.getDate())} ${p(d.getHours())}:${p(d.getMinutes())}`; }
+function renderHistory(){
+  const all=loadHist();
+  const h=all.slice().reverse();
+  const sessions=all.length;
+  const totalAns=all.reduce((s,r)=>s+r.total,0);
+  const totalRight=all.reduce((s,r)=>s+r.right,0);
+  const avg=totalAns?Math.round(totalRight/totalAns*100):0;
+  const t0=new Date(); t0.setHours(0,0,0,0);
+  const todayCount=all.filter(r=>r.ts>=t0.getTime()).length;
+  const recent=all.slice(-20);
+  const bars=recent.map(r=>`<div class="hbar" title="${fmtDate(r.ts)}｜${r.pct}%" style="height:${Math.max(r.pct,4)}%"></div>`).join("");
+  const rows = h.length ? h.map(r=>`
+    <div class="hrow">
+      <div><div class="hdeck">${r.deck}</div><div class="hmeta">${fmtDate(r.ts)} · ${r.mode}</div></div>
+      <div class="hr"><div class="hpct ${r.pct>=70?'g':r.pct>=50?'a':'b'}">${r.pct}%</div><div class="hmeta">${r.right}/${r.total} 對</div></div>
+    </div>`).join("") : `<div class="hempty">還沒有訓練紀錄<br>去背幾輪，數據就會長出來 📈</div>`;
+  document.getElementById('histBody').innerHTML=`
+    <div class="hstats">
+      <div class="hs"><div class="n a">${sessions}</div><div class="t">訓練次數</div></div>
+      <div class="hs"><div class="n">${totalAns}</div><div class="t">累計作答</div></div>
+      <div class="hs"><div class="n g">${avg}%</div><div class="t">平均正確率</div></div>
+      <div class="hs"><div class="n a">${todayCount}</div><div class="t">今日次數</div></div>
+    </div>
+    ${recent.length?`<div class="hchart-wrap"><div class="hchart">${bars}</div><div class="hcap">近 ${recent.length} 輪正確率走勢</div></div>`:""}
+    <div class="hlist">${rows}</div>
+    ${all.length?`<button class="btn ghost" id="clrHist" style="margin-top:13px">🗑 清除所有紀錄</button>`:""}`;
+  const clr=document.getElementById('clrHist');
+  if(clr) clr.onclick=()=>{ if(confirm("確定清除所有訓練紀錄？此動作無法復原。")){ saveHist([]); renderHistory(); } };
+}
+
+/* ============ 導覽 ============ */
+document.getElementById('quitBtn').onclick=()=>{ renderLessons(); show('s-home'); };
+document.getElementById('againBtn').onclick=startSession;
+document.getElementById('homeBtn').onclick=()=>{ renderLessons(); show('s-home'); };
+document.getElementById('histBtn').onclick=()=>{ renderHistory(); show('s-history'); };
+document.getElementById('resHist').onclick=()=>{ renderHistory(); show('s-history'); };
+document.getElementById('histBack').onclick=()=>{ renderLessons(); show('s-home'); };
+
+/* ============ init ============ */
+renderTabs(); renderLessons(); refreshDock(); initVoices();
+</script>
+</body>
+</html>
