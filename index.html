@@ -1121,213 +1121,174 @@ const NOTES = {
 <div class="footer">CH.6 完整版 ／ CIVICS NOTES ／ 翰林版 ／ 段考衝刺</div>`,
 
 /* ════════ 歷史 Unit 6 ════════ */
-'h-u6': `<div class="top-header">
-  <div class="tag">HISTORY ／ 第六章 ／ 段考完整版 ／ 三民版</div>
-  <h1>戰爭與和平</h1>
-  <div class="sub">第1節 東亞與第二次世界大戰　・　第2節 共產主義在東亞的擴張</div>
+'h-u6': `
+<div class="note-header-block" style="border-left-color:#ff9955;">
+  <div class="nh-tag" style="color:#c86020;">HISTORY ／ 第六章 ／ 三民版 ／ 段考完整版</div>
+  <h1 style="color:#ff9955;">戰爭與和平</h1>
+  <div class="nh-sub">第1節 東亞與第二次世界大戰　・　第2節 共產主義在東亞的擴張</div>
 </div>
 
-<div class="tab-bar">
-  <div class="tab active" onclick="h6Tab(0)">第1節 東亞與二戰</div>
-  <div class="tab" onclick="h6Tab(1)">第2節 共產主義擴張</div>
+<div class="cv-tab-bar">
+  <div class="cv-tab active" onclick="h6Tab(0,this)">第1節 東亞與二戰</div>
+  <div class="cv-tab" onclick="h6Tab(1,this)">第2節 共產主義擴張</div>
 </div>
 
-
-<!-- ══════════════════ 第1節 ══════════════════ -->
-<div class="section active" id="s0">
-
-  <div class="sec-title"><span class="num">一</span><h2>中日戰爭</h2></div>
-  <div class="card hl">
-    <div class="sub-title">（一）九一八事件與滿洲國（1931）</div>
-    <div class="pts">
-      <div class="pt"><div class="dot r"></div><div>導火線：1931年9月18日，日本關東軍<em>誆稱</em>中國軍隊炸毀瀋陽北郊鐵路，藉此進攻附近駐軍，三個多月便占領東北全境</div></div>
-      <div class="pt"><div class="dot r"></div><div>1932年，日本扶植傀儡政權<em>滿洲國</em>成立，受日本關東軍控制</div></div>
-      <div class="pt"><div class="dot c"></div><div>影響：國民政府呼籲國際社會主持公道；<em>國際聯盟</em>派調查團至東北，譴責日本為侵略者，日本退出國聯</div></div>
-    </div>
-    <div class="sub-title">（二）一二八事件與華北衝突（1932–1933）</div>
-    <div class="pts">
-      <div class="pt"><div class="dot r"></div><div>1932年1月28日，上海日軍以<em>保護僑民</em>為藉口攻擊中國駐軍，國民政府抵抗持續三個多月；歐美各國出面逼迫日軍停火，日軍退回原駐地</div></div>
-      <div class="pt"><div class="dot r"></div><div>入侵熱河、河北後，蔣中正堅持「<em>先安內後攘外</em>」以剿共優先</div></div>
-      <div class="pt"><div class="dot c"></div><div>1933年5月簽訂《<em>塘沽協定</em>》，劃定北平、天津以北至長城為非軍事區，中國不得駐軍</div></div>
-    </div>
-    <div class="sub-title">（三）八年抗戰（1937–1945）</div>
-    <div class="pts">
-      <div class="pt"><div class="dot r"></div><div>導火線：1937年7月7日<em>盧溝橋事變</em>（七七事變），日軍在河北盧溝橋演習，藉口士兵失蹤要求進城搜查，遭拒後引發軍事衝突</div></div>
-      <div class="pt"><div class="dot r"></div><div>8月13日<em>淞滬會戰</em>：日本相信中國將迅速投降，大量增兵，於上海發動攻擊</div></div>
-      <div class="pt"><div class="dot r"></div><div>死守上海三個月後撤退，11月國民政府宣布<em>遷都重慶</em>；12月日軍占領南京</div></div>
-      <div class="pt"><div class="dot r"></div><div>結果：日軍控制中國東部沿海從天津到廣州的重要城市</div></div>
-    </div>
-    <div class="eg"><span class="eg-label">以華制華</span>日本扶植溥儀控制滿洲國（當地多為滿洲人和懷念清朝統治者）；扶植汪精衛在南京成立「中華民國國民政府」，分化國民政府內部勢力</div>
+<div class="cv-sec active" id="h6s0">
+<div class="sec-title"><span class="num">一</span><h2>中日戰爭</h2></div>
+<div class="card hl">
+  <div class="sub-title">（一）九一八事件與滿洲國（1931）</div>
+  <div class="pts">
+    <div class="pt"><div class="dot r"></div><div>導火線：1931年9月18日，日本關東軍<em>誆稱</em>中國軍隊炸毀瀋陽北郊鐵路，藉此進攻附近駐軍，三個多月便占領東北全境</div></div>
+    <div class="pt"><div class="dot r"></div><div>1932年，日本扶植傀儡政權<em>滿洲國</em>成立，受日本關東軍控制</div></div>
+    <div class="pt"><div class="dot c"></div><div>影響：國民政府呼籲國際社會主持公道；<em>國際聯盟</em>派調查團至東北，譴責日本為侵略者，日本退出國聯</div></div>
   </div>
-
-  <div class="sec-title"><span class="num">二</span><h2>太平洋戰爭</h2></div>
-  <div class="card hl">
-    <div class="sub-title">（一）日軍偷襲珍珠港（1941.12.7）</div>
-    <div class="pts">
-      <div class="pt"><div class="dot"></div><div>背景：1939年歐戰爆發；1940年日、德、義組成<em>軸心國</em>；日本積極南進，使美、英感受強大威脅</div></div>
-      <div class="pt"><div class="dot r"></div><div>導火線：美國停止向日本出口石油作為報復 → 日本主戰派計畫對美、英開戰，並占領荷屬印度群島以獲取<em>東南亞石油資源</em></div></div>
-      <div class="pt"><div class="dot r"></div><div>過程：1941年12月7日凌晨，日本偷襲珍珠港，多艘美軍戰艦被炸沉，美軍陣亡超過兩千人</div></div>
-      <div class="pt"><div class="dot c"></div><div>結果：美國向日、德、義宣戰；國民政府12月9日同樣對三國宣戰</div></div>
-    </div>
-    <div class="sub-title">（二）日本入侵東南亞與太平洋</div>
-    <div class="pts">
-      <div class="pt"><div class="dot r"></div><div>進攻美、英、荷殖民地，包括香港、馬尼拉、新加坡等；占領緬甸仰光，切斷中國戰時重要對外通道（<em>滇緬公路</em>）；攻入大洋洲部分島嶼，兵臨澳洲</div></div>
-      <div class="pt"><div class="dot r"></div><div>影響：日本幾乎控制<em>整個西太平洋</em>，疆域與勢力擴張到前所未有的程度</div></div>
-    </div>
-    <div class="sub-title">（三）大東亞共榮圈</div>
-    <div class="pts">
-      <div class="pt"><div class="dot"></div><div>目的：合理化在東亞與太平洋地區的軍事侵略行動；聲稱解放亞洲民族，驅逐西方帝國主義勢力，防止共產主義蔓延</div></div>
-      <div class="pt"><div class="dot r"></div><div>作法：扶植汪精衛南京國民政府（1940）；緬甸、菲律賓建立傀儡政權；新加坡成立印度臨時政府；泰國納入保護國；越南保大帝；馬來半島、蘇門答臘、婆羅洲納入領土榨取礦產資源</div></div>
-    </div>
-    <div class="sub-title">（四）日本投降</div>
-    <table>
-      <tr><th>時間</th><th>事件</th></tr>
-      <tr><td class="g">1943.11</td><td>美、英、中蔣中正、羅斯福、邱吉爾於<em>開羅</em>舉行會談，商討對日反攻及戰後東亞領土安排</td></tr>
-      <tr><td class="g">1945.2</td><td>羅斯福、邱吉爾、史達林簽訂《<em>雅爾達協定</em>》，約定蘇聯對日宣戰，以蒙古與中國東北特殊利益作為回報</td></tr>
-      <tr><td class="r">1945.8.6</td><td>美國於廣島投下<em>第一顆原子彈</em></td></tr>
-      <tr><td class="r">1945.8.8</td><td>蘇聯對日宣戰，攻入滿洲國和朝鮮半島</td></tr>
-      <tr><td class="r">1945.8.9</td><td>美國於長崎投下<em>第二顆原子彈</em></td></tr>
-      <tr><td class="r">1945.8.15</td><td>日本<em>無條件投降</em></td></tr>
-    </table>
+  <div class="sub-title">（二）一二八事件與華北衝突（1932–1933）</div>
+  <div class="pts">
+    <div class="pt"><div class="dot r"></div><div>1932年1月28日，上海日軍以<em>保護僑民</em>為藉口攻擊中國駐軍，國民政府抵抗持續三個多月；歐美各國出面逼迫日軍停火，日軍退回原駐地</div></div>
+    <div class="pt"><div class="dot r"></div><div>入侵熱河、河北後，蔣中正堅持「<em>先安內後攘外</em>」以剿共優先</div></div>
+    <div class="pt"><div class="dot c"></div><div>1933年5月簽訂《<em>塘沽協定</em>》，劃定北平、天津以北至長城為非軍事區，中國不得駐軍</div></div>
   </div>
-
-  <div class="sec-title"><span class="num">三</span><h2>戰爭的殘酷與省思</h2></div>
-  <div class="card hl">
-    <div class="sub-title">（一）平民生命財產的損失</div>
-    <div class="pts">
-      <div class="pt"><div class="dot r"></div><div>全球：二戰至少造成<em>五千五百多萬人</em>喪生</div></div>
-      <div class="pt"><div class="dot r"></div><div>日本：戰爭末期受美軍轟炸，長崎與廣島因原子彈轟炸共十餘萬人死亡，核子輻射感染死亡人數眾多</div></div>
-      <div class="pt"><div class="dot r"></div><div>中國：八年抗戰期間軍隊陣亡一百三十多萬人，平民死於戰火者難以估算，總數可能超過千萬</div></div>
-    </div>
-    <div class="sub-title">（二）總體戰爭</div>
-    <div class="pts">
-      <div class="pt"><div class="dot r"></div><div><em>平民成為軍事攻擊目標</em>，歐洲與亞洲皆出現無差別轟炸</div></div>
-      <div class="pt"><div class="dot r"></div><div>戰爭手段越趨瘋狂：日軍<em>神風特攻隊</em>自殺攻擊、美國原子彈報復</div></div>
-    </div>
-    <div class="sub-title">（三）無辜犧牲者</div>
-    <table>
-      <tr><th>事件</th><th>內容</th></tr>
-      <tr><td class="r">南京大屠殺</td><td>1937年12月，日軍攻陷南京，兩個月內屠殺戰俘和平民百姓達<em>三十萬人</em></td></tr>
-      <tr><td class="r">慰安婦</td><td>日本強徵國內及殖民地女性，包括日本、朝鮮、臺灣、中國及東南亞，前往戰場充當慰安婦，戰後受到強烈譴責，受害者展開長年的求償訴訟</td></tr>
-      <tr><td class="r">臺籍軍伕及日本兵</td><td>鼓勵臺灣人加入軍隊充當軍伕，甚至上戰場作戰，總計超過<em>二十萬人</em>被動員</td></tr>
-    </table>
-    <div class="sub-title">（四）追究戰爭責任</div>
-    <div class="pts">
-      <div class="pt"><div class="dot c"></div><div>東京的<em>遠東國際軍事法庭</em>：審判發動戰爭的日本軍人與政客</div></div>
-      <div class="pt"><div class="dot c"></div><div>南京的戰犯軍事法庭：審判策動中日戰爭的日本軍人</div></div>
-      <div class="pt"><div class="dot c"></div><div>在戰爭期間犯下虐待戰俘等罪名的臺灣人被送至中、美、澳等國的軍事法庭</div></div>
-    </div>
+  <div class="sub-title">（三）八年抗戰（1937–1945）</div>
+  <div class="pts">
+    <div class="pt"><div class="dot r"></div><div>導火線：1937年7月7日<em>盧溝橋事變</em>（七七事變），日軍在河北盧溝橋演習，藉口士兵失蹤要求進城搜查，遭拒後引發軍事衝突</div></div>
+    <div class="pt"><div class="dot r"></div><div>8月13日<em>淞滬會戰</em>：日本相信中國將迅速投降，大量增兵，於上海發動攻擊</div></div>
+    <div class="pt"><div class="dot r"></div><div>死守上海三個月後撤退，11月國民政府宣布<em>遷都重慶</em>；12月日軍占領南京</div></div>
+    <div class="pt"><div class="dot r"></div><div>結果：日軍控制中國東部沿海從天津到廣州的重要城市</div></div>
   </div>
+  <div class="eg"><span class="eg-label">以華制華</span>日本扶植溥儀控制滿洲國；扶植汪精衛在南京成立「中華民國國民政府」，分化國民政府內部勢力</div>
+</div>
 
-</div><!-- end 第1節 -->
-
-
-<!-- ══════════════════ 第2節 ══════════════════ -->
-<div class="section" id="s1">
-
-  <div class="sec-title"><span class="num">一</span><h2>中華人民共和國的建立</h2></div>
-  <div class="card hl">
-    <div class="sub-title">（一）中共勢力擴張</div>
-    <div class="pts">
-      <div class="pt"><div class="dot"></div><div>背景：1917年俄國共產黨主導共產國際，推動全球共產主義運動</div></div>
-      <div class="pt"><div class="dot c"></div><div>1921年<em>中國共產黨成立</em>；1927年起以<em>農村包圍城市</em>革命路線，在偏僻農村建立武裝游擊隊</div></div>
-      <div class="pt"><div class="dot r"></div><div>1930年國軍大規模追剿；1934年<em>長征</em>：國軍圍剿江西及湖北共軍，中共長途跋涉至陝西延安</div></div>
-      <div class="pt"><div class="dot c"></div><div>1936年12月<em>西安事變</em>：張學良發動兵諫，軟禁蔣中正，要求停止剿共、共同抗日 → 蔣中正停止剿共，第二次國共合作</div></div>
-      <div class="pt"><div class="dot c"></div><div>對日作戰期間，中共勢力迅速擴大，至戰爭末期控制區人口已達一億人（約中國五分之一人口）</div></div>
-    </div>
-    <div class="sub-title">（二）蘇聯占領中國東北</div>
-    <div class="pts">
-      <div class="pt"><div class="dot r"></div><div>1945年蘇聯依照《雅爾達協定》對日開戰，占領滿洲國及朝鮮半島</div></div>
-      <div class="pt"><div class="dot r"></div><div>美、蘇兩國以北緯38度線為界分占；蘇聯占有<em>東北亞大片土地</em>，共產勢力在亞洲迅速擴張</div></div>
-    </div>
-    <div class="sub-title">（三）國共戰爭</div>
-    <div class="pts">
-      <div class="pt"><div class="dot r"></div><div>蘇聯占領東北地區，阻止國民政府接收，讓中共軍隊進入東北，中共獲得日軍遺留的武器</div></div>
-      <div class="pt"><div class="dot r"></div><div>1946年3月，國共在東北與華北等地爆發內戰；美國派<em>馬歇爾</em>來調停，但失敗</div></div>
-      <div class="pt"><div class="dot r"></div><div>1948年底至1949年1月，超過一百萬名國軍部隊在國共戰爭中潰敗，共軍占領長江以北地區</div></div>
-      <div class="pt"><div class="dot r"></div><div>1949年10月1日，中國共產黨宣布建立<em>中華人民共和國</em>，將北平改為北京；國民政府遷臺</div></div>
-    </div>
-    <div class="sub-title">（四）毛澤東時代——階級鬥爭與社會主義改造</div>
-    <table>
-      <tr><th>政策</th><th>內容</th><th>結果</th></tr>
-      <tr><td class="g">土地改革</td><td>1950年起於農村推動，以鬥爭地主方式將土地均分給農民</td><td>造成一百萬名以上地主死亡</td></tr>
-      <tr><td class="g">鎮壓反革命</td><td>掃蕩國民政府遺留的游擊隊、回鄉軍人、黑社會、地方宗教等</td><td>被害人數超過<em>二百萬人</em>以上</td></tr>
-      <tr><td class="g">消滅私營經濟</td><td>三反、五反運動打擊工商業資本家；1955–1956年私營企業全部由政府接管</td><td>中國正式邁入社會主義</td></tr>
-      <tr><td class="r">反右派鬥爭</td><td>1957年毛澤東號召知識界「大鳴大放」批評共黨，隨即秋後算帳</td><td>大批曾公開批評者被指為「右派知識分子」，遭調查、批判、降職、迫害甚至關押</td></tr>
-      <tr><td class="r">大躍進</td><td>1957年提出「超英趕美」，要求鋼鐵與糧食產量隔年翻倍；動員全民大煉鋼、成立<em>人民公社</em></td><td>各公社自誇農業產量大幅增長，政府徵收糧食出口換外匯，轄區內糧食不足卻禁止災民外逃，造成1959–1961年<em>二至三千萬人死亡</em></td></tr>
-      <tr><td class="r">文化大革命</td><td>大躍進失敗後毛澤東失去權力；1966年鼓動紅衛兵推翻劉少奇與鄧小平；破四舊（舊思想、舊文化、舊風俗、舊習慣）；知識分子下放勞改，教育倒退</td><td>黨政領導官員在政治運動中被認定為「反革命」，許多中共元老被鬥爭致死，也包括劉少奇</td></tr>
-    </table>
-    <div class="sub-title">（五）鄧小平時代——改革開放來臨</div>
-    <div class="pts">
-      <div class="pt"><div class="dot c"></div><div>背景：1976年毛澤東病逝，四人幫被捕，文革結束，鄧小平重回政壇掌權</div></div>
-      <div class="pt"><div class="dot c"></div><div>政治、經濟改革：向國外資本主義取經，釋為「<em>具有中國特色的社會主義</em>」；廢除人民公社制度；建立<em>經濟特區</em>吸引外資；改革國營企業體制</div></div>
-      <div class="pt"><div class="dot c"></div><div>保守政治：堅持共產黨領導、抗拒政治改革、元老干政</div></div>
-    </div>
-    <div class="eg"><span class="eg-label">六四天安門事件（1989）</span>原因：1980年代改革開放造成物價飛漲、官員貪污，引起民怨 → 1989年爆發以政治民主化為訴求的全國性學生運動 → 鄧小平強硬鎮壓，6月4日在北京天安門廣場<em>血腥鎮壓</em> → 結果：江澤民被指定為新任總書記；西方國家對中共進行聯合經濟制裁 → 1992年鄧小平再強調經濟發展重要性，江澤民持續改革開放，推行大國外交</div>
+<div class="sec-title"><span class="num">二</span><h2>太平洋戰爭</h2></div>
+<div class="card hl">
+  <div class="sub-title">（一）日軍偷襲珍珠港（1941.12.7）</div>
+  <div class="pts">
+    <div class="pt"><div class="dot"></div><div>背景：1939年歐戰爆發；1940年日、德、義組成<em>軸心國</em>；日本積極南進，使美、英感受強大威脅</div></div>
+    <div class="pt"><div class="dot r"></div><div>導火線：美國停止向日本出口石油作為報復 → 日本主戰派計畫對美、英開戰，並占領荷屬印度群島以獲取<em>東南亞石油資源</em></div></div>
+    <div class="pt"><div class="dot r"></div><div>過程：1941年12月7日凌晨，日本偷襲珍珠港，多艘美軍戰艦被炸沉，美軍陣亡超過兩千人</div></div>
+    <div class="pt"><div class="dot c"></div><div>結果：美國向日、德、義宣戰；國民政府12月9日同樣對三國宣戰</div></div>
   </div>
-
-  <div class="sec-title"><span class="num">二</span><h2>冷戰下的熱戰</h2></div>
-  <div class="card hl">
-    <div class="sub-title">（一）韓戰</div>
-    <div class="pts">
-      <div class="pt"><div class="dot"></div><div>二戰後，美、蘇以<em>北緯38度線</em>為界分占朝鮮半島；北韓（蘇聯扶植，金日成）建立朝鮮民主主義人民共和國；南韓（美國占領，李承晚）建立大韓民國</div></div>
-      <div class="pt"><div class="dot r"></div><div>爆發：北韓率先出兵進攻南韓，聯合國派<em>麥克阿瑟</em>增援反攻</div></div>
-      <div class="pt"><div class="dot r"></div><div>中國抗美援朝：聯合國軍隊逼近中國邊境 → 中國人民志願軍出兵</div></div>
-      <div class="pt"><div class="dot c"></div><div>1953年<em>板門店停戰協議</em>，韓戰結束，仍以北緯38度線劃分南北韓</div></div>
-      <div class="pt"><div class="dot r"></div><div>傷亡人數：近<em>三百萬人</em>喪生，一千萬個家庭離散</div></div>
-    </div>
-    <div class="sub-title">防堵共產勢力</div>
-    <div class="pts">
-      <div class="pt"><div class="dot c"></div><div>韓戰時期：美國與菲律賓、日本簽署<em>軍事共同防禦條約</em></div></div>
-      <div class="pt"><div class="dot c"></div><div>韓戰後：美國與南韓、中華民國簽署共同防禦條約，形成<em>第一島鏈</em></div></div>
-    </div>
-    <div class="sub-title">（二）越戰</div>
-    <div class="pts">
-      <div class="pt"><div class="dot"></div><div>法越戰爭：莫邊府戰役，法軍大敗 → 《日內瓦協定》：越盟建立<em>越南民主共和國</em>（北越）；法國扶植保大帝建立越南國（南越）</div></div>
-      <div class="pt"><div class="dot r"></div><div>美國介入：支援南越，但國內抗議聲浪下，1973年撤兵</div></div>
-      <div class="pt"><div class="dot r"></div><div>1976年<em>越南社會主義共和國</em>成立（南北越統一）</div></div>
-      <div class="pt"><div class="dot r"></div><div>影響：打破東亞圍堵計畫、平民傷害大</div></div>
-    </div>
-    <div class="compare-row">
-      <div class="cmp-card gold">
-        <span class="cmp-tag">韓戰</span>
-        <div class="cmp-title">結果</div>
-        <div class="cmp-body">南、北韓仍以<em>北緯38度線</em>為界，至今仍分裂</div>
-      </div>
-      <div class="cmp-card cyan">
-        <span class="cmp-tag">越戰</span>
-        <div class="cmp-title">結果</div>
-        <div class="cmp-body">北越統一越南，成立<em>越南社會主義共和國</em>（1976）</div>
-      </div>
-    </div>
+  <div class="sub-title">（二）大東亞共榮圈</div>
+  <div class="pts">
+    <div class="pt"><div class="dot"></div><div>目的：合理化在東亞與太平洋地區的軍事侵略行動；聲稱解放亞洲民族，驅逐西方帝國主義勢力</div></div>
+    <div class="pt"><div class="dot r"></div><div>扶植汪精衛南京國民政府（1940）；緬甸、菲律賓建立傀儡政權；越南保大帝；泰國納入保護國</div></div>
   </div>
+  <div class="sub-title">（三）日本投降</div>
+  <table>
+    <tr><th>時間</th><th>事件</th></tr>
+    <tr><td class="g">1943.11</td><td>美、英、中於<em>開羅</em>會談，商討對日反攻及戰後東亞領土安排</td></tr>
+    <tr><td class="g">1945.2</td><td>《<em>雅爾達協定</em>》：蘇聯對日宣戰，以蒙古與中國東北特殊利益作為回報</td></tr>
+    <tr><td class="r">1945.8.6</td><td>美國於廣島投下<em>第一顆原子彈</em></td></tr>
+    <tr><td class="r">1945.8.8</td><td>蘇聯對日宣戰，攻入滿洲國和朝鮮半島</td></tr>
+    <tr><td class="r">1945.8.9</td><td>美國於長崎投下<em>第二顆原子彈</em></td></tr>
+    <tr><td class="r">1945.8.15</td><td>日本<em>無條件投降</em></td></tr>
+  </table>
+</div>
 
-  <hr>
-  <div class="sec-title"><span class="num">⚡</span><h2>必背重點 &amp; 易混淆</h2></div>
-  <div class="checklist-card">
-    <div class="pts">
-      <div class="pt"><div class="dot r"></div><div>九一八事件（1931）：關東軍<em>誆稱</em>中國炸鐵路 → 占東北 → 滿洲國成立（1932）→ 日本退出國聯</div></div>
-      <div class="pt"><div class="dot r"></div><div>一二八事件（1932）：上海，歐美介入調停；《塘沽協定》（1933）：劃非軍事區</div></div>
-      <div class="pt"><div class="dot r"></div><div>蔣中正「先安內後攘外」= 剿共優先，不是說不打日本</div></div>
-      <div class="pt"><div class="dot r"></div><div>盧溝橋事變（1937.7.7）→ 八年抗戰開始 → 淞滬會戰 → 遷都重慶 → 南京大屠殺</div></div>
-      <div class="pt"><div class="dot r"></div><div>珍珠港（1941.12.7）= 美國停止出口石油 → 日本偷襲 → 美國宣戰</div></div>
-      <div class="pt"><div class="dot r"></div><div>開羅會議（1943）= 美英中；《雅爾達協定》（1945.2）= 美英蘇，蘇聯換取東北利益對日宣戰</div></div>
-      <div class="pt"><div class="dot r"></div><div>廣島（8/6）→ 長崎（8/9）→ 日本投降（8/15）</div></div>
-      <div class="pt"><div class="dot r"></div><div>南京大屠殺：1937年12月，屠殺三十萬人；臺籍軍伕：超過二十萬人被動員</div></div>
-      <div class="pt"><div class="dot r"></div><div>遠東國際軍事法庭（東京）= 審判發動戰爭的日本軍人與政客</div></div>
-      <div class="pt"><div class="dot r"></div><div>長征（1934）：國軍圍剿 → 中共跋涉至陝西延安；西安事變（1936）：張學良軟禁蔣，第二次國共合作</div></div>
-      <div class="pt"><div class="dot r"></div><div>中華人民共和國（1949.10.1）成立；國民政府遷臺</div></div>
-      <div class="pt"><div class="dot r"></div><div>大躍進（1957提出）→ 人民公社 → 1959–1961年<em>二至三千萬人</em>死亡</div></div>
-      <div class="pt"><div class="dot r"></div><div>文化大革命（1966）：紅衛兵、破四舊；六四天安門（1989）：血腥鎮壓學生運動</div></div>
-      <div class="pt"><div class="dot r"></div><div>韓戰（1950）：北緯38度線，板門店停戰協議（1953），至今仍分裂</div></div>
-      <div class="pt"><div class="dot r"></div><div>越戰：美國1973年撤兵；1976年越南統一成立越南社會主義共和國</div></div>
-      <div class="pt"><div class="dot r"></div><div>韓戰 vs 越戰：韓戰→分裂至今；越戰→北越統一全國</div></div>
-    </div>
+<div class="sec-title"><span class="num">三</span><h2>戰爭的殘酷與省思</h2></div>
+<div class="card hl">
+  <div class="sub-title">平民損失</div>
+  <div class="pts">
+    <div class="pt"><div class="dot r"></div><div>全球二戰至少造成<em>五千五百多萬人</em>喪生</div></div>
+    <div class="pt"><div class="dot r"></div><div>長崎與廣島因原子彈共十餘萬人死亡；中國八年抗戰軍隊陣亡一百三十多萬人</div></div>
+    <div class="pt"><div class="dot r"></div><div>平民成為軍事攻擊目標（<em>總體戰爭</em>）；神風特攻隊自殺攻擊、原子彈報復</div></div>
   </div>
+  <table style="margin-top:10px;">
+    <tr><th>事件</th><th>內容</th></tr>
+    <tr><td class="r">南京大屠殺</td><td>1937年12月，日軍攻陷南京，兩個月內屠殺戰俘和平民達<em>三十萬人</em></td></tr>
+    <tr><td class="r">慰安婦</td><td>日本強徵國內及殖民地女性前往戰場充當慰安婦，受害者展開長年求償訴訟</td></tr>
+    <tr><td class="r">臺籍軍伕</td><td>鼓勵臺灣人加入軍隊，總計超過<em>二十萬人</em>被動員</td></tr>
+  </table>
+  <div class="sub-title">追究戰爭責任</div>
+  <div class="pts">
+    <div class="pt"><div class="dot c"></div><div>東京的<em>遠東國際軍事法庭</em>：審判發動戰爭的日本軍人與政客</div></div>
+    <div class="pt"><div class="dot c"></div><div>南京的戰犯軍事法庭：審判策動中日戰爭的日本軍人</div></div>
+  </div>
+</div>
+</div>
 
-</div><!-- end 第2節 -->
+<div class="cv-sec" id="h6s1">
+<div class="sec-title"><span class="num">一</span><h2>中華人民共和國的建立</h2></div>
+<div class="card hl">
+  <div class="sub-title">（一）中共勢力擴張</div>
+  <div class="pts">
+    <div class="pt"><div class="dot c"></div><div>1921年<em>中國共產黨成立</em>；1927年起以<em>農村包圍城市</em>路線，在偏僻農村建立武裝游擊隊</div></div>
+    <div class="pt"><div class="dot r"></div><div>1934年<em>長征</em>：國軍圍剿江西共軍，中共長途跋涉至陝西延安</div></div>
+    <div class="pt"><div class="dot c"></div><div>1936年12月<em>西安事變</em>：張學良軟禁蔣中正，要求停止剿共、共同抗日 → 第二次國共合作</div></div>
+    <div class="pt"><div class="dot c"></div><div>對日作戰期間中共勢力迅速擴大，戰爭末期控制區人口達一億人（約中國五分之一）</div></div>
+  </div>
+  <div class="sub-title">（二）國共戰爭</div>
+  <div class="pts">
+    <div class="pt"><div class="dot r"></div><div>蘇聯占領東北，讓中共軍隊進入並獲得日軍遺留武器；1946年3月國共內戰爆發，美國派<em>馬歇爾</em>調停失敗</div></div>
+    <div class="pt"><div class="dot r"></div><div>1948年底至1949年1月，超過一百萬名國軍在國共戰爭中潰敗</div></div>
+    <div class="pt"><div class="dot r"></div><div>1949年10月1日，中共宣布建立<em>中華人民共和國</em>；國民政府遷臺</div></div>
+  </div>
+  <div class="sub-title">（三）毛澤東時代</div>
+  <table>
+    <tr><th>政策</th><th>內容</th><th>結果</th></tr>
+    <tr><td class="g">土地改革</td><td>1950年起鬥爭地主，將土地均分給農民</td><td>一百萬名以上地主死亡</td></tr>
+    <tr><td class="g">鎮壓反革命</td><td>掃蕩國民政府遺留勢力、地方宗教等</td><td>被害人數超過<em>二百萬人</em></td></tr>
+    <tr><td class="r">反右派鬥爭</td><td>1957年「大鳴大放」後秋後算帳</td><td>大批知識分子被迫害</td></tr>
+    <tr><td class="r">大躍進</td><td>1957年「超英趕美」，全民大煉鋼、成立<em>人民公社</em></td><td>1959–1961年<em>二至三千萬人</em>死亡</td></tr>
+    <tr><td class="r">文化大革命</td><td>1966年鼓動紅衛兵，破四舊；知識分子下放勞改</td><td>劉少奇等中共元老被鬥爭致死</td></tr>
+  </table>
+  <div class="sub-title">（四）鄧小平時代——改革開放</div>
+  <div class="pts">
+    <div class="pt"><div class="dot c"></div><div>1976年毛澤東病逝，四人幫被捕，鄧小平重掌政壇</div></div>
+    <div class="pt"><div class="dot c"></div><div>「<em>具有中國特色的社會主義</em>」：廢除人民公社、建立<em>經濟特區</em>吸引外資、改革國營企業</div></div>
+    <div class="pt"><div class="dot c"></div><div>但堅持共產黨領導，抗拒政治改革</div></div>
+  </div>
+  <div class="eg"><span class="eg-label">六四天安門（1989）</span>改革開放引起物價飛漲、官員貪污 → 全國學生運動爭取政治民主化 → 鄧小平6月4日<em>血腥鎮壓</em> → 江澤民接任總書記 → 西方聯合經濟制裁 → 1992年鄧小平再強調經濟發展，持續改革開放</div>
+</div>
 
-<div class="footer">CH.6 完整版 ／ HISTORY NOTES ／ 三民版 ／ 段考衝刺</div>`,
+<div class="sec-title"><span class="num">二</span><h2>冷戰下的熱戰</h2></div>
+<div class="card hl">
+  <div class="sub-title">（一）韓戰</div>
+  <div class="pts">
+    <div class="pt"><div class="dot"></div><div>二戰後，美蘇以<em>北緯38度線</em>為界分占朝鮮半島；北韓（金日成）、南韓（李承晚）各自建立政權</div></div>
+    <div class="pt"><div class="dot r"></div><div>北韓率先出兵進攻南韓，聯合國派<em>麥克阿瑟</em>增援反攻</div></div>
+    <div class="pt"><div class="dot r"></div><div>聯合國軍隊逼近中國邊境 → 中國人民志願軍出兵（抗美援朝）</div></div>
+    <div class="pt"><div class="dot c"></div><div>1953年<em>板門店停戰協議</em>，仍以北緯38度線劃分南北韓，至今仍分裂</div></div>
+    <div class="pt"><div class="dot r"></div><div>傷亡：近<em>三百萬人</em>喪生，一千萬個家庭離散</div></div>
+  </div>
+  <div class="sub-title">防堵共產勢力</div>
+  <div class="pts">
+    <div class="pt"><div class="dot c"></div><div>韓戰時期：美國與菲律賓、日本簽署<em>軍事共同防禦條約</em></div></div>
+    <div class="pt"><div class="dot c"></div><div>韓戰後：美國與南韓、中華民國簽署共同防禦條約，形成<em>第一島鏈</em></div></div>
+  </div>
+  <div class="sub-title">（二）越戰</div>
+  <div class="pts">
+    <div class="pt"><div class="dot"></div><div>法越戰爭：莫邊府戰役法軍大敗 → 《日內瓦協定》：北越（越南民主共和國）vs 南越</div></div>
+    <div class="pt"><div class="dot r"></div><div>美國支援南越，但在國內抗議聲浪下，1973年撤兵</div></div>
+    <div class="pt"><div class="dot r"></div><div>1976年<em>越南社會主義共和國</em>成立，南北越統一</div></div>
+  </div>
+  <div class="compare-row">
+    <div class="cmp-card gold"><span class="cmp-tag">韓戰</span><div class="cmp-title">結果</div><div class="cmp-body">南、北韓仍以<em>北緯38度線</em>為界，至今分裂</div></div>
+    <div class="cmp-card cyan"><span class="cmp-tag">越戰</span><div class="cmp-title">結果</div><div class="cmp-body">北越統一，成立<em>越南社會主義共和國</em>（1976）</div></div>
+  </div>
+</div>
+
+<hr>
+<div class="sec-title"><span class="num">⚡</span><h2>必背重點</h2></div>
+<div class="checklist-card">
+  <div class="pts">
+    <div class="pt"><div class="dot r"></div><div>九一八（1931）→ 滿洲國（1932）→ 日本退出國聯</div></div>
+    <div class="pt"><div class="dot r"></div><div>一二八（1932）上海；《塘沽協定》（1933）劃非軍事區</div></div>
+    <div class="pt"><div class="dot r"></div><div>蔣「先安內後攘外」= 剿共優先</div></div>
+    <div class="pt"><div class="dot r"></div><div>盧溝橋（1937.7.7）→ 淞滬會戰 → 遷都重慶 → 南京大屠殺（三十萬人）</div></div>
+    <div class="pt"><div class="dot r"></div><div>珍珠港（1941.12.7）= 美停出口石油 → 日偷襲 → 美宣戰</div></div>
+    <div class="pt"><div class="dot r"></div><div>開羅（1943）= 美英中；雅爾達（1945.2）= 美英蘇，蘇聯換東北利益對日宣戰</div></div>
+    <div class="pt"><div class="dot r"></div><div>廣島（8/6）→ 長崎（8/9）→ 日本投降（8/15）</div></div>
+    <div class="pt"><div class="dot r"></div><div>遠東國際軍事法庭（東京）= 審判發動戰爭的日本軍人與政客</div></div>
+    <div class="pt"><div class="dot r"></div><div>長征（1934）延安；西安事變（1936）張學良 → 第二次國共合作</div></div>
+    <div class="pt"><div class="dot r"></div><div>中華人民共和國（1949.10.1）成立；國民政府遷臺</div></div>
+    <div class="pt"><div class="dot r"></div><div>大躍進（1957）人民公社 → 1959–1961年<em>二至三千萬人</em>死亡</div></div>
+    <div class="pt"><div class="dot r"></div><div>文化大革命（1966）紅衛兵、破四舊；六四天安門（1989）血腥鎮壓</div></div>
+    <div class="pt"><div class="dot r"></div><div>韓戰（1950）板門店停戰（1953），至今仍分裂</div></div>
+    <div class="pt"><div class="dot r"></div><div>越戰：1973年美撤兵；1976年越南統一</div></div>
+  </div>
+</div>
+</div>
+`,
 
 
 /* ════════ 地科 5-3 海流 ════════ */
@@ -2515,10 +2476,10 @@ function cv6Tab(idx) {
   body.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===idx));
   body.querySelectorAll('.section').forEach((s,i) => s.classList.toggle('active', i===idx));
 }
-function h6Tab(idx) {
+function h6Tab(idx, el) {
   const body = document.getElementById('note-body');
-  body.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i===idx));
-  body.querySelectorAll('.section').forEach((s,i) => s.classList.toggle('active', i===idx));
+  body.querySelectorAll('.cv-tab').forEach((t,i) => t.classList.toggle('active', i===idx));
+  body.querySelectorAll('#h6s0,#h6s1').forEach((s,i) => s.classList.toggle('active', i===idx));
 }
 function cvTab(idx, el) {
   // 只操作當前顯示的 note-body 內的元素
